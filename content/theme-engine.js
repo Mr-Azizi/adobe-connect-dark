@@ -1,7 +1,7 @@
 /**
  * Adobe Connect Dark Mode - Theme Engine
- * Controls stylesheet injection, Open Shadow DOM traversal,
- * and Layer 1 smart generic luminance detection.
+ * Controls stylesheet injection, Open Shadow DOM lifecycle,
+ * guaranteed initial DOM scanning, and Layer 1 smart generic luminance detection.
  */
 
 (function () {
@@ -17,7 +17,9 @@
     'styles/components.css'
   ];
 
-  // Tags that MUST NEVER be altered or darkened
+  const SHADOW_STYLESHEET_PATH = 'styles/shadow-dom.css';
+
+  // Tags that MUST NEVER be altered or darkened (Media & embeds)
   const SENSITIVE_TAGS = new Set([
     'VIDEO',
     'CANVAS',
@@ -26,13 +28,7 @@
     'AUDIO',
     'EMBED',
     'OBJECT',
-    'IFRAME',
-    'SVG',
-    'PATH',
-    'CIRCLE',
-    'RECT',
-    'POLYGON',
-    'LINE'
+    'IFRAME'
   ]);
 
   // Selectors for containers whose contents must remain untouched
@@ -45,6 +41,8 @@
     '.whiteboard-canvas',
     '.shared-content-viewport',
     '.video-stream-element',
+    '.presentation-content',
+    '.slide-container',
     '[data-ac-role="presentation"]',
     '[data-ac-role="whiteboard"]',
     '[data-ac-role="screenshare"]',
@@ -56,7 +54,8 @@
     constructor() {
       this.enabled = false;
       this.injectedElements = new Set();
-      this.shadowRootsProcessed = new WeakSet();
+      this.attachedShadowRoots = new Set();
+      this.hasScannedInitialDOM = false;
       this.processQueue = [];
       this.isProcessingQueue = false;
     }
@@ -75,14 +74,14 @@
       if (this.enabled) return;
       this.enabled = true;
 
-      // 1. Set root attribute immediately
+      // 1. Set root attribute immediately on documentElement
       this.applyRootAttribute();
 
       // 2. Inject core stylesheets
       this.injectStylesheets(document);
 
-      // 3. Scan existing DOM for Shadow DOM and Layer 1 generic detection
-      this.scanDocument();
+      // 3. Schedule guaranteed initial DOM scan
+      this.scheduleInitialScan();
     }
 
     /**
@@ -91,6 +90,7 @@
     disable() {
       if (!this.enabled) return;
       this.enabled = false;
+      this.hasScannedInitialDOM = false;
 
       // 1. Remove root attribute
       const root = document.documentElement;
@@ -98,7 +98,7 @@
         root.removeAttribute('data-acd-theme');
       }
 
-      // 2. Remove all injected stylesheet elements
+      // 2. Remove all injected document stylesheet elements
       this.injectedElements.forEach((el) => {
         try {
           if (el && el.parentNode) {
@@ -110,7 +110,10 @@
       });
       this.injectedElements.clear();
 
-      // 3. Clean up Layer 1 attributes
+      // 3. Clean up Open Shadow Roots (Lifecycle: Off -> On repeatable)
+      this.cleanupShadowRoots();
+
+      // 4. Clean up Layer 1 attributes in main document
       try {
         const brightSurfaces = document.querySelectorAll('[data-acd-surface]');
         brightSurfaces.forEach((el) => el.removeAttribute('data-acd-surface'));
@@ -125,7 +128,7 @@
     }
 
     /**
-     * Set attribute on html element
+     * Set attribute on html element as early as possible
      */
     applyRootAttribute() {
       const root = document.documentElement;
@@ -135,7 +138,7 @@
     }
 
     /**
-     * Inject extension stylesheets into a document or shadow root target
+     * Inject extension stylesheets into the document
      */
     injectStylesheets(target) {
       if (!this.enabled) return;
@@ -167,30 +170,146 @@
     }
 
     /**
-     * Handle Open Shadow Root styling safely
+     * Guaranteed Initial DOM Scan
+     * Fixes document_start race where document.body is not yet constructed.
      */
-    attachToShadowRoot(shadowRoot) {
-      if (!this.enabled || !shadowRoot || this.shadowRootsProcessed.has(shadowRoot)) {
-        return;
+    scheduleInitialScan() {
+      if (this.hasScannedInitialDOM) return;
+
+      if (document.body) {
+        this.performInitialScan();
+      } else {
+        // Wait for body to be created
+        const onReady = () => {
+          if (this.enabled && !this.hasScannedInitialDOM && document.body) {
+            this.performInitialScan();
+          }
+        };
+
+        document.addEventListener('DOMContentLoaded', onReady, { once: true });
+
+        const onStateChange = () => {
+          if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            document.removeEventListener('readystatechange', onStateChange);
+            onReady();
+          }
+        };
+        document.addEventListener('readystatechange', onStateChange);
+      }
+    }
+
+    /**
+     * Perform the actual scan once body is ready
+     */
+    performInitialScan() {
+      if (!this.enabled || this.hasScannedInitialDOM || !document.body) return;
+      this.hasScannedInitialDOM = true;
+
+      // Scan body and its key container children
+      this.queueNodesForEvaluation([document.body]);
+
+      try {
+        const candidates = document.querySelectorAll(
+          'div, section, aside, header, nav, main, article, [role="region"], [role="dialog"], [role="menu"]'
+        );
+        this.queueNodesForEvaluation(candidates);
+      } catch (e) {
+        // Fallback
       }
 
-      this.shadowRootsProcessed.add(shadowRoot);
-      this.injectStylesheets(shadowRoot);
+      // Check for any open shadow roots present in initial DOM
+      this.scanForShadowRoots(document.body);
+    }
+
+    /**
+     * Handle Open Shadow Root styling safely with dedicated shadow stylesheet
+     */
+    attachToShadowRoot(shadowRoot) {
+      if (!this.enabled || !shadowRoot) return;
+      if (this.attachedShadowRoots.has(shadowRoot)) return;
+
+      this.attachedShadowRoots.add(shadowRoot);
+
+      // Inject dedicated Shadow DOM stylesheet (encapsulation-friendly)
+      const shadowStyleId = 'acd-shadow-theme-style';
+      if (!shadowRoot.querySelector || !shadowRoot.querySelector(`#${shadowStyleId}`)) {
+        const link = document.createElement('link');
+        link.id = shadowStyleId;
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = chrome.runtime.getURL(SHADOW_STYLESHEET_PATH);
+        link.setAttribute('data-acd-shadow-injected', 'true');
+
+        shadowRoot.appendChild(link);
+      }
 
       // Evaluate elements inside shadow root
       this.queueNodesForEvaluation(shadowRoot.children);
+
+      // Recursively check for nested shadow roots
+      this.scanForShadowRoots(shadowRoot);
+    }
+
+    /**
+     * Clean up all attached shadow roots upon disable()
+     */
+    cleanupShadowRoots() {
+      this.attachedShadowRoots.forEach((shadowRoot) => {
+        try {
+          if (shadowRoot.querySelectorAll) {
+            // Remove injected stylesheet
+            const injected = shadowRoot.querySelectorAll('[data-acd-shadow-injected]');
+            injected.forEach((el) => {
+              if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+
+            // Cleanup Layer 1 attributes inside shadow root
+            const brightSurfaces = shadowRoot.querySelectorAll('[data-acd-surface]');
+            brightSurfaces.forEach((el) => el.removeAttribute('data-acd-surface'));
+
+            const darkTexts = shadowRoot.querySelectorAll('[data-acd-text]');
+            darkTexts.forEach((el) => el.removeAttribute('data-acd-text'));
+          }
+        } catch (e) {
+          // Suppress cleanup error for detached shadow roots
+        }
+      });
+
+      this.attachedShadowRoots.clear();
+    }
+
+    /**
+     * Scan container for custom elements with open shadow roots
+     */
+    scanForShadowRoots(container) {
+      if (!this.enabled || !container) return;
+
+      try {
+        const allElements = container.querySelectorAll('*');
+        for (let i = 0; i < allElements.length; i++) {
+          const el = allElements[i];
+          if (el.shadowRoot) {
+            this.attachToShadowRoot(el.shadowRoot);
+          }
+        }
+      } catch (e) {
+        // Fallback
+      }
     }
 
     /**
      * Check if an element or its ancestor is sensitive (media, whiteboard, presentation)
+     * Differentiates between Content SVGs (preserved) and UI SVGs (allowed to adapt).
      */
     isSensitive(element) {
       if (!element || element.nodeType !== Node.ELEMENT_NODE) return true;
 
-      // Direct tag check
-      if (SENSITIVE_TAGS.has(element.tagName)) return true;
+      const tagName = element.tagName.toUpperCase();
 
-      // Attribute or class check
+      // Direct media tags check
+      if (SENSITIVE_TAGS.has(tagName)) return true;
+
+      // Explicit preservation attribute or class
       if (element.hasAttribute && (
         element.hasAttribute('data-acd-preserve') ||
         element.classList.contains('acd-preserve')
@@ -198,13 +317,33 @@
         return true;
       }
 
-      // Ancestor check
+      // Ancestor check for media / presentation containers
       try {
         if (element.closest && element.closest(SENSITIVE_CONTAINER_SELECTORS)) {
           return true;
         }
       } catch (e) {
-        // Invalid selector or detached node fallback
+        // Fallback
+      }
+
+      // SVG handling:
+      // Content SVGs (slides, whiteboard, presentations) are preserved.
+      // UI SVGs (toolbar icons, buttons, menus) are NOT sensitive.
+      if (tagName === 'SVG' || element.ownerSVGElement) {
+        try {
+          if (element.closest && (
+            element.closest('.presentation-content') ||
+            element.closest('.slide-container') ||
+            element.closest('.whiteboard-canvas') ||
+            element.closest('[data-ac-role="presentation"]') ||
+            element.closest('[data-ac-role="whiteboard"]')
+          )) {
+            return true; // Content SVG -> Sensitive
+          }
+        } catch (e) {}
+
+        // UI SVG -> Not sensitive, allowing parent text/icon color styling
+        return false;
       }
 
       return false;
@@ -323,28 +462,6 @@
           this.scheduleQueueProcessing();
         }
       });
-    }
-
-    /**
-     * Scan document on initial activation
-     */
-    scanDocument() {
-      if (!this.enabled) return;
-
-      // Scan body and its children
-      if (document.body) {
-        this.queueNodesForEvaluation([document.body]);
-
-        // Traverse key candidate containers (pods, toolbars, panels)
-        try {
-          const candidates = document.querySelectorAll(
-            'div, section, aside, header, nav, main, article, [role="region"], [role="dialog"], [role="menu"]'
-          );
-          this.queueNodesForEvaluation(candidates);
-        } catch (e) {
-          // Fallback if querySelector fails
-        }
-      }
     }
   }
 

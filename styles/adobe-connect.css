@@ -144,11 +144,11 @@ html[data-acd-theme="dark"] .pod-header [role="button"]:hover {
   background-color: var(--acd-bg-hover) !important;
 }
 
-/* Pod Body / Content Area */
-html[data-acd-theme="dark"] .pod-body,
-html[data-acd-theme="dark"] .pod-content,
-html[data-acd-theme="dark"] [class*="pod-body"],
-html[data-acd-theme="dark"] [class*="pod-content"] {
+/* Pod Body / Content Area (Excludes sensitive presentation/canvas content) */
+html[data-acd-theme="dark"] .pod-body:not([data-acd-preserve="true"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *),
+html[data-acd-theme="dark"] .pod-content:not([data-acd-preserve="true"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *),
+html[data-acd-theme="dark"] [class*="pod-body"]:not([data-acd-preserve="true"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *),
+html[data-acd-theme="dark"] [class*="pod-content"]:not([data-acd-preserve="true"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *) {
   background-color: var(--acd-bg-panel) !important;
   color: var(--acd-text-primary) !important;
 }

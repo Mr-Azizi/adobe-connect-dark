@@ -1,10 +1,11 @@
 /**
  * Adobe Connect Dark Mode - Background Service Worker (Manifest V3)
- * Handles lifecycle events, default preferences, and dynamic toolbar badge indicators.
+ * Handles lifecycle events, default preferences, dynamic script registration sync,
+ * and toolbar action badge indicators.
  */
 
-// Initialize default storage on installation
-chrome.runtime.onInstalled.addListener((details) => {
+// Initialize default storage and sync registered scripts on install
+chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
     chrome.storage.local.get(['acd_enabled_domains'], (result) => {
       if (!result.acd_enabled_domains) {
@@ -12,7 +13,47 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     });
   }
+  await syncRegisteredScripts();
 });
+
+// Sync registered scripts on browser startup
+chrome.runtime.onStartup.addListener(async () => {
+  await syncRegisteredScripts();
+});
+
+/**
+ * Synchronize chrome.scripting.registerContentScripts with storage.local
+ */
+async function syncRegisteredScripts() {
+  if (!chrome.scripting || !chrome.scripting.getRegisteredContentScripts) return;
+
+  try {
+    const result = await chrome.storage.local.get(['acd_enabled_domains']);
+    const enabledDomains = result.acd_enabled_domains || {};
+    const registered = await chrome.scripting.getRegisteredContentScripts();
+    const registeredMap = new Map(registered.map((r) => [r.id, r]));
+
+    // Unregister any scripts that are no longer in enabledDomains
+    const toUnregister = [];
+    for (const [id] of registeredMap) {
+      if (id.startsWith('acd_cs_')) {
+        const domainSlug = id.replace('acd_cs_', '');
+        const stillEnabled = Object.keys(enabledDomains).some(
+          (d) => d.replace(/[^a-zA-Z0-9_-]/g, '_') === domainSlug && enabledDomains[d]
+        );
+        if (!stillEnabled) {
+          toUnregister.push(id);
+        }
+      }
+    }
+
+    if (toUnregister.length > 0) {
+      await chrome.scripting.unregisterContentScripts({ ids: toUnregister });
+    }
+  } catch (e) {
+    console.warn('[ACD] Error syncing registered scripts:', e);
+  }
+}
 
 /**
  * Update the toolbar action badge (ON / empty) depending on the active tab domain
@@ -41,7 +82,6 @@ function updateBadgeForTab(tabId, urlString) {
       }
     });
   } catch (e) {
-    // URL parsing error
     chrome.action.setBadgeText({ tabId, text: '' });
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Adobe Connect Dark Mode - Base Stylesheet
- * Document root, foundational elements, scrollbars, and strict media preservation
+ * Document root, foundational elements, scrollbars, and non-destructive media preservation
  */
 
 /* ==========================================================================
@@ -15,9 +15,11 @@ html[data-acd-theme="dark"] body {
 }
 
 /* ==========================================================================
-   CRITICAL: Sensitive Element Preservation
-   Strictly prevents any media, video streams, presentation canvases, or slides
-   from being darkened, inverted, or color-altered.
+   NON-DESTRUCTIVE Sensitive Element Preservation
+   Strictly prevents media, video streams, presentation canvases, and slides
+   from being filtered or inverted.
+   CRITICAL: We DO NOT force background-color: transparent or color: inherit,
+   ensuring the original slide / whiteboard rendering is completely untouched.
    ========================================================================== */
 html[data-acd-theme="dark"] video,
 html[data-acd-theme="dark"] canvas,
@@ -25,7 +27,6 @@ html[data-acd-theme="dark"] img,
 html[data-acd-theme="dark"] picture,
 html[data-acd-theme="dark"] [data-acd-preserve="true"],
 html[data-acd-theme="dark"] .acd-preserve,
-html[data-acd-theme="dark"] [role="img"]:not(.acd-icon),
 html[data-acd-theme="dark"] .presentation-canvas,
 html[data-acd-theme="dark"] .whiteboard-canvas,
 html[data-acd-theme="dark"] .shared-content-viewport,
@@ -35,15 +36,32 @@ html[data-acd-theme="dark"] [data-ac-role="whiteboard"],
 html[data-acd-theme="dark"] [data-ac-role="screenshare"] {
   filter: none !important;
   mix-blend-mode: normal !important;
-  background-color: transparent !important;
-  color: inherit;
 }
 
-/* Preserve SVG presentations and slide diagrams */
+/* Preserve Content SVGs (Presentations, Slides, Whiteboard Drawings) */
 html[data-acd-theme="dark"] svg.presentation-content,
 html[data-acd-theme="dark"] svg.slide-content,
-html[data-acd-theme="dark"] .slide-container svg {
+html[data-acd-theme="dark"] .slide-container svg,
+html[data-acd-theme="dark"] .whiteboard-canvas svg,
+html[data-acd-theme="dark"] [data-ac-role="presentation"] svg,
+html[data-acd-theme="dark"] [data-ac-role="whiteboard"] svg,
+html[data-acd-theme="dark"] [data-acd-preserve="true"] svg {
   filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+/* UI SVGs: Adapt UI icons to dark theme via currentColor */
+html[data-acd-theme="dark"] button svg:not([data-acd-preserve="true"]),
+html[data-acd-theme="dark"] [role="button"] svg:not([data-acd-preserve="true"]),
+html[data-acd-theme="dark"] [class*="icon"] svg:not([data-acd-preserve="true"]),
+html[data-acd-theme="dark"] .spectrum-Icon {
+  color: var(--acd-text-secondary);
+  transition: color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] button:hover svg:not([data-acd-preserve="true"]),
+html[data-acd-theme="dark"] [role="button"]:hover svg:not([data-acd-preserve="true"]) {
+  color: var(--acd-text-primary);
 }
 
 /* ==========================================================================
@@ -123,7 +141,7 @@ html[data-acd-theme="dark"] select {
   border: 1px solid var(--acd-border) !important;
   border-radius: 4px;
   outline: none;
-  transition: border-color var(--acd-transition-fast), box-style var(--acd-transition-fast);
+  transition: border-color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] input[type="text"]:focus,
@@ -154,12 +172,13 @@ html[data-acd-theme="dark"] button {
 /* ==========================================================================
    Layer 1: Conservative Generic Detection Styling
    Applied to elements dynamically flagged by the Layer 1 detector.
+   Strictly excludes media elements, presentation areas, and whiteboard.
    ========================================================================== */
-html[data-acd-theme="dark"] [data-acd-surface="bright"]:not(video):not(canvas):not(img):not(picture):not([data-acd-preserve="true"]) {
+html[data-acd-theme="dark"] [data-acd-surface="bright"]:not(video):not(canvas):not(img):not(picture):not([data-acd-preserve="true"]):not(.acd-preserve):not([data-ac-role="presentation"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *) {
   background-color: var(--acd-bg-panel) !important;
   border-color: var(--acd-border) !important;
 }
 
-html[data-acd-theme="dark"] [data-acd-text="dark"]:not(video):not(canvas):not(img):not([data-acd-preserve="true"]) {
+html[data-acd-theme="dark"] [data-acd-text="dark"]:not(video):not(canvas):not(img):not([data-acd-preserve="true"]):not(.acd-preserve):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *) {
   color: var(--acd-text-primary) !important;
 }

@@ -1,0 +1,119 @@
+/**
+ * Adobe Connect Dark Mode - Shadow DOM Stylesheet
+ * Encapsulation-safe rules for Open Shadow Roots
+ * Reuses CSS custom properties inherited from document :root
+ */
+
+:host {
+  color: var(--acd-text-primary);
+  border-color: var(--acd-border);
+}
+
+/* ==========================================================================
+   Layer 1 Inside Shadow DOM: Conservative Generic Detection
+   ========================================================================== */
+[data-acd-surface="bright"]:not(video):not(canvas):not(img):not(picture):not([data-acd-preserve="true"]):not(.acd-preserve) {
+  background-color: var(--acd-bg-panel) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+[data-acd-text="dark"]:not(video):not(canvas):not(img):not([data-acd-preserve="true"]):not(.acd-preserve) {
+  color: var(--acd-text-primary) !important;
+}
+
+/* ==========================================================================
+   Common Containers & Structural Elements inside Shadow Roots
+   ========================================================================== */
+[class*="pod-header"],
+[class*="header-bar"],
+[class*="toolbar"],
+[class*="title-bar"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  color: var(--acd-text-primary) !important;
+  border-color: var(--acd-border) !important;
+}
+
+[class*="pod-body"],
+[class*="pod-content"],
+[class*="panel-content"],
+[class*="chat-messages"] {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Form controls inside shadow trees */
+input[type="text"],
+input[type="search"],
+textarea,
+select {
+  background-color: var(--acd-bg-input) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--acd-border-focus) !important;
+}
+
+/* Buttons and interactive elements */
+button,
+[role="button"] {
+  color: var(--acd-text-primary);
+  border-color: var(--acd-border);
+}
+
+button:hover,
+[role="button"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Menus & Popovers */
+[role="menu"],
+[role="listbox"],
+[class*="popover"],
+[class*="dropdown"] {
+  background-color: var(--acd-bg-elevated) !important;
+  border: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+[role="menuitem"]:hover,
+[role="option"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* ==========================================================================
+   UI SVGs vs Content SVGs inside Shadow DOM
+   ========================================================================== */
+button svg,
+[role="button"] svg,
+[class*="icon"] svg {
+  color: var(--acd-text-secondary);
+}
+
+button:hover svg,
+[role="button"]:hover svg {
+  color: var(--acd-text-primary);
+}
+
+/* ==========================================================================
+   STRICT Media Preservation inside Shadow DOM (Non-destructive)
+   ========================================================================== */
+video,
+canvas,
+img,
+picture,
+[data-acd-preserve="true"],
+.acd-preserve,
+[data-ac-role="presentation"],
+[data-ac-role="whiteboard"],
+[data-ac-role="screenshare"],
+.presentation-content,
+.whiteboard-canvas {
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}

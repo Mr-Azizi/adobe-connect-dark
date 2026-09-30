@@ -20,9 +20,7 @@
     'CANVAS',
     'IMG',
     'PICTURE',
-    'AUDIO',
-    'SVG',
-    'PATH'
+    'AUDIO'
   ]);
 
   class ACDObserver {
@@ -43,7 +41,6 @@
 
       const target = document.body || document.documentElement;
       if (!target) {
-        // If body not available yet (document_start), wait for DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => this.start(), { once: true });
         return;
       }
@@ -117,14 +114,15 @@
         const nodesToProcess = this.batch;
         this.batch = [];
 
-        // Check for Open Shadow Roots in added nodes
+        // Check for Open Shadow Roots in added nodes and their subtrees
         for (const node of nodesToProcess) {
           if (node.shadowRoot) {
             this.themeEngine.attachToShadowRoot(node.shadowRoot);
           }
+          this.themeEngine.scanForShadowRoots(node);
         }
 
-        // Send to Theme Engine queue
+        // Send to Theme Engine queue for Layer 1 detection
         this.themeEngine.queueNodesForEvaluation(nodesToProcess);
       }, this.DEBOUNCE_DELAY);
     }
