@@ -1,0 +1,466 @@
+/**
+ * Adobe Connect Dark Mode - Adobe Connect Specific Stylesheet (Layer 2)
+ * Component-aware styling for Adobe Connect HTML5 / Web Client
+ */
+
+/* ==========================================================================
+   1. Main Application Header & Top Toolbar
+   ========================================================================== */
+html[data-acd-theme="dark"] header,
+html[data-acd-theme="dark"] .meeting-header,
+html[data-acd-theme="dark"] .top-bar,
+html[data-acd-theme="dark"] .app-header,
+html[data-acd-theme="dark"] .main-toolbar,
+html[data-acd-theme="dark"] #meeting-header,
+html[data-acd-theme="dark"] .meeting-app-header,
+html[data-acd-theme="dark"] [class*="header-bar"],
+html[data-acd-theme="dark"] [class*="meeting-bar"],
+html[data-acd-theme="dark"] [class*="top-toolbar"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Meeting Title & Information */
+html[data-acd-theme="dark"] .meeting-title,
+html[data-acd-theme="dark"] .room-title,
+html[data-acd-theme="dark"] [class*="meeting-name"],
+html[data-acd-theme="dark"] [class*="room-name"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600;
+}
+
+/* Header Action Buttons (Speaker, Mic, Camera, Raise Hand, Menu) */
+html[data-acd-theme="dark"] .main-toolbar button,
+html[data-acd-theme="dark"] .top-bar button,
+html[data-acd-theme="dark"] [class*="header-bar"] button,
+html[data-acd-theme="dark"] [class*="action-button"],
+html[data-acd-theme="dark"] .top-bar [role="button"] {
+  background-color: transparent !important;
+  color: var(--acd-text-secondary) !important;
+  border-color: transparent !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .main-toolbar button:hover,
+html[data-acd-theme="dark"] .top-bar button:hover,
+html[data-acd-theme="dark"] [class*="header-bar"] button:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  border-radius: 4px;
+}
+
+/* Active State for Audio/Mic/Webcam Buttons */
+html[data-acd-theme="dark"] .main-toolbar button.active,
+html[data-acd-theme="dark"] .main-toolbar button[aria-pressed="true"],
+html[data-acd-theme="dark"] [class*="header-bar"] button.active,
+html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"] {
+  background-color: var(--acd-accent-bg) !important;
+  color: var(--acd-accent) !important;
+  border: 1px solid var(--acd-accent-border) !important;
+}
+
+/* ==========================================================================
+   2. Layout Selector / Sidebar
+   ========================================================================== */
+html[data-acd-theme="dark"] .layout-bar,
+html[data-acd-theme="dark"] .layout-sidebar,
+html[data-acd-theme="dark"] [class*="layout-sidebar"],
+html[data-acd-theme="dark"] [class*="layouts-panel"] {
+  background-color: var(--acd-bg-secondary) !important;
+  border-left: 1px solid var(--acd-border) !important;
+  border-right: 1px solid var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] .layout-item,
+html[data-acd-theme="dark"] [class*="layout-item"] {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-secondary) !important;
+  border-radius: 6px;
+}
+
+html[data-acd-theme="dark"] .layout-item:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .layout-item.active,
+html[data-acd-theme="dark"] .layout-item.selected {
+  border-color: var(--acd-accent) !important;
+  box-shadow: 0 0 0 1px var(--acd-accent) !important;
+}
+
+/* ==========================================================================
+   3. Pod Containers & Frames (Generic Pod Structure)
+   ========================================================================== */
+html[data-acd-theme="dark"] .pod,
+html[data-acd-theme="dark"] .ac-pod,
+html[data-acd-theme="dark"] .pod-container,
+html[data-acd-theme="dark"] [class*="pod-container"],
+html[data-acd-theme="dark"] [class*="pod_container"],
+html[data-acd-theme="dark"] [class*="pod-wrapper"],
+html[data-acd-theme="dark"] div[data-pod-type] {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 6px !important;
+  box-shadow: var(--acd-shadow-sm) !important;
+  overflow: hidden;
+}
+
+/* Pod Header Bar */
+html[data-acd-theme="dark"] .pod-header,
+html[data-acd-theme="dark"] .pod-title-bar,
+html[data-acd-theme="dark"] [class*="pod-header"],
+html[data-acd-theme="dark"] [class*="pod_header"],
+html[data-acd-theme="dark"] .title-bar {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+  min-height: 36px;
+}
+
+/* Pod Title Text */
+html[data-acd-theme="dark"] .pod-title,
+html[data-acd-theme="dark"] [class*="pod-title"],
+html[data-acd-theme="dark"] .pod-header h2,
+html[data-acd-theme="dark"] .pod-header h3 {
+  color: var(--acd-text-primary) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+/* Pod Header Controls (Menu, Minimize, Maximize) */
+html[data-acd-theme="dark"] .pod-header button,
+html[data-acd-theme="dark"] .pod-header [role="button"],
+html[data-acd-theme="dark"] [class*="pod-header"] button {
+  color: var(--acd-text-muted) !important;
+  background-color: transparent !important;
+}
+
+html[data-acd-theme="dark"] .pod-header button:hover,
+html[data-acd-theme="dark"] .pod-header [role="button"]:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Pod Body / Content Area */
+html[data-acd-theme="dark"] .pod-body,
+html[data-acd-theme="dark"] .pod-content,
+html[data-acd-theme="dark"] [class*="pod-body"],
+html[data-acd-theme="dark"] [class*="pod-content"] {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* ==========================================================================
+   4. Chat Pod
+   ========================================================================== */
+html[data-acd-theme="dark"] .chat-pod,
+html[data-acd-theme="dark"] [class*="chat-pod"],
+html[data-acd-theme="dark"] [class*="chat_pod"],
+html[data-acd-theme="dark"] [data-pod-type="chat"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
+/* Chat Message List Area */
+html[data-acd-theme="dark"] .chat-messages,
+html[data-acd-theme="dark"] .chat-message-list,
+html[data-acd-theme="dark"] .chat-history,
+html[data-acd-theme="dark"] [class*="chat-messages"],
+html[data-acd-theme="dark"] [class*="chat-scroll"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
+/* Chat Messages */
+html[data-acd-theme="dark"] .chat-message,
+html[data-acd-theme="dark"] .message-item,
+html[data-acd-theme="dark"] [class*="chat-message"],
+html[data-acd-theme="dark"] [class*="chat-item"] {
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .chat-message:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Sender Name */
+html[data-acd-theme="dark"] .chat-user-name,
+html[data-acd-theme="dark"] .sender-name,
+html[data-acd-theme="dark"] .user-name,
+html[data-acd-theme="dark"] [class*="chat-sender"],
+html[data-acd-theme="dark"] [class*="user-name"] {
+  color: var(--acd-accent) !important;
+  font-weight: 600 !important;
+}
+
+/* Timestamps */
+html[data-acd-theme="dark"] .chat-time,
+html[data-acd-theme="dark"] .message-time,
+html[data-acd-theme="dark"] [class*="chat-time"],
+html[data-acd-theme="dark"] [class*="timestamp"] {
+  color: var(--acd-text-muted) !important;
+  font-size: 11px !important;
+}
+
+/* Chat Input Container */
+html[data-acd-theme="dark"] .chat-input-container,
+html[data-acd-theme="dark"] .chat-input-wrapper,
+html[data-acd-theme="dark"] [class*="chat-input"] {
+  background-color: var(--acd-bg-secondary) !important;
+  border-top: 1px solid var(--acd-border) !important;
+}
+
+/* Chat Input Field */
+html[data-acd-theme="dark"] .chat-input-container textarea,
+html[data-acd-theme="dark"] .chat-input-container input,
+html[data-acd-theme="dark"] [class*="chat-input"] textarea,
+html[data-acd-theme="dark"] [class*="chat-input"] input {
+  background-color: var(--acd-bg-input) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] .chat-input-container textarea:focus,
+html[data-acd-theme="dark"] [class*="chat-input"] textarea:focus {
+  border-color: var(--acd-border-focus) !important;
+}
+
+/* Chat Tabs (Everyone / Private) */
+html[data-acd-theme="dark"] .chat-tabs,
+html[data-acd-theme="dark"] [class*="chat-tab"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
+}
+
+/* ==========================================================================
+   5. Attendees / Participants Pod
+   ========================================================================== */
+html[data-acd-theme="dark"] .attendees-pod,
+html[data-acd-theme="dark"] .participant-pod,
+html[data-acd-theme="dark"] [class*="attendee-pod"],
+html[data-acd-theme="dark"] [data-pod-type="attendee"],
+html[data-acd-theme="dark"] [data-pod-type="participants"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
+/* Role Headers (Hosts, Presenters, Participants) */
+html[data-acd-theme="dark"] .attendee-role-header,
+html[data-acd-theme="dark"] .role-header,
+html[data-acd-theme="dark"] [class*="role-header"],
+html[data-acd-theme="dark"] [class*="group-header"] {
+  background-color: var(--acd-bg-secondary) !important;
+  color: var(--acd-text-secondary) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  border-top: 1px solid var(--acd-border-subtle) !important;
+}
+
+/* Individual Attendee Row */
+html[data-acd-theme="dark"] .attendee-item,
+html[data-acd-theme="dark"] .attendee-row,
+html[data-acd-theme="dark"] .user-row,
+html[data-acd-theme="dark"] [class*="attendee-item"],
+html[data-acd-theme="dark"] [class*="attendee-row"],
+html[data-acd-theme="dark"] [class*="participant-item"] {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .attendee-item:hover,
+html[data-acd-theme="dark"] .attendee-row:hover,
+html[data-acd-theme="dark"] [class*="attendee-item"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Search Attendees Box */
+html[data-acd-theme="dark"] .attendee-search,
+html[data-acd-theme="dark"] [class*="attendee-search"] input {
+  background-color: var(--acd-bg-input) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+}
+
+/* User Count Badges */
+html[data-acd-theme="dark"] .user-count,
+html[data-acd-theme="dark"] [class*="count-badge"],
+html[data-acd-theme="dark"] [class*="role-count"] {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-muted) !important;
+  border-radius: 10px;
+}
+
+/* ==========================================================================
+   6. Notes Pod
+   ========================================================================== */
+html[data-acd-theme="dark"] .notes-pod,
+html[data-acd-theme="dark"] [class*="notes-pod"],
+html[data-acd-theme="dark"] [data-pod-type="notes"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
+/* Notes Formatting Toolbar */
+html[data-acd-theme="dark"] .notes-toolbar,
+html[data-acd-theme="dark"] [class*="notes-toolbar"],
+html[data-acd-theme="dark"] .ql-toolbar {
+  background-color: var(--acd-bg-secondary) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] .notes-toolbar button,
+html[data-acd-theme="dark"] .ql-toolbar button {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] .notes-toolbar button:hover,
+html[data-acd-theme="dark"] .ql-toolbar button:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Notes Text Editor Area */
+html[data-acd-theme="dark"] .note-editor,
+html[data-acd-theme="dark"] .notes-content,
+html[data-acd-theme="dark"] .ql-editor,
+html[data-acd-theme="dark"] [class*="note-editor"],
+html[data-acd-theme="dark"] [class*="notes-content"] {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* ==========================================================================
+   7. Q&A (Questions & Answers) Pod
+   ========================================================================== */
+html[data-acd-theme="dark"] .qna-pod,
+html[data-acd-theme="dark"] .qa-pod,
+html[data-acd-theme="dark"] [class*="qna-pod"],
+html[data-acd-theme="dark"] [class*="qa-pod"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
+html[data-acd-theme="dark"] .qna-question-item,
+html[data-acd-theme="dark"] [class*="question-item"] {
+  background-color: var(--acd-bg-secondary) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] .qna-answer-item,
+html[data-acd-theme="dark"] [class*="answer-item"] {
+  background-color: var(--acd-bg-panel) !important;
+  border-left: 2px solid var(--acd-accent) !important;
+}
+
+/* ==========================================================================
+   8. Poll Pod
+   ========================================================================== */
+html[data-acd-theme="dark"] .poll-pod,
+html[data-acd-theme="dark"] [class*="poll-pod"],
+html[data-acd-theme="dark"] [data-pod-type="poll"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
+html[data-acd-theme="dark"] .poll-question,
+html[data-acd-theme="dark"] [class*="poll-question"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600;
+}
+
+html[data-acd-theme="dark"] .poll-option,
+html[data-acd-theme="dark"] [class*="poll-option"],
+html[data-acd-theme="dark"] [class*="poll-answer"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+/* Poll Results Bar */
+html[data-acd-theme="dark"] .poll-bar-container,
+html[data-acd-theme="dark"] [class*="poll-bar-container"] {
+  background-color: var(--acd-bg-input) !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] .poll-bar,
+html[data-acd-theme="dark"] [class*="poll-bar"],
+html[data-acd-theme="dark"] [class*="poll-progress"] {
+  background-color: var(--acd-accent) !important;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   9. Share Pod Frame & Whiteboard Controls (FRAME ONLY - PRESERVE CONTENT!)
+   ========================================================================== */
+html[data-acd-theme="dark"] .share-pod,
+html[data-acd-theme="dark"] [class*="share-pod"],
+html[data-acd-theme="dark"] [data-pod-type="share"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
+/* Whiteboard Drawing Tools Palette */
+html[data-acd-theme="dark"] .whiteboard-toolbar,
+html[data-acd-theme="dark"] [class*="whiteboard-toolbar"],
+html[data-acd-theme="dark"] [class*="draw-toolbar"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 6px;
+}
+
+html[data-acd-theme="dark"] .whiteboard-toolbar button:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Share Pod Control Toolbar */
+html[data-acd-theme="dark"] .share-toolbar,
+html[data-acd-theme="dark"] [class*="share-toolbar"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-top: 1px solid var(--acd-border) !important;
+}
+
+/* ==========================================================================
+   10. Video / Webcam Pod Frame (FRAME ONLY - NEVER TOUCH VIDEO ELEMENTS)
+   ========================================================================== */
+html[data-acd-theme="dark"] .video-pod,
+html[data-acd-theme="dark"] [class*="video-pod"],
+html[data-acd-theme="dark"] [data-pod-type="video"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
+/* Participant Video Overlay Tag (e.g. name over webcam) */
+html[data-acd-theme="dark"] .video-user-tag,
+html[data-acd-theme="dark"] [class*="video-user-label"],
+html[data-acd-theme="dark"] [class*="webcam-label"] {
+  background-color: rgba(17, 20, 24, 0.75) !important;
+  color: var(--acd-text-primary) !important;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   11. Adobe Spectrum Components Support
+   ========================================================================== */
+html[data-acd-theme="dark"] [class*="spectrum-Picker"],
+html[data-acd-theme="dark"] [class*="spectrum-Menu"],
+html[data-acd-theme="dark"] [class*="spectrum-Popover"] {
+  background-color: var(--acd-bg-elevated) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"] {
+  background-color: var(--acd-bg-panel) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"].is-selected {
+  color: var(--acd-accent) !important;
+  border-bottom-color: var(--acd-accent) !important;
+}

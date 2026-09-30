@@ -1,0 +1,165 @@
+/**
+ * Adobe Connect Dark Mode - Base Stylesheet
+ * Document root, foundational elements, scrollbars, and strict media preservation
+ */
+
+/* ==========================================================================
+   Root & Viewport Defaults
+   ========================================================================== */
+html[data-acd-theme="dark"],
+html[data-acd-theme="dark"] body {
+  background-color: var(--acd-bg-main) !important;
+  color: var(--acd-text-primary) !important;
+  color-scheme: dark !important;
+  border-color: var(--acd-border);
+}
+
+/* ==========================================================================
+   CRITICAL: Sensitive Element Preservation
+   Strictly prevents any media, video streams, presentation canvases, or slides
+   from being darkened, inverted, or color-altered.
+   ========================================================================== */
+html[data-acd-theme="dark"] video,
+html[data-acd-theme="dark"] canvas,
+html[data-acd-theme="dark"] img,
+html[data-acd-theme="dark"] picture,
+html[data-acd-theme="dark"] [data-acd-preserve="true"],
+html[data-acd-theme="dark"] .acd-preserve,
+html[data-acd-theme="dark"] [role="img"]:not(.acd-icon),
+html[data-acd-theme="dark"] .presentation-canvas,
+html[data-acd-theme="dark"] .whiteboard-canvas,
+html[data-acd-theme="dark"] .shared-content-viewport,
+html[data-acd-theme="dark"] .video-stream-element,
+html[data-acd-theme="dark"] [data-ac-role="presentation"],
+html[data-acd-theme="dark"] [data-ac-role="whiteboard"],
+html[data-acd-theme="dark"] [data-ac-role="screenshare"] {
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  background-color: transparent !important;
+  color: inherit;
+}
+
+/* Preserve SVG presentations and slide diagrams */
+html[data-acd-theme="dark"] svg.presentation-content,
+html[data-acd-theme="dark"] svg.slide-content,
+html[data-acd-theme="dark"] .slide-container svg {
+  filter: none !important;
+}
+
+/* ==========================================================================
+   Custom Dark Scrollbars
+   ========================================================================== */
+html[data-acd-theme="dark"] * {
+  scrollbar-color: var(--acd-scrollbar-thumb) var(--acd-scrollbar-track) !important;
+  scrollbar-width: thin !important;
+}
+
+html[data-acd-theme="dark"] ::-webkit-scrollbar {
+  width: 9px !important;
+  height: 9px !important;
+  background-color: var(--acd-scrollbar-track) !important;
+}
+
+html[data-acd-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--acd-scrollbar-track) !important;
+}
+
+html[data-acd-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--acd-scrollbar-thumb) !important;
+  border-radius: 5px !important;
+  border: 2px solid var(--acd-scrollbar-track) !important;
+}
+
+html[data-acd-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--acd-scrollbar-thumb-hover) !important;
+}
+
+html[data-acd-theme="dark"] ::-webkit-scrollbar-corner {
+  background: var(--acd-scrollbar-track) !important;
+}
+
+/* ==========================================================================
+   Base Typography & Links
+   ========================================================================== */
+html[data-acd-theme="dark"] a:link,
+html[data-acd-theme="dark"] a:visited {
+  color: var(--acd-accent) !important;
+  text-decoration: none;
+}
+
+html[data-acd-theme="dark"] a:hover,
+html[data-acd-theme="dark"] a:focus {
+  color: var(--acd-accent-hover) !important;
+  text-decoration: underline;
+}
+
+html[data-acd-theme="dark"] h1,
+html[data-acd-theme="dark"] h2,
+html[data-acd-theme="dark"] h3,
+html[data-acd-theme="dark"] h4,
+html[data-acd-theme="dark"] h5,
+html[data-acd-theme="dark"] h6 {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] p,
+html[data-acd-theme="dark"] span:not(.acd-preserve),
+html[data-acd-theme="dark"] label {
+  border-color: var(--acd-border);
+}
+
+/* ==========================================================================
+   Base Form Controls (Inputs, Textarea, Select, Buttons)
+   ========================================================================== */
+html[data-acd-theme="dark"] input[type="text"],
+html[data-acd-theme="dark"] input[type="search"],
+html[data-acd-theme="dark"] input[type="password"],
+html[data-acd-theme="dark"] input[type="email"],
+html[data-acd-theme="dark"] input[type="url"],
+html[data-acd-theme="dark"] textarea,
+html[data-acd-theme="dark"] select {
+  background-color: var(--acd-bg-input) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color var(--acd-transition-fast), box-style var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] input[type="text"]:focus,
+html[data-acd-theme="dark"] input[type="search"]:focus,
+html[data-acd-theme="dark"] textarea:focus,
+html[data-acd-theme="dark"] select:focus {
+  border-color: var(--acd-border-focus) !important;
+  box-shadow: 0 0 0 2px var(--acd-accent-bg) !important;
+}
+
+html[data-acd-theme="dark"] input::placeholder,
+html[data-acd-theme="dark"] textarea::placeholder {
+  color: var(--acd-text-placeholder) !important;
+}
+
+/* Checkboxes and Radio Buttons */
+html[data-acd-theme="dark"] input[type="checkbox"],
+html[data-acd-theme="dark"] input[type="radio"] {
+  accent-color: var(--acd-accent) !important;
+}
+
+/* Generic Base Buttons */
+html[data-acd-theme="dark"] button {
+  border-color: var(--acd-border);
+  color: var(--acd-text-primary);
+}
+
+/* ==========================================================================
+   Layer 1: Conservative Generic Detection Styling
+   Applied to elements dynamically flagged by the Layer 1 detector.
+   ========================================================================== */
+html[data-acd-theme="dark"] [data-acd-surface="bright"]:not(video):not(canvas):not(img):not(picture):not([data-acd-preserve="true"]) {
+  background-color: var(--acd-bg-panel) !important;
+  border-color: var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] [data-acd-text="dark"]:not(video):not(canvas):not(img):not([data-acd-preserve="true"]) {
+  color: var(--acd-text-primary) !important;
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adobe Connect Dark Mode</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Adobe Connect Dark</h1>
+          <span class="version">v1.0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Domain Card -->
+    <section class="card domain-card">
+      <div class="card-header">
+        <span class="card-label">Current Domain / دامنه فعلی</span>
+        <span id="status-badge" class="badge badge-inactive">Inactive</span>
+      </div>
+      <div class="domain-display">
+        <svg class="globe-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span id="current-domain" class="domain-name" title="Detecting...">Detecting domain...</span>
+      </div>
+    </section>
+
+    <!-- Main Toggle Control -->
+    <section class="card toggle-card">
+      <div class="toggle-info">
+        <span class="toggle-title">Dark Mode</span>
+        <span class="toggle-desc">Toggle dark theme for this site</span>
+      </div>
+      <label class="switch" for="theme-toggle">
+        <input type="checkbox" id="theme-toggle" aria-label="Toggle Dark Mode">
+        <span class="slider"></span>
+      </label>
+    </section>
+
+    <!-- Site Reset Action -->
+    <section class="action-section">
+      <button id="reset-btn" class="btn btn-reset" type="button" title="Remove custom settings for this domain">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+        <span>Reset Site / بازنشانی دامنه</span>
+      </button>
+    </section>
+
+    <!-- Toast Notification Message -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <!-- Safety Note -->
+    <footer class="footer">
+      <div class="safety-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        <span>Webcam, screen share & slides protected</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

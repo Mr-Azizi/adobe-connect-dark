@@ -1,0 +1,206 @@
+/**
+ * Adobe Connect Dark Mode - Components Stylesheet
+ * Common UI patterns: Menus, Dropdowns, Modals, Popovers, Tabs, Tooltips & Buttons
+ */
+
+/* ==========================================================================
+   1. Menus, Dropdowns & Context Menus
+   ========================================================================== */
+html[data-acd-theme="dark"] [role="menu"],
+html[data-acd-theme="dark"] [role="listbox"],
+html[data-acd-theme="dark"] .dropdown-menu,
+html[data-acd-theme="dark"] .context-menu,
+html[data-acd-theme="dark"] [class*="context-menu"],
+html[data-acd-theme="dark"] [class*="dropdown-menu"],
+html[data-acd-theme="dark"] [class*="menu-container"],
+html[data-acd-theme="dark"] [class*="options-menu"] {
+  background-color: var(--acd-bg-elevated) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 6px !important;
+  box-shadow: var(--acd-shadow-lg) !important;
+  padding: 4px !important;
+}
+
+/* Menu Items */
+html[data-acd-theme="dark"] [role="menuitem"],
+html[data-acd-theme="dark"] [role="option"],
+html[data-acd-theme="dark"] .menu-item,
+html[data-acd-theme="dark"] [class*="menu-item"],
+html[data-acd-theme="dark"] [class*="dropdown-item"] {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  border-radius: 4px !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [role="menuitem"]:hover,
+html[data-acd-theme="dark"] [role="option"]:hover,
+html[data-acd-theme="dark"] .menu-item:hover,
+html[data-acd-theme="dark"] [class*="menu-item"]:hover,
+html[data-acd-theme="dark"] [class*="dropdown-item"]:hover,
+html[data-acd-theme="dark"] [role="menuitem"]:focus,
+html[data-acd-theme="dark"] [role="option"][aria-selected="true"] {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Menu Dividers */
+html[data-acd-theme="dark"] [role="separator"],
+html[data-acd-theme="dark"] .menu-divider,
+html[data-acd-theme="dark"] [class*="menu-divider"] {
+  background-color: var(--acd-border-subtle) !important;
+  height: 1px !important;
+  margin: 4px 0 !important;
+}
+
+/* ==========================================================================
+   2. Modals, Dialogs & Overlay Backdrops
+   ========================================================================== */
+html[data-acd-theme="dark"] [role="dialog"],
+html[data-acd-theme="dark"] .modal,
+html[data-acd-theme="dark"] .dialog,
+html[data-acd-theme="dark"] [class*="modal-dialog"],
+html[data-acd-theme="dark"] [class*="modal-content"],
+html[data-acd-theme="dark"] [class*="dialog-content"] {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--acd-shadow-lg) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Modal Backdrops / Underlays */
+html[data-acd-theme="dark"] .modal-backdrop,
+html[data-acd-theme="dark"] [class*="backdrop"],
+html[data-acd-theme="dark"] [class*="underlay"],
+html[data-acd-theme="dark"] .overlay {
+  background-color: rgba(0, 0, 0, 0.72) !important;
+}
+
+/* Modal Headers & Footers */
+html[data-acd-theme="dark"] .modal-header,
+html[data-acd-theme="dark"] [class*="modal-header"],
+html[data-acd-theme="dark"] [class*="dialog-header"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .modal-footer,
+html[data-acd-theme="dark"] [class*="modal-footer"],
+html[data-acd-theme="dark"] [class*="dialog-footer"] {
+  background-color: var(--acd-bg-secondary) !important;
+  border-top: 1px solid var(--acd-border) !important;
+}
+
+/* ==========================================================================
+   3. Popovers & Tooltips
+   ========================================================================== */
+html[data-acd-theme="dark"] [role="tooltip"],
+html[data-acd-theme="dark"] .tooltip,
+html[data-acd-theme="dark"] [class*="tooltip"],
+html[data-acd-theme="dark"] .popover,
+html[data-acd-theme="dark"] [class*="popover"] {
+  background-color: var(--acd-bg-elevated) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 5px !important;
+  box-shadow: var(--acd-shadow-md) !important;
+}
+
+/* Tooltip Arrow */
+html[data-acd-theme="dark"] .tooltip-arrow,
+html[data-acd-theme="dark"] [class*="tooltip-arrow"] {
+  border-top-color: var(--acd-bg-elevated) !important;
+  border-bottom-color: var(--acd-bg-elevated) !important;
+}
+
+/* ==========================================================================
+   4. Buttons (Primary, Secondary, Danger, Icon)
+   ========================================================================== */
+/* Primary Buttons */
+html[data-acd-theme="dark"] .btn-primary,
+html[data-acd-theme="dark"] button.primary,
+html[data-acd-theme="dark"] [class*="btn-primary"],
+html[data-acd-theme="dark"] [class*="button-primary"] {
+  background-color: var(--acd-accent) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--acd-accent) !important;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .btn-primary:hover,
+html[data-acd-theme="dark"] button.primary:hover,
+html[data-acd-theme="dark"] [class*="btn-primary"]:hover {
+  background-color: var(--acd-accent-hover) !important;
+  border-color: var(--acd-accent-hover) !important;
+}
+
+html[data-acd-theme="dark"] .btn-primary:active,
+html[data-acd-theme="dark"] button.primary:active {
+  background-color: var(--acd-accent-active) !important;
+}
+
+/* Secondary / Outline Buttons */
+html[data-acd-theme="dark"] .btn-secondary,
+html[data-acd-theme="dark"] button.secondary,
+html[data-acd-theme="dark"] [class*="btn-secondary"],
+html[data-acd-theme="dark"] [class*="btn-default"] {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] .btn-secondary:hover,
+html[data-acd-theme="dark"] button.secondary:hover,
+html[data-acd-theme="dark"] [class*="btn-secondary"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  border-color: var(--acd-border) !important;
+}
+
+/* ==========================================================================
+   5. Tabs & Segmented Controls
+   ========================================================================== */
+html[data-acd-theme="dark"] [role="tablist"],
+html[data-acd-theme="dark"] .tabs-header,
+html[data-acd-theme="dark"] [class*="tab-container"] {
+  border-bottom: 1px solid var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] [role="tab"],
+html[data-acd-theme="dark"] .tab-item,
+html[data-acd-theme="dark"] [class*="tab-item"] {
+  color: var(--acd-text-secondary) !important;
+  background-color: transparent !important;
+  border: none !important;
+  transition: color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [role="tab"]:hover,
+html[data-acd-theme="dark"] .tab-item:hover {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [role="tab"][aria-selected="true"],
+html[data-acd-theme="dark"] .tab-item.active {
+  color: var(--acd-accent) !important;
+  border-bottom: 2px solid var(--acd-accent) !important;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   6. Toasts & Notifications
+   ========================================================================== */
+html[data-acd-theme="dark"] .toast,
+html[data-acd-theme="dark"] .notification,
+html[data-acd-theme="dark"] [class*="toast-message"],
+html[data-acd-theme="dark"] [class*="notification-banner"] {
+  background-color: var(--acd-bg-elevated) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 6px !important;
+  box-shadow: var(--acd-shadow-md) !important;
+}
