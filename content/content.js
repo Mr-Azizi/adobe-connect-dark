@@ -1,6 +1,6 @@
 /**
  * Adobe Connect Dark Mode - Content Script Entry Point
- * Orchestrates domain permission checks, storage persistence, and message handling.
+ * Orchestrates siteKey permission checks, storage persistence, and message handling.
  */
 
 (function () {
@@ -10,7 +10,7 @@
   if (window.__ACD_CONTENT_SCRIPT_INITIALIZED__) return;
   window.__ACD_CONTENT_SCRIPT_INITIALIZED__ = true;
 
-  const currentHostname = window.location.hostname;
+  const currentSiteKey = `${window.location.protocol}//${window.location.hostname}`;
   const themeEngine = window.__ACD_THEME_ENGINE__;
   const observer = window.__ACD_OBSERVER__;
 
@@ -20,15 +20,18 @@
   }
 
   /**
-   * Check if the current domain is enabled in chrome.storage.local
+   * Check if the current siteKey is enabled in chrome.storage.local
    */
-  function checkDomainState() {
+  function checkSiteState() {
     try {
-      chrome.storage.local.get(['acd_enabled_domains'], (result) => {
+      chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains'], (result) => {
         if (chrome.runtime.lastError) return;
 
-        const enabledDomains = result.acd_enabled_domains || {};
-        const isEnabled = Boolean(enabledDomains[currentHostname]);
+        const enabledSites = result.acd_enabled_sites || {};
+        const isEnabled = Boolean(
+          enabledSites[currentSiteKey] ||
+          (result.acd_enabled_domains && result.acd_enabled_domains[window.location.hostname])
+        );
 
         if (isEnabled) {
           activate();
@@ -37,7 +40,7 @@
         }
       });
     } catch (e) {
-      // Extension context invalidated (e.g. extension updated while tab open)
+      // Extension context invalidated
     }
   }
 
@@ -58,19 +61,21 @@
   }
 
   // Initial check at document_start
-  checkDomainState();
+  checkSiteState();
 
   // Listen for storage changes across tabs or from popup
   chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName !== 'local' || !changes.acd_enabled_domains) return;
+    if (areaName !== 'local') return;
 
-    const newDomains = changes.acd_enabled_domains.newValue || {};
-    const shouldBeEnabled = Boolean(newDomains[currentHostname]);
+    if (changes.acd_enabled_sites) {
+      const newSites = changes.acd_enabled_sites.newValue || {};
+      const shouldBeEnabled = Boolean(newSites[currentSiteKey]);
 
-    if (shouldBeEnabled && !themeEngine.isEnabled()) {
-      activate();
-    } else if (!shouldBeEnabled && themeEngine.isEnabled()) {
-      deactivate();
+      if (shouldBeEnabled && !themeEngine.isEnabled()) {
+        activate();
+      } else if (!shouldBeEnabled && themeEngine.isEnabled()) {
+        deactivate();
+      }
     }
   });
 
@@ -85,24 +90,24 @@
         } else {
           deactivate();
         }
-        sendResponse({ success: true, enabled: themeEngine.isEnabled(), domain: currentHostname });
+        sendResponse({ success: true, enabled: themeEngine.isEnabled(), siteKey: currentSiteKey });
         break;
 
       case 'reset':
         deactivate();
-        sendResponse({ success: true, enabled: false, domain: currentHostname });
+        sendResponse({ success: true, enabled: false, siteKey: currentSiteKey });
         break;
 
       case 'getStatus':
         sendResponse({
           success: true,
           enabled: themeEngine.isEnabled(),
-          domain: currentHostname
+          siteKey: currentSiteKey
         });
         break;
 
       case 'ping':
-        sendResponse({ pong: true, domain: currentHostname });
+        sendResponse({ pong: true, siteKey: currentSiteKey });
         break;
 
       default:

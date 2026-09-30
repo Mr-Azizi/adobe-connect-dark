@@ -1,8 +1,8 @@
 /**
  * Adobe Connect Dark Mode - Popup Script
- * Permission-on-demand architecture:
- * Requests per-origin host permissions, registers dynamic content scripts,
- * and synchronizes state with storage and tabs.
+ * Permission-on-demand architecture using siteKey (scheme + host):
+ * Ensures HTTP and HTTPS are separate, guarantees atomic registration,
+ * and maintains synchronized state.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const toastEl = document.getElementById('toast');
 
   let currentTab = null;
-  let currentDomain = null;
+  let currentUrl = null;
+  let currentSiteKey = null;
   let currentOriginPattern = null;
   let toastTimer = null;
 
@@ -37,8 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function getScriptId(domain) {
-    return 'acd_cs_' + domain.replace(/[^a-zA-Z0-9_-]/g, '_');
+  function getScriptId(urlObj) {
+    const protocolSlug = urlObj.protocol.replace(':', '');
+    const hostSlug = urlObj.hostname.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return `acd_cs_${protocolSlug}_${hostSlug}`;
   }
 
   // Query active tab in the current window
@@ -53,9 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     currentTab = tabs[0];
     const urlString = currentTab.url || '';
 
-    let url;
     try {
-      url = new URL(urlString);
+      currentUrl = new URL(urlString);
     } catch (e) {
       currentDomainEl.textContent = 'Invalid URL';
       themeToggleEl.disabled = true;
@@ -64,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Check for web schemes (http or https)
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    if (currentUrl.protocol !== 'http:' && currentUrl.protocol !== 'https:') {
       currentDomainEl.textContent = 'Browser Internal Page';
       themeToggleEl.disabled = true;
       resetBtnEl.disabled = true;
@@ -73,44 +75,61 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    currentDomain = url.hostname;
-    currentOriginPattern = `${url.protocol}//${currentDomain}/*`;
-    currentDomainEl.textContent = currentDomain;
-    currentDomainEl.title = currentDomain;
+    // Define scheme-specific siteKey (e.g. "https://connect.example.com")
+    currentSiteKey = `${currentUrl.protocol}//${currentUrl.hostname}`;
+    currentOriginPattern = `${currentSiteKey}/*`;
 
-    // Load persisted state for this domain
-    chrome.storage.local.get(['acd_enabled_domains'], (result) => {
+    // Display site info in UI
+    currentDomainEl.textContent = `${currentUrl.hostname} (${currentUrl.protocol.replace(':', '').toUpperCase()})`;
+    currentDomainEl.title = currentSiteKey;
+
+    // Load persisted state for this siteKey (with backward-compatibility migration)
+    chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains'], (result) => {
       if (chrome.runtime.lastError) {
         showToast('Error loading settings');
         return;
       }
 
-      const enabledDomains = result.acd_enabled_domains || {};
-      const isEnabled = Boolean(enabledDomains[currentDomain]);
+      let enabledSites = result.acd_enabled_sites;
+
+      // Migrate legacy acd_enabled_domains if needed
+      if (!enabledSites && result.acd_enabled_domains) {
+        enabledSites = {};
+        for (const [dom, val] of Object.entries(result.acd_enabled_domains)) {
+          if (val) {
+            enabledSites[`https://${dom}`] = true;
+          }
+        }
+        chrome.storage.local.set({ acd_enabled_sites: enabledSites });
+      }
+
+      enabledSites = enabledSites || {};
+      const isEnabled = Boolean(enabledSites[currentSiteKey]);
       updateUIState(isEnabled);
     });
   });
 
-  // Toggle handler (Permission-on-demand)
+  // Toggle handler with ATOMIC execution
   themeToggleEl.addEventListener('change', () => {
-    if (!currentDomain || !currentTab || !currentOriginPattern) return;
+    if (!currentSiteKey || !currentTab || !currentOriginPattern || !currentUrl) return;
 
-    const isEnabled = themeToggleEl.checked;
-    const scriptId = getScriptId(currentDomain);
+    const wantsToEnable = themeToggleEl.checked;
+    const scriptId = getScriptId(currentUrl);
 
-    if (isEnabled) {
-      // 1. Request permission only for the current origin
+    if (wantsToEnable) {
+      // Step 1: Request permission specifically for this siteKey origin
       chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
         if (!granted) {
-          // User denied permission prompt
+          // Permission denied by user: rollback toggle immediately
           updateUIState(false);
-          showToast('Permission not granted');
+          showToast('Permission not granted / مجوز داده نشد');
           return;
         }
 
-        // 2. Register dynamic content script for this specific origin
-        if (chrome.scripting && chrome.scripting.registerContentScripts) {
-          try {
+        // Step 2: Register dynamic content script
+        let regSuccess = false;
+        try {
+          if (chrome.scripting && chrome.scripting.registerContentScripts) {
             await chrome.scripting.unregisterContentScripts({ ids: [scriptId] }).catch(() => {});
             await chrome.scripting.registerContentScripts([{
               id: scriptId,
@@ -123,27 +142,35 @@ document.addEventListener('DOMContentLoaded', () => {
               runAt: 'document_start',
               allFrames: true
             }]);
-          } catch (err) {
-            console.warn('[ACD] Failed to register content script:', err);
+            regSuccess = true;
           }
+        } catch (err) {
+          console.error('[ACD] Dynamic content script registration failed:', err);
         }
 
-        // 3. Save domain state in chrome.storage.local
-        chrome.storage.local.get(['acd_enabled_domains'], (result) => {
-          const enabledDomains = result.acd_enabled_domains || {};
-          enabledDomains[currentDomain] = true;
+        // Step 3: Handle registration failure atomically
+        if (!regSuccess) {
+          updateUIState(false);
+          showToast('Registration failed / خطا در ثبت اسکریپت');
+          return;
+        }
 
-          chrome.storage.local.set({ acd_enabled_domains: enabledDomains }, () => {
+        // Step 4: Persist enabled state to storage ONLY after successful registration
+        chrome.storage.local.get(['acd_enabled_sites'], (result) => {
+          const enabledSites = result.acd_enabled_sites || {};
+          enabledSites[currentSiteKey] = true;
+
+          chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
             updateUIState(true);
-            showToast('✓ Dark Mode enabled for ' + currentDomain);
+            showToast('✓ Dark Mode enabled for ' + currentUrl.hostname);
 
-            // 4. Activate in current active tab immediately without requiring refresh
+            // Step 5: Activate immediately in current tab without requiring reload
             chrome.tabs.sendMessage(
               currentTab.id,
-              { action: 'toggle', enabled: true, domain: currentDomain },
+              { action: 'toggle', enabled: true, siteKey: currentSiteKey },
               () => {
                 if (chrome.runtime.lastError) {
-                  // If content script was not already present in the tab, inject directly
+                  // Fallback injection if content script was not already running in tab
                   if (chrome.scripting && chrome.scripting.executeScript) {
                     chrome.scripting.executeScript({
                       target: { tabId: currentTab.id, allFrames: true },
@@ -161,25 +188,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     } else {
-      // Disabling:
+      // Disabling flow:
       // 1. Unregister dynamic content script
       if (chrome.scripting && chrome.scripting.unregisterContentScripts) {
         chrome.scripting.unregisterContentScripts({ ids: [scriptId] }).catch(() => {});
       }
 
-      // 2. Remove domain from storage
-      chrome.storage.local.get(['acd_enabled_domains'], (result) => {
-        const enabledDomains = result.acd_enabled_domains || {};
-        delete enabledDomains[currentDomain];
+      // 2. Remove from storage
+      chrome.storage.local.get(['acd_enabled_sites'], (result) => {
+        const enabledSites = result.acd_enabled_sites || {};
+        delete enabledSites[currentSiteKey];
 
-        chrome.storage.local.set({ acd_enabled_domains: enabledDomains }, () => {
+        chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
           updateUIState(false);
           showToast('✓ Dark Mode disabled');
 
           // 3. Message active tab to disable theme and restore native look immediately
           chrome.tabs.sendMessage(
             currentTab.id,
-            { action: 'toggle', enabled: false, domain: currentDomain },
+            { action: 'toggle', enabled: false, siteKey: currentSiteKey },
             () => {
               if (chrome.runtime.lastError) {}
             }
@@ -191,28 +218,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Reset button handler
   resetBtnEl.addEventListener('click', () => {
-    if (!currentDomain || !currentTab || !currentOriginPattern) return;
+    if (!currentSiteKey || !currentTab || !currentOriginPattern || !currentUrl) return;
 
-    const scriptId = getScriptId(currentDomain);
+    const scriptId = getScriptId(currentUrl);
 
     // 1. Unregister dynamic content script
     if (chrome.scripting && chrome.scripting.unregisterContentScripts) {
       chrome.scripting.unregisterContentScripts({ ids: [scriptId] }).catch(() => {});
     }
 
-    // 2. Remove domain from storage
-    chrome.storage.local.get(['acd_enabled_domains'], (result) => {
-      const enabledDomains = result.acd_enabled_domains || {};
-      delete enabledDomains[currentDomain];
+    // 2. Remove siteKey from storage
+    chrome.storage.local.get(['acd_enabled_sites'], (result) => {
+      const enabledSites = result.acd_enabled_sites || {};
+      delete enabledSites[currentSiteKey];
 
-      chrome.storage.local.set({ acd_enabled_domains: enabledDomains }, () => {
+      chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
         updateUIState(false);
         showToast('✓ Site settings reset');
 
         // 3. Message tab to reset
         chrome.tabs.sendMessage(
           currentTab.id,
-          { action: 'reset', domain: currentDomain },
+          { action: 'reset', siteKey: currentSiteKey },
           () => {
             if (chrome.runtime.lastError) {}
           }

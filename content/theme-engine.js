@@ -1,6 +1,6 @@
 /**
  * Adobe Connect Dark Mode - Theme Engine
- * Controls stylesheet injection, Open Shadow DOM lifecycle,
+ * Controls stylesheet injection, Open Shadow DOM per-root MutationObservers,
  * guaranteed initial DOM scanning, and Layer 1 smart generic luminance detection.
  */
 
@@ -55,6 +55,7 @@
       this.enabled = false;
       this.injectedElements = new Set();
       this.attachedShadowRoots = new Set();
+      this.shadowObservers = new Map(); // Map<ShadowRoot, MutationObserver>
       this.hasScannedInitialDOM = false;
       this.processQueue = [];
       this.isProcessingQueue = false;
@@ -110,7 +111,7 @@
       });
       this.injectedElements.clear();
 
-      // 3. Clean up Open Shadow Roots (Lifecycle: Off -> On repeatable)
+      // 3. Clean up Open Shadow Roots and disconnect shadow observers
       this.cleanupShadowRoots();
 
       // 4. Clean up Layer 1 attributes in main document
@@ -222,15 +223,14 @@
     }
 
     /**
-     * Handle Open Shadow Root styling safely with dedicated shadow stylesheet
+     * Handle Open Shadow Root styling and observe dynamic shadow mutations
      */
     attachToShadowRoot(shadowRoot) {
       if (!this.enabled || !shadowRoot) return;
-      if (this.attachedShadowRoots.has(shadowRoot)) return;
 
       this.attachedShadowRoots.add(shadowRoot);
 
-      // Inject dedicated Shadow DOM stylesheet (encapsulation-friendly)
+      // 1. Inject dedicated Shadow DOM stylesheet (encapsulation-friendly)
       const shadowStyleId = 'acd-shadow-theme-style';
       if (!shadowRoot.querySelector || !shadowRoot.querySelector(`#${shadowStyleId}`)) {
         const link = document.createElement('link');
@@ -243,27 +243,72 @@
         shadowRoot.appendChild(link);
       }
 
-      // Evaluate elements inside shadow root
+      // 2. Attach dedicated lightweight MutationObserver to this ShadowRoot
+      if (!this.shadowObservers.has(shadowRoot)) {
+        const shadowObserver = new MutationObserver((mutations) => {
+          if (!this.enabled) return;
+
+          const addedElements = [];
+          for (let i = 0; i < mutations.length; i++) {
+            const mutation = mutations[i];
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+              for (let j = 0; j < mutation.addedNodes.length; j++) {
+                const node = mutation.addedNodes[j];
+                if (node.nodeType === Node.ELEMENT_NODE && !SENSITIVE_TAGS.has(node.tagName.toUpperCase())) {
+                  addedElements.push(node);
+                }
+              }
+            }
+          }
+
+          if (addedElements.length > 0) {
+            this.queueNodesForEvaluation(addedElements);
+
+            for (const el of addedElements) {
+              if (el.shadowRoot) {
+                this.attachToShadowRoot(el.shadowRoot);
+              }
+              this.scanForShadowRoots(el);
+            }
+          }
+        });
+
+        shadowObserver.observe(shadowRoot, {
+          childList: true,
+          subtree: true
+        });
+
+        this.shadowObservers.set(shadowRoot, shadowObserver);
+      }
+
+      // 3. Evaluate existing elements inside shadow root
       this.queueNodesForEvaluation(shadowRoot.children);
 
-      // Recursively check for nested shadow roots
+      // 4. Recursively check for nested shadow roots
       this.scanForShadowRoots(shadowRoot);
     }
 
     /**
-     * Clean up all attached shadow roots upon disable()
+     * Clean up all attached shadow roots and disconnect all shadow observers on disable()
      */
     cleanupShadowRoots() {
+      // 1. Disconnect all shadow MutationObservers
+      this.shadowObservers.forEach((observer) => {
+        try {
+          observer.disconnect();
+        } catch (e) {}
+      });
+      this.shadowObservers.clear();
+
+      // 2. Remove injected styles and clean up Layer 1 attributes
       this.attachedShadowRoots.forEach((shadowRoot) => {
         try {
           if (shadowRoot.querySelectorAll) {
-            // Remove injected stylesheet
             const injected = shadowRoot.querySelectorAll('[data-acd-shadow-injected]');
             injected.forEach((el) => {
               if (el && el.parentNode) el.parentNode.removeChild(el);
             });
 
-            // Cleanup Layer 1 attributes inside shadow root
             const brightSurfaces = shadowRoot.querySelectorAll('[data-acd-surface]');
             brightSurfaces.forEach((el) => el.removeAttribute('data-acd-surface'));
 
