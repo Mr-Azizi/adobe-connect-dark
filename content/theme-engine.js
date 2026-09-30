@@ -1,7 +1,8 @@
 /**
  * Adobe Connect Dark Mode - Theme Engine
- * Controls stylesheet injection, Open Shadow DOM per-root MutationObservers,
- * guaranteed initial DOM scanning, and Layer 1 smart generic luminance detection.
+ * Consolidated, idempotent activation path (applyDarkTheme/removeDarkTheme)
+ * with zero-timing-gap observer startup, full subtree candidate traversal,
+ * guaranteed initial DOM scanning, and Open Shadow DOM per-root MutationObservers.
  */
 
 (function () {
@@ -50,15 +51,34 @@
     '.acd-preserve'
   ].join(', ');
 
+  const CANDIDATE_DESCENDANT_SELECTORS = [
+    'div', 'section', 'aside', 'header', 'nav', 'main', 'article', 'footer',
+    '[role="region"]', '[role="dialog"]', '[role="menu"]', '[role="listbox"]', '[role="tabpanel"]',
+    '[class*="pod"]', '[class*="container"]', '[class*="panel"]', '[class*="content"]',
+    '[class*="header"]', '[class*="item"]', '[class*="message"]', '[class*="attendee"]',
+    '[class*="spectrum-"]'
+  ].join(', ');
+
   class ACDThemeEngine {
     constructor() {
       this.enabled = false;
+      this.observer = null; // Associated ACDObserver
       this.injectedElements = new Set();
       this.attachedShadowRoots = new Set();
       this.shadowObservers = new Map(); // Map<ShadowRoot, MutationObserver>
       this.hasScannedInitialDOM = false;
       this.processQueue = [];
       this.isProcessingQueue = false;
+    }
+
+    /**
+     * Attach ACDObserver instance
+     */
+    setObserver(observer) {
+      this.observer = observer;
+      if (this.enabled && !observer.isObserving) {
+        observer.start();
+      }
     }
 
     /**
@@ -69,37 +89,63 @@
     }
 
     /**
-     * Activate Dark Mode
+     * CONSOLIDATED IDEMPOTENT ACTIVATION PATH
+     * Executed identically by automatic page load and manual popup toggle.
      */
-    enable() {
-      if (this.enabled) return;
+    applyDarkTheme() {
+      const wasAlreadyEnabled = this.enabled;
       this.enabled = true;
 
-      // 1. Set root attribute immediately on documentElement
+      // 1. Set root attribute immediately on documentElement to prevent white flash
       this.applyRootAttribute();
 
       // 2. Inject core stylesheets
       this.injectStylesheets(document);
 
-      // 3. Schedule guaranteed initial DOM scan
-      this.scheduleInitialScan();
+      // 3. Start MutationObserver BEFORE initial scan to eliminate timing gap
+      if (this.observer && !this.observer.isObserving) {
+        this.observer.start();
+      }
+
+      // 4. Schedule or perform guaranteed initial DOM scan
+      if (wasAlreadyEnabled) {
+        this.performInitialScan(true); // refresh scan
+      } else {
+        this.scheduleInitialScan();
+      }
     }
 
     /**
-     * Deactivate Dark Mode and restore native look
+     * Backward-compatible alias for applyDarkTheme
      */
-    disable() {
+    enable() {
+      this.applyDarkTheme();
+    }
+
+    /**
+     * CONSOLIDATED DEACTIVATION PATH
+     * Cleanly restores native appearance and disconnects all observers.
+     */
+    removeDarkTheme() {
       if (!this.enabled) return;
       this.enabled = false;
       this.hasScannedInitialDOM = false;
 
-      // 1. Remove root attribute
+      // 1. Stop main MutationObserver
+      if (this.observer) {
+        this.observer.stop();
+      }
+
+      // 2. Disconnect and clean up Open Shadow Roots
+      this.cleanupShadowRoots();
+
+      // 3. Remove root attribute
       const root = document.documentElement;
       if (root) {
         root.removeAttribute('data-acd-theme');
       }
 
-      // 2. Remove all injected document stylesheet elements
+      // 4. Remove all injected document stylesheet elements
       this.injectedElements.forEach((el) => {
         try {
           if (el && el.parentNode) {
@@ -111,10 +157,7 @@
       });
       this.injectedElements.clear();
 
-      // 3. Clean up Open Shadow Roots and disconnect shadow observers
-      this.cleanupShadowRoots();
-
-      // 4. Clean up Layer 1 attributes in main document
+      // 5. Clean up Layer 1 attributes in main document
       try {
         const brightSurfaces = document.querySelectorAll('[data-acd-surface]');
         brightSurfaces.forEach((el) => el.removeAttribute('data-acd-surface'));
@@ -126,6 +169,14 @@
       }
 
       this.processQueue = [];
+      this.isProcessingQueue = false;
+    }
+
+    /**
+     * Backward-compatible alias for removeDarkTheme
+     */
+    disable() {
+      this.removeDarkTheme();
     }
 
     /**
@@ -171,18 +222,42 @@
     }
 
     /**
+     * Helper to collect a node and all candidate descendants in its subtree.
+     * Essential for asynchronous SPA mounting (Adobe Connect Meeting/Recording pods).
+     */
+    getCandidateElements(container) {
+      if (!container || container.nodeType !== Node.ELEMENT_NODE) return [];
+      const results = [container];
+
+      // If container is sensitive (video, canvas, presentation), do not collect its descendants
+      if (this.isSensitive(container)) return results;
+
+      try {
+        if (container.querySelectorAll) {
+          const descendants = container.querySelectorAll(CANDIDATE_DESCENDANT_SELECTORS);
+          for (let i = 0; i < descendants.length; i++) {
+            const d = descendants[i];
+            if (d.nodeType === Node.ELEMENT_NODE && !SENSITIVE_TAGS.has(d.tagName.toUpperCase())) {
+              results.push(d);
+            }
+          }
+        }
+      } catch (e) {}
+
+      return results;
+    }
+
+    /**
      * Guaranteed Initial DOM Scan
      * Fixes document_start race where document.body is not yet constructed.
      */
     scheduleInitialScan() {
-      if (this.hasScannedInitialDOM) return;
-
       if (document.body) {
         this.performInitialScan();
       } else {
         // Wait for body to be created
         const onReady = () => {
-          if (this.enabled && !this.hasScannedInitialDOM && document.body) {
+          if (this.enabled && document.body) {
             this.performInitialScan();
           }
         };
@@ -197,26 +272,28 @@
         };
         document.addEventListener('readystatechange', onStateChange);
       }
+
+      // Safety sweep when window completes loading
+      if (document.readyState !== 'complete') {
+        window.addEventListener('load', () => {
+          if (this.enabled && document.body) {
+            this.performInitialScan(true);
+          }
+        }, { once: true });
+      }
     }
 
     /**
-     * Perform the actual scan once body is ready
+     * Perform the scan over document.body and all current candidate descendants
      */
-    performInitialScan() {
-      if (!this.enabled || this.hasScannedInitialDOM || !document.body) return;
+    performInitialScan(force = false) {
+      if (!this.enabled || !document.body) return;
+      if (this.hasScannedInitialDOM && !force) return;
       this.hasScannedInitialDOM = true;
 
-      // Scan body and its key container children
-      this.queueNodesForEvaluation([document.body]);
-
-      try {
-        const candidates = document.querySelectorAll(
-          'div, section, aside, header, nav, main, article, [role="region"], [role="dialog"], [role="menu"]'
-        );
-        this.queueNodesForEvaluation(candidates);
-      } catch (e) {
-        // Fallback
-      }
+      // Scan body and its key container children across entire subtree
+      const candidates = this.getCandidateElements(document.body);
+      this.queueNodesForEvaluation(candidates);
 
       // Check for any open shadow roots present in initial DOM
       this.scanForShadowRoots(document.body);
@@ -255,7 +332,10 @@
               for (let j = 0; j < mutation.addedNodes.length; j++) {
                 const node = mutation.addedNodes[j];
                 if (node.nodeType === Node.ELEMENT_NODE && !SENSITIVE_TAGS.has(node.tagName.toUpperCase())) {
-                  addedElements.push(node);
+                  const subCandidates = this.getCandidateElements(node);
+                  for (let k = 0; k < subCandidates.length; k++) {
+                    addedElements.push(subCandidates[k]);
+                  }
                 }
               }
             }
@@ -282,7 +362,14 @@
       }
 
       // 3. Evaluate existing elements inside shadow root
-      this.queueNodesForEvaluation(shadowRoot.children);
+      const shadowCandidates = [];
+      for (let i = 0; i < shadowRoot.children.length; i++) {
+        const sub = this.getCandidateElements(shadowRoot.children[i]);
+        for (let j = 0; j < sub.length; j++) {
+          shadowCandidates.push(sub[j]);
+        }
+      }
+      this.queueNodesForEvaluation(shadowCandidates);
 
       // 4. Recursively check for nested shadow roots
       this.scanForShadowRoots(shadowRoot);
@@ -485,19 +572,18 @@
       this.isProcessingQueue = true;
 
       const runner = window.requestIdleCallback || window.requestAnimationFrame;
-      runner(() => {
-        const batchSize = 60;
-        const currentBatch = this.processQueue.splice(0, batchSize);
+      runner((deadline) => {
+        const batchSize = 100;
+        let processed = 0;
 
-        for (const element of currentBatch) {
+        while (this.processQueue.length > 0 && processed < batchSize) {
           if (!this.enabled) break;
+          const element = this.processQueue.shift();
           this.evaluateElement(element);
+          processed++;
 
-          // Also check direct children for quick coverage
-          if (element.children && element.children.length > 0 && element.children.length < 25) {
-            for (let j = 0; j < element.children.length; j++) {
-              this.evaluateElement(element.children[j]);
-            }
+          if (deadline && typeof deadline.timeRemaining === 'function' && deadline.timeRemaining() <= 1) {
+            break;
           }
         }
 

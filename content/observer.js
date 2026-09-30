@@ -2,6 +2,7 @@
  * Adobe Connect Dark Mode - DOM Mutation Observer
  * Lightweight, debounced observer that handles dynamically added SPA pods,
  * chat messages, dialogs, and Open Shadow DOM roots without degrading performance.
+ * Traverses subtrees of newly mounted SPA containers to eliminate light surface gaps.
  */
 
 (function () {
@@ -30,16 +31,17 @@
       this.isObserving = false;
       this.batch = [];
       this.debounceTimer = null;
-      this.DEBOUNCE_DELAY = 60; // 60ms debounce for high performance
+      this.DEBOUNCE_DELAY = 40; // 40ms debounce for rapid SPA pod responsiveness
     }
 
     /**
-     * Start observing DOM changes
+     * Start observing DOM changes on document.documentElement
+     * Starts early enough to capture all head, body, and subtree additions.
      */
     start() {
       if (this.isObserving) return;
 
-      const target = document.body || document.documentElement;
+      const target = document.documentElement;
       if (!target) {
         document.addEventListener('DOMContentLoaded', () => this.start(), { once: true });
         return;
@@ -50,7 +52,7 @@
       this.observer.observe(target, {
         childList: true,
         subtree: true,
-        attributes: false, // Don't observe all attributes to minimize overhead
+        attributes: false,
         characterData: false
       });
 
@@ -74,7 +76,7 @@
     }
 
     /**
-     * Filter and queue relevant mutation elements
+     * Filter and queue mutation elements and their subtrees
      */
     handleMutations(mutations) {
       if (!this.themeEngine || !this.themeEngine.isEnabled()) {
@@ -86,8 +88,12 @@
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
           for (let j = 0; j < mutation.addedNodes.length; j++) {
             const node = mutation.addedNodes[j];
-            if (node.nodeType === Node.ELEMENT_NODE && !IGNORE_TAGS.has(node.tagName)) {
-              this.batch.push(node);
+            if (node.nodeType === Node.ELEMENT_NODE && !IGNORE_TAGS.has(node.tagName.toUpperCase())) {
+              // Collect node AND candidate descendants within this mounted subtree
+              const candidates = this.themeEngine.getCandidateElements(node);
+              for (let k = 0; k < candidates.length; k++) {
+                this.batch.push(candidates[k]);
+              }
             }
           }
         }
@@ -130,4 +136,7 @@
 
   window.ACDObserver = ACDObserver;
   window.__ACD_OBSERVER__ = new ACDObserver(window.__ACD_THEME_ENGINE__);
+  if (window.__ACD_THEME_ENGINE__) {
+    window.__ACD_THEME_ENGINE__.setObserver(window.__ACD_OBSERVER__);
+  }
 })();

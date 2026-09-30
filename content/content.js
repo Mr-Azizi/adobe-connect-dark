@@ -45,19 +45,17 @@
   }
 
   /**
-   * Activate dark mode
+   * Activate dark mode through the consolidated, idempotent theme engine path
    */
   function activate() {
-    themeEngine.enable();
-    observer.start();
+    themeEngine.applyDarkTheme();
   }
 
   /**
-   * Deactivate dark mode
+   * Deactivate dark mode through the consolidated theme engine path
    */
   function deactivate() {
-    themeEngine.disable();
-    observer.stop();
+    themeEngine.removeDarkTheme();
   }
 
   // Initial check at document_start
