@@ -268,36 +268,65 @@ html[data-acd-theme="dark"] [class*="chat-scroll"] {
   background-color: var(--acd-bg-panel) !important;
 }
 
-/* Chat Messages */
+/* Chat Messages - Real Adobe Connect CSS-Module DOM & Semantic Fallbacks */
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"],
 html[data-acd-theme="dark"] .chat-message,
 html[data-acd-theme="dark"] .message-item,
 html[data-acd-theme="dark"] [class*="chat-message"],
 html[data-acd-theme="dark"] [class*="chat-item"] {
-  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 4px;
+  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
+/* Chat Message Hover State */
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:hover,
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]:hover,
 html[data-acd-theme="dark"] .chat-message:hover {
   background-color: var(--acd-bg-hover) !important;
+  border-color: var(--acd-border) !important;
 }
 
-/* Sender Name */
+/* Chat Message Focus / Selected States (if supported) */
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][aria-selected="true"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][aria-selected="true"] {
+  background-color: var(--acd-bg-selected) !important;
+  border-left: 2px solid var(--acd-accent) !important;
+}
+
+/* Chat Message Sender - Real DOM & Fallbacks */
+html[data-acd-theme="dark"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*=" chatMessageSender--"],
 html[data-acd-theme="dark"] .chat-user-name,
 html[data-acd-theme="dark"] .sender-name,
-html[data-acd-theme="dark"] .user-name,
-html[data-acd-theme="dark"] [class*="chat-sender"],
-html[data-acd-theme="dark"] [class*="user-name"] {
+html[data-acd-theme="dark"] [class*="chat-sender"] {
   color: var(--acd-accent) !important;
   font-weight: 600 !important;
 }
 
-/* Timestamps */
+/* Chat Message Content Text - Real DOM */
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContent--"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContent--"] {
+  color: var(--acd-text-primary) !important;
+}
+
+/* Chat Message Timestamps - Real DOM & Fallbacks */
+html[data-acd-theme="dark"] [class^="chatMessageTime--"],
+html[data-acd-theme="dark"] [class*=" chatMessageTime--"],
 html[data-acd-theme="dark"] .chat-time,
 html[data-acd-theme="dark"] .message-time,
 html[data-acd-theme="dark"] [class*="chat-time"],
 html[data-acd-theme="dark"] [class*="timestamp"] {
   color: var(--acd-text-muted) !important;
-  font-size: 11px !important;
 }
 
 /* Chat Input Container */
@@ -388,184 +417,146 @@ html[data-acd-theme="dark"] [data-pod-type="participants"] {
   background-color: var(--acd-bg-panel) !important;
 }
 
-/* 5.1 Role Headers (Hosts, Presenters, Participants) - Collapsible Group Rows */
-html[data-acd-theme="dark"] .attendee-role-header,
-html[data-acd-theme="dark"] .role-header,
-html[data-acd-theme="dark"] [class*="role-header"],
-html[data-acd-theme="dark"] [class*="group-header"],
-html[data-acd-theme="dark"] [class*="category-header"],
-html[data-acd-theme="dark"] [class*="accordion-header"],
-html[data-acd-theme="dark"] .attendees-pod .attendee-role-header,
-html[data-acd-theme="dark"] .attendees-pod .role-header,
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"],
+/* 5.1 Real Attendees Group Headers (CSS-module hashed) & Semantic Fallbacks */
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]),
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]),
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class^="customAttendeeGroupText--"]),
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class^="customAttendeeGroupText--"]),
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]),
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]),
 html[data-acd-theme="dark"] .attendees-pod [class*="group-header"],
-html[data-acd-theme="dark"] .attendees-pod button[aria-expanded],
-html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded],
-html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="role-header"],
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"],
 html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="group-header"],
-html[data-acd-theme="dark"] [class*="attendee-pod"] button[aria-expanded],
-html[data-acd-theme="dark"] [class*="attendee-pod"] [role="button"][aria-expanded],
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"] {
+html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="role-header"],
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
   font-weight: 600 !important;
-  border-bottom: 1px solid var(--acd-border-subtle) !important;
   border-top: 1px solid var(--acd-border-subtle) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
   border-left: 3px solid transparent !important;
   cursor: pointer;
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
-/* Hover: Overrides native light hover background with dark hover surface */
-html[data-acd-theme="dark"] .attendee-role-header:hover,
-html[data-acd-theme="dark"] .role-header:hover,
-html[data-acd-theme="dark"] [class*="role-header"]:hover,
-html[data-acd-theme="dark"] [class*="group-header"]:hover,
-html[data-acd-theme="dark"] [class*="category-header"]:hover,
-html[data-acd-theme="dark"] [class*="accordion-header"]:hover,
-html[data-acd-theme="dark"] .attendees-pod .attendee-role-header:hover,
-html[data-acd-theme="dark"] .attendees-pod .role-header:hover,
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"]:hover,
+/* Hover: Overrides Adobe Connect native light hover background */
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):hover,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):hover,
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class^="customAttendeeGroupText--"]):hover,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class^="customAttendeeGroupText--"]):hover,
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]):hover,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]):hover,
 html[data-acd-theme="dark"] .attendees-pod [class*="group-header"]:hover,
-html[data-acd-theme="dark"] .attendees-pod button[aria-expanded]:hover,
-html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded]:hover,
-html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="role-header"]:hover,
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"]:hover,
 html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="group-header"]:hover,
-html[data-acd-theme="dark"] [class*="attendee-pod"] button[aria-expanded]:hover,
-html[data-acd-theme="dark"] [class*="attendee-pod"] [role="button"][aria-expanded]:hover,
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:hover {
+html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="role-header"]:hover,
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
   border-top-color: var(--acd-border) !important;
   border-bottom-color: var(--acd-border) !important;
 }
 
-/* Inner buttons inside role header on hover */
-html[data-acd-theme="dark"] [class*="role-header"] button:hover,
-html[data-acd-theme="dark"] [class*="group-header"] button:hover,
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"] button:hover,
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"] button:hover {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-/* Focus and Keyboard Focus for Group Rows */
-html[data-acd-theme="dark"] .attendee-role-header:focus,
-html[data-acd-theme="dark"] .attendee-role-header:focus-visible,
-html[data-acd-theme="dark"] .role-header:focus,
-html[data-acd-theme="dark"] .role-header:focus-visible,
-html[data-acd-theme="dark"] [class*="role-header"]:focus,
-html[data-acd-theme="dark"] [class*="role-header"]:focus-visible,
-html[data-acd-theme="dark"] [class*="group-header"]:focus,
-html[data-acd-theme="dark"] [class*="group-header"]:focus-visible,
-html[data-acd-theme="dark"] .attendees-pod button[aria-expanded]:focus,
-html[data-acd-theme="dark"] .attendees-pod button[aria-expanded]:focus-visible,
-html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded]:focus,
-html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded]:focus-visible,
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:focus,
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:focus-visible,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:focus,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:focus-visible {
+/* Focus and Keyboard Focus for Group Headers */
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):focus,
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):focus-visible,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):focus,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):focus-visible,
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]):focus,
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]):focus-visible,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]):focus,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]):focus-visible,
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"]:focus-visible,
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"]:focus-visible {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
   outline: 2px solid var(--acd-border-focus) !important;
   outline-offset: -2px !important;
 }
 
-/* Active / Pressed state */
-html[data-acd-theme="dark"] .attendee-role-header:active,
-html[data-acd-theme="dark"] .role-header:active,
-html[data-acd-theme="dark"] [class*="role-header"]:active,
-html[data-acd-theme="dark"] [class*="group-header"]:active,
-html[data-acd-theme="dark"] .attendees-pod button[aria-expanded]:active,
-html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded]:active,
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:active,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:active {
+/* Active / Pressed State */
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):active,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):active,
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]):active,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]):active,
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"]:active,
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"]:active {
   background-color: var(--acd-bg-active) !important;
   color: var(--acd-text-primary) !important;
 }
 
-/* Expanded state */
-html[data-acd-theme="dark"] .attendee-role-header[aria-expanded="true"],
-html[data-acd-theme="dark"] .role-header[aria-expanded="true"],
-html[data-acd-theme="dark"] [class*="role-header"][aria-expanded="true"],
-html[data-acd-theme="dark"] [class*="group-header"][aria-expanded="true"],
-html[data-acd-theme="dark"] .attendees-pod button[aria-expanded="true"],
-html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded="true"],
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader.is-open,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"].is-open,
-html[data-acd-theme="dark"] [class*="role-header"].expanded,
-html[data-acd-theme="dark"] [class*="group-header"].expanded,
-html[data-acd-theme="dark"] [class*="role-header"].is-open,
-html[data-acd-theme="dark"] [class*="group-header"].is-open {
+/* Open / Expanded State */
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="headerChevronIconIsOpen--"]),
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="headerChevronIconIsOpen--"]),
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"])[aria-expanded="true"],
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"])[aria-expanded="true"],
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"][aria-expanded="true"],
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"][aria-expanded="true"] {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
   border-left: 3px solid var(--acd-accent) !important;
 }
 
-/* Expanded state on Hover */
-html[data-acd-theme="dark"] .attendee-role-header[aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] .role-header[aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] [class*="role-header"][aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] [class*="group-header"][aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] .attendees-pod button[aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader.is-open:hover,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"].is-open:hover,
-html[data-acd-theme="dark"] [class*="role-header"].expanded:hover,
-html[data-acd-theme="dark"] [class*="group-header"].expanded:hover,
-html[data-acd-theme="dark"] [class*="role-header"].is-open:hover,
-html[data-acd-theme="dark"] [class*="group-header"].is-open:hover {
+/* Open / Expanded State on Hover */
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="headerChevronIconIsOpen--"]):hover,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="headerChevronIconIsOpen--"]):hover,
+html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"])[aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"])[aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"][aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"][aria-expanded="true"]:hover {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
 }
 
-/* Nested Text Spans & Labels within Group Rows */
-html[data-acd-theme="dark"] [class*="role-header"] span,
-html[data-acd-theme="dark"] [class*="group-header"] span,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"] span,
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"] [class*="title"],
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"] [class*="title"],
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"] [class*="label"],
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"] [class*="label"],
-html[data-acd-theme="dark"] .spectrum-Accordion-itemLabel {
-  color: inherit !important;
-  background-color: transparent !important;
-}
-
-/* Disclosure Arrow / Chevron / Icon in Group Rows */
-html[data-acd-theme="dark"] [class*="role-header"] svg,
-html[data-acd-theme="dark"] [class*="group-header"] svg,
-html[data-acd-theme="dark"] [class*="role-header"] [class*="chevron"],
+/* Chevron within Real Attendee Group Header */
+html[data-acd-theme="dark"] [class^="headerContainer--"] [class^="headerChevronIcon--"],
+html[data-acd-theme="dark"] [class^="headerContainer--"] [class*=" headerChevronIcon--"],
+html[data-acd-theme="dark"] [class*=" headerContainer--"] [class^="headerChevronIcon--"],
+html[data-acd-theme="dark"] [class*=" headerContainer--"] [class*=" headerChevronIcon--"],
 html[data-acd-theme="dark"] [class*="group-header"] [class*="chevron"],
-html[data-acd-theme="dark"] [class*="role-header"] [class*="indicator"],
-html[data-acd-theme="dark"] [class*="group-header"] [class*="indicator"],
-html[data-acd-theme="dark"] [class*="role-header"] [class*="arrow"],
-html[data-acd-theme="dark"] [class*="group-header"] [class*="arrow"],
-html[data-acd-theme="dark"] .spectrum-Accordion-itemIndicator,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemIndicator"] {
+html[data-acd-theme="dark"] [class*="group-header"] [class*="indicator"] {
   color: var(--acd-text-secondary) !important;
   fill: currentColor !important;
   transition: color var(--acd-transition-fast), transform var(--acd-transition-fast);
 }
 
-html[data-acd-theme="dark"] [class*="role-header"]:hover svg,
-html[data-acd-theme="dark"] [class*="group-header"]:hover svg,
-html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="chevron"],
+html[data-acd-theme="dark"] [class^="headerContainer--"] [class^="headerChevronIcon--"] path,
+html[data-acd-theme="dark"] [class^="headerContainer--"] [class*=" headerChevronIcon--"] path,
+html[data-acd-theme="dark"] [class*=" headerContainer--"] [class^="headerChevronIcon--"] path,
+html[data-acd-theme="dark"] [class*=" headerContainer--"] [class*=" headerChevronIcon--"] path {
+  fill: currentColor !important;
+}
+
+/* Chevron Hover */
+html[data-acd-theme="dark"] [class^="headerContainer--"]:hover [class^="headerChevronIcon--"],
+html[data-acd-theme="dark"] [class^="headerContainer--"]:hover [class*=" headerChevronIcon--"],
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:hover [class^="headerChevronIcon--"],
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:hover [class*=" headerChevronIcon--"],
 html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="chevron"],
-html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="indicator"],
-html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="indicator"],
-html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="arrow"],
-html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="arrow"],
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover .spectrum-Accordion-itemIndicator,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:hover [class*="spectrum-Accordion-itemIndicator"] {
+html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="indicator"] {
   color: var(--acd-text-primary) !important;
   fill: currentColor !important;
 }
 
-/* User Count Badges (e.g. Hosts (1), Presenters (0), Participants (11)) */
+/* Attendee Group Text Container & Span (e.g. Hosts (1)) */
+html[data-acd-theme="dark"] [class^="customAttendeeGroupText--"],
+html[data-acd-theme="dark"] [class*=" customAttendeeGroupText--"],
+html[data-acd-theme="dark"] [class^="headerContainer--"] [class^="customAttendeeGroupText--"],
+html[data-acd-theme="dark"] [class*=" headerContainer--"] [class^="customAttendeeGroupText--"],
+html[data-acd-theme="dark"] [class^="headerContainer--"] [class*=" customAttendeeGroupText--"],
+html[data-acd-theme="dark"] [class*=" headerContainer--"] [class*=" customAttendeeGroupText--"] {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
+html[data-acd-theme="dark"] [class^="customAttendeeGroupText--"] span,
+html[data-acd-theme="dark"] [class*=" customAttendeeGroupText--"] span,
+html[data-acd-theme="dark"] [class*="group-header"] span {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
+/* User Count Badges (Fallback for pods using separate badge elements) */
 html[data-acd-theme="dark"] .user-count,
 html[data-acd-theme="dark"] [class*="count-badge"],
 html[data-acd-theme="dark"] [class*="role-count"],
@@ -581,16 +572,10 @@ html[data-acd-theme="dark"] [class*="attendee-count"] {
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
-html[data-acd-theme="dark"] [class*="role-header"]:hover .user-count,
-html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="count-badge"],
-html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="role-count"],
-html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="user-count"],
 html[data-acd-theme="dark"] [class*="group-header"]:hover .user-count,
 html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="count-badge"],
 html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="role-count"],
-html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="user-count"],
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover [class*="count"],
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:hover [class*="count"] {
+html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="user-count"] {
   background-color: var(--acd-bg-active) !important;
   color: var(--acd-text-primary) !important;
   border-color: var(--acd-border) !important;
