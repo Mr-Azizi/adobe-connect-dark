@@ -35,16 +35,59 @@ html[data-acd-theme="dark"] .main-toolbar button,
 html[data-acd-theme="dark"] .top-bar button,
 html[data-acd-theme="dark"] [class*="header-bar"] button,
 html[data-acd-theme="dark"] [class*="action-button"],
-html[data-acd-theme="dark"] .top-bar [role="button"] {
+html[data-acd-theme="dark"] .top-bar [role="button"],
+html[data-acd-theme="dark"] .main-toolbar [role="button"],
+html[data-acd-theme="dark"] [class*="top-toolbar"] button,
+html[data-acd-theme="dark"] [class*="top-toolbar"] [role="button"] {
   background-color: transparent !important;
   color: var(--acd-text-secondary) !important;
   border-color: transparent !important;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] .main-toolbar button:hover,
 html[data-acd-theme="dark"] .top-bar button:hover,
-html[data-acd-theme="dark"] [class*="header-bar"] button:hover {
+html[data-acd-theme="dark"] [class*="header-bar"] button:hover,
+html[data-acd-theme="dark"] [class*="action-button"]:hover,
+html[data-acd-theme="dark"] .top-bar [role="button"]:hover,
+html[data-acd-theme="dark"] .main-toolbar [role="button"]:hover,
+html[data-acd-theme="dark"] [class*="top-toolbar"] button:hover,
+html[data-acd-theme="dark"] [class*="top-toolbar"] [role="button"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] .main-toolbar button:focus-visible,
+html[data-acd-theme="dark"] .top-bar button:focus-visible,
+html[data-acd-theme="dark"] [class*="header-bar"] button:focus-visible,
+html[data-acd-theme="dark"] [class*="action-button"]:focus-visible,
+html[data-acd-theme="dark"] .top-bar [role="button"]:focus-visible,
+html[data-acd-theme="dark"] .main-toolbar [role="button"]:focus-visible,
+html[data-acd-theme="dark"] [class*="top-toolbar"] button:focus-visible {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] .main-toolbar button:active,
+html[data-acd-theme="dark"] .top-bar button:active,
+html[data-acd-theme="dark"] [class*="header-bar"] button:active,
+html[data-acd-theme="dark"] [class*="action-button"]:active,
+html[data-acd-theme="dark"] .top-bar [role="button"]:active,
+html[data-acd-theme="dark"] .main-toolbar [role="button"]:active {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+  border-radius: 4px;
+}
+
+/* Open / Expanded Popover Menu Attached to Toolbar Button */
+html[data-acd-theme="dark"] .main-toolbar button[aria-expanded="true"],
+html[data-acd-theme="dark"] .top-bar button[aria-expanded="true"],
+html[data-acd-theme="dark"] [class*="header-bar"] button[aria-expanded="true"],
+html[data-acd-theme="dark"] [class*="action-button"][aria-expanded="true"] {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
   border-radius: 4px;
@@ -54,10 +97,20 @@ html[data-acd-theme="dark"] [class*="header-bar"] button:hover {
 html[data-acd-theme="dark"] .main-toolbar button.active,
 html[data-acd-theme="dark"] .main-toolbar button[aria-pressed="true"],
 html[data-acd-theme="dark"] [class*="header-bar"] button.active,
-html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"] {
+html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"],
+html[data-acd-theme="dark"] [class*="action-button"].active,
+html[data-acd-theme="dark"] [class*="action-button"][aria-pressed="true"] {
   background-color: var(--acd-accent-bg) !important;
   color: var(--acd-accent) !important;
   border: 1px solid var(--acd-accent-border) !important;
+}
+
+html[data-acd-theme="dark"] .main-toolbar button.active:hover,
+html[data-acd-theme="dark"] .main-toolbar button[aria-pressed="true"]:hover,
+html[data-acd-theme="dark"] [class*="header-bar"] button.active:hover,
+html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"]:hover {
+  background-color: rgba(110, 155, 255, 0.22) !important;
+  color: var(--acd-accent-hover) !important;
 }
 
 /* ==========================================================================
@@ -130,18 +183,61 @@ html[data-acd-theme="dark"] .pod-header h3 {
   font-weight: 600 !important;
 }
 
-/* Pod Header Controls (Menu, Minimize, Maximize) */
+/* Pod Header Controls (Menu, Minimize, Maximize, Close, Pod Options) */
 html[data-acd-theme="dark"] .pod-header button,
 html[data-acd-theme="dark"] .pod-header [role="button"],
-html[data-acd-theme="dark"] [class*="pod-header"] button {
+html[data-acd-theme="dark"] [class*="pod-header"] button,
+html[data-acd-theme="dark"] [class*="pod-header"] [role="button"],
+html[data-acd-theme="dark"] [class*="pod_header"] button,
+html[data-acd-theme="dark"] [class*="pod_header"] [role="button"],
+html[data-acd-theme="dark"] [class*="pod-title-bar"] button,
+html[data-acd-theme="dark"] [class*="pod-title-bar"] [role="button"],
+html[data-acd-theme="dark"] [class*="pod-controls"] button,
+html[data-acd-theme="dark"] [class*="pod-controls"] [role="button"] {
   color: var(--acd-text-muted) !important;
   background-color: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] .pod-header button:hover,
-html[data-acd-theme="dark"] .pod-header [role="button"]:hover {
+html[data-acd-theme="dark"] .pod-header [role="button"]:hover,
+html[data-acd-theme="dark"] [class*="pod-header"] button:hover,
+html[data-acd-theme="dark"] [class*="pod-header"] [role="button"]:hover,
+html[data-acd-theme="dark"] [class*="pod_header"] button:hover,
+html[data-acd-theme="dark"] [class*="pod_header"] [role="button"]:hover,
+html[data-acd-theme="dark"] [class*="pod-title-bar"] button:hover,
+html[data-acd-theme="dark"] [class*="pod-controls"] button:hover {
   color: var(--acd-text-primary) !important;
   background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] .pod-header button:focus-visible,
+html[data-acd-theme="dark"] .pod-header [role="button"]:focus-visible,
+html[data-acd-theme="dark"] [class*="pod-header"] button:focus-visible,
+html[data-acd-theme="dark"] [class*="pod-header"] [role="button"]:focus-visible,
+html[data-acd-theme="dark"] [class*="pod-controls"] button:focus-visible {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+html[data-acd-theme="dark"] .pod-header button:active,
+html[data-acd-theme="dark"] .pod-header [role="button"]:active,
+html[data-acd-theme="dark"] [class*="pod-header"] button:active,
+html[data-acd-theme="dark"] [class*="pod-header"] [role="button"]:active {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-active) !important;
+}
+
+html[data-acd-theme="dark"] .pod-header button[aria-expanded="true"],
+html[data-acd-theme="dark"] .pod-header [role="button"][aria-expanded="true"],
+html[data-acd-theme="dark"] [class*="pod-header"] button[aria-expanded="true"],
+html[data-acd-theme="dark"] [class*="pod-header"] [role="button"][aria-expanded="true"] {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-active) !important;
 }
 
 /* Pod Body / Content Area (Excludes sensitive presentation/canvas content) */
@@ -229,9 +325,56 @@ html[data-acd-theme="dark"] [class*="chat-input"] textarea:focus {
 
 /* Chat Tabs (Everyone / Private) */
 html[data-acd-theme="dark"] .chat-tabs,
-html[data-acd-theme="dark"] [class*="chat-tab"] {
+html[data-acd-theme="dark"] [class*="chat-tab-bar"],
+html[data-acd-theme="dark"] [class*="chat-tab-container"] {
   background-color: var(--acd-bg-toolbar) !important;
   border-bottom: 1px solid var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] .chat-tabs button,
+html[data-acd-theme="dark"] .chat-tabs [role="tab"],
+html[data-acd-theme="dark"] [class*="chat-tab-item"],
+html[data-acd-theme="dark"] [class*="chat-tab"] button {
+  background-color: transparent !important;
+  color: var(--acd-text-secondary) !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  padding: 6px 12px !important;
+  transition: color var(--acd-transition-fast), background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .chat-tabs button:hover,
+html[data-acd-theme="dark"] .chat-tabs [role="tab"]:hover,
+html[data-acd-theme="dark"] [class*="chat-tab-item"]:hover,
+html[data-acd-theme="dark"] [class*="chat-tab"] button:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .chat-tabs button:focus-visible,
+html[data-acd-theme="dark"] .chat-tabs [role="tab"]:focus-visible,
+html[data-acd-theme="dark"] [class*="chat-tab-item"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .chat-tabs button:active,
+html[data-acd-theme="dark"] .chat-tabs [role="tab"]:active {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .chat-tabs button[aria-selected="true"],
+html[data-acd-theme="dark"] .chat-tabs [role="tab"][aria-selected="true"],
+html[data-acd-theme="dark"] .chat-tabs button.active,
+html[data-acd-theme="dark"] .chat-tabs [role="tab"].active,
+html[data-acd-theme="dark"] [class*="chat-tab-item"].active,
+html[data-acd-theme="dark"] [class*="chat-tab-item"][aria-selected="true"] {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-accent) !important;
+  border-bottom: 2px solid var(--acd-accent) !important;
+  font-weight: 600 !important;
 }
 
 /* ==========================================================================
@@ -245,34 +388,300 @@ html[data-acd-theme="dark"] [data-pod-type="participants"] {
   background-color: var(--acd-bg-panel) !important;
 }
 
-/* Role Headers (Hosts, Presenters, Participants) */
+/* 5.1 Role Headers (Hosts, Presenters, Participants) - Collapsible Group Rows */
 html[data-acd-theme="dark"] .attendee-role-header,
 html[data-acd-theme="dark"] .role-header,
 html[data-acd-theme="dark"] [class*="role-header"],
-html[data-acd-theme="dark"] [class*="group-header"] {
+html[data-acd-theme="dark"] [class*="group-header"],
+html[data-acd-theme="dark"] [class*="category-header"],
+html[data-acd-theme="dark"] [class*="accordion-header"],
+html[data-acd-theme="dark"] .attendees-pod .attendee-role-header,
+html[data-acd-theme="dark"] .attendees-pod .role-header,
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"],
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"],
+html[data-acd-theme="dark"] .attendees-pod button[aria-expanded],
+html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded],
+html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="role-header"],
+html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="group-header"],
+html[data-acd-theme="dark"] [class*="attendee-pod"] button[aria-expanded],
+html[data-acd-theme="dark"] [class*="attendee-pod"] [role="button"][aria-expanded],
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"] {
   background-color: var(--acd-bg-secondary) !important;
-  color: var(--acd-text-secondary) !important;
+  color: var(--acd-text-primary) !important;
   font-weight: 600 !important;
   border-bottom: 1px solid var(--acd-border-subtle) !important;
   border-top: 1px solid var(--acd-border-subtle) !important;
+  border-left: 3px solid transparent !important;
+  cursor: pointer;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
-/* Individual Attendee Row */
+/* Hover: Overrides native light hover background with dark hover surface */
+html[data-acd-theme="dark"] .attendee-role-header:hover,
+html[data-acd-theme="dark"] .role-header:hover,
+html[data-acd-theme="dark"] [class*="role-header"]:hover,
+html[data-acd-theme="dark"] [class*="group-header"]:hover,
+html[data-acd-theme="dark"] [class*="category-header"]:hover,
+html[data-acd-theme="dark"] [class*="accordion-header"]:hover,
+html[data-acd-theme="dark"] .attendees-pod .attendee-role-header:hover,
+html[data-acd-theme="dark"] .attendees-pod .role-header:hover,
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"]:hover,
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"]:hover,
+html[data-acd-theme="dark"] .attendees-pod button[aria-expanded]:hover,
+html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded]:hover,
+html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="role-header"]:hover,
+html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="group-header"]:hover,
+html[data-acd-theme="dark"] [class*="attendee-pod"] button[aria-expanded]:hover,
+html[data-acd-theme="dark"] [class*="attendee-pod"] [role="button"][aria-expanded]:hover,
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  border-top-color: var(--acd-border) !important;
+  border-bottom-color: var(--acd-border) !important;
+}
+
+/* Inner buttons inside role header on hover */
+html[data-acd-theme="dark"] [class*="role-header"] button:hover,
+html[data-acd-theme="dark"] [class*="group-header"] button:hover,
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"] button:hover,
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"] button:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Focus and Keyboard Focus for Group Rows */
+html[data-acd-theme="dark"] .attendee-role-header:focus,
+html[data-acd-theme="dark"] .attendee-role-header:focus-visible,
+html[data-acd-theme="dark"] .role-header:focus,
+html[data-acd-theme="dark"] .role-header:focus-visible,
+html[data-acd-theme="dark"] [class*="role-header"]:focus,
+html[data-acd-theme="dark"] [class*="role-header"]:focus-visible,
+html[data-acd-theme="dark"] [class*="group-header"]:focus,
+html[data-acd-theme="dark"] [class*="group-header"]:focus-visible,
+html[data-acd-theme="dark"] .attendees-pod button[aria-expanded]:focus,
+html[data-acd-theme="dark"] .attendees-pod button[aria-expanded]:focus-visible,
+html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded]:focus,
+html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded]:focus-visible,
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:focus,
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:focus-visible,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:focus,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:focus-visible {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+/* Active / Pressed state */
+html[data-acd-theme="dark"] .attendee-role-header:active,
+html[data-acd-theme="dark"] .role-header:active,
+html[data-acd-theme="dark"] [class*="role-header"]:active,
+html[data-acd-theme="dark"] [class*="group-header"]:active,
+html[data-acd-theme="dark"] .attendees-pod button[aria-expanded]:active,
+html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded]:active,
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:active,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:active {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Expanded state */
+html[data-acd-theme="dark"] .attendee-role-header[aria-expanded="true"],
+html[data-acd-theme="dark"] .role-header[aria-expanded="true"],
+html[data-acd-theme="dark"] [class*="role-header"][aria-expanded="true"],
+html[data-acd-theme="dark"] [class*="group-header"][aria-expanded="true"],
+html[data-acd-theme="dark"] .attendees-pod button[aria-expanded="true"],
+html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded="true"],
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader.is-open,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"].is-open,
+html[data-acd-theme="dark"] [class*="role-header"].expanded,
+html[data-acd-theme="dark"] [class*="group-header"].expanded,
+html[data-acd-theme="dark"] [class*="role-header"].is-open,
+html[data-acd-theme="dark"] [class*="group-header"].is-open {
+  background-color: var(--acd-bg-secondary) !important;
+  color: var(--acd-text-primary) !important;
+  border-left: 3px solid var(--acd-accent) !important;
+}
+
+/* Expanded state on Hover */
+html[data-acd-theme="dark"] .attendee-role-header[aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] .role-header[aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] [class*="role-header"][aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] [class*="group-header"][aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] .attendees-pod button[aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] .attendees-pod [role="button"][aria-expanded="true"]:hover,
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader.is-open:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"].is-open:hover,
+html[data-acd-theme="dark"] [class*="role-header"].expanded:hover,
+html[data-acd-theme="dark"] [class*="group-header"].expanded:hover,
+html[data-acd-theme="dark"] [class*="role-header"].is-open:hover,
+html[data-acd-theme="dark"] [class*="group-header"].is-open:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Nested Text Spans & Labels within Group Rows */
+html[data-acd-theme="dark"] [class*="role-header"] span,
+html[data-acd-theme="dark"] [class*="group-header"] span,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"] span,
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"] [class*="title"],
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"] [class*="title"],
+html[data-acd-theme="dark"] .attendees-pod [class*="role-header"] [class*="label"],
+html[data-acd-theme="dark"] .attendees-pod [class*="group-header"] [class*="label"],
+html[data-acd-theme="dark"] .spectrum-Accordion-itemLabel {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
+/* Disclosure Arrow / Chevron / Icon in Group Rows */
+html[data-acd-theme="dark"] [class*="role-header"] svg,
+html[data-acd-theme="dark"] [class*="group-header"] svg,
+html[data-acd-theme="dark"] [class*="role-header"] [class*="chevron"],
+html[data-acd-theme="dark"] [class*="group-header"] [class*="chevron"],
+html[data-acd-theme="dark"] [class*="role-header"] [class*="indicator"],
+html[data-acd-theme="dark"] [class*="group-header"] [class*="indicator"],
+html[data-acd-theme="dark"] [class*="role-header"] [class*="arrow"],
+html[data-acd-theme="dark"] [class*="group-header"] [class*="arrow"],
+html[data-acd-theme="dark"] .spectrum-Accordion-itemIndicator,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemIndicator"] {
+  color: var(--acd-text-secondary) !important;
+  fill: currentColor !important;
+  transition: color var(--acd-transition-fast), transform var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class*="role-header"]:hover svg,
+html[data-acd-theme="dark"] [class*="group-header"]:hover svg,
+html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="chevron"],
+html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="chevron"],
+html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="indicator"],
+html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="indicator"],
+html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="arrow"],
+html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="arrow"],
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover .spectrum-Accordion-itemIndicator,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:hover [class*="spectrum-Accordion-itemIndicator"] {
+  color: var(--acd-text-primary) !important;
+  fill: currentColor !important;
+}
+
+/* User Count Badges (e.g. Hosts (1), Presenters (0), Participants (11)) */
+html[data-acd-theme="dark"] .user-count,
+html[data-acd-theme="dark"] [class*="count-badge"],
+html[data-acd-theme="dark"] [class*="role-count"],
+html[data-acd-theme="dark"] [class*="user-count"],
+html[data-acd-theme="dark"] [class*="attendee-count"] {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-secondary) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 10px !important;
+  padding: 1px 7px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class*="role-header"]:hover .user-count,
+html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="count-badge"],
+html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="role-count"],
+html[data-acd-theme="dark"] [class*="role-header"]:hover [class*="user-count"],
+html[data-acd-theme="dark"] [class*="group-header"]:hover .user-count,
+html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="count-badge"],
+html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="role-count"],
+html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="user-count"],
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover [class*="count"],
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:hover [class*="count"] {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+  border-color: var(--acd-border) !important;
+}
+
+/* 5.2 Individual Attendee Rows */
 html[data-acd-theme="dark"] .attendee-item,
 html[data-acd-theme="dark"] .attendee-row,
 html[data-acd-theme="dark"] .user-row,
 html[data-acd-theme="dark"] [class*="attendee-item"],
 html[data-acd-theme="dark"] [class*="attendee-row"],
-html[data-acd-theme="dark"] [class*="participant-item"] {
+html[data-acd-theme="dark"] [class*="participant-item"],
+html[data-acd-theme="dark"] [class*="participant-row"],
+html[data-acd-theme="dark"] [class*="user-row"],
+html[data-acd-theme="dark"] [class*="attendee-list-item"],
+html[data-acd-theme="dark"] [class*="attendee-entry"] {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
-  transition: background-color var(--acd-transition-fast);
+  border-left: 3px solid transparent !important;
+  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] .attendee-item:hover,
 html[data-acd-theme="dark"] .attendee-row:hover,
-html[data-acd-theme="dark"] [class*="attendee-item"]:hover {
+html[data-acd-theme="dark"] .user-row:hover,
+html[data-acd-theme="dark"] [class*="attendee-item"]:hover,
+html[data-acd-theme="dark"] [class*="attendee-row"]:hover,
+html[data-acd-theme="dark"] [class*="participant-item"]:hover,
+html[data-acd-theme="dark"] [class*="participant-row"]:hover,
+html[data-acd-theme="dark"] [class*="user-row"]:hover,
+html[data-acd-theme="dark"] [class*="attendee-list-item"]:hover,
+html[data-acd-theme="dark"] [class*="attendee-entry"]:hover {
   background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .attendee-item:focus,
+html[data-acd-theme="dark"] .attendee-item:focus-visible,
+html[data-acd-theme="dark"] .attendee-row:focus,
+html[data-acd-theme="dark"] .attendee-row:focus-visible,
+html[data-acd-theme="dark"] [class*="attendee-item"]:focus,
+html[data-acd-theme="dark"] [class*="attendee-item"]:focus-visible,
+html[data-acd-theme="dark"] [class*="attendee-row"]:focus,
+html[data-acd-theme="dark"] [class*="attendee-row"]:focus-visible {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+html[data-acd-theme="dark"] .attendee-item:active,
+html[data-acd-theme="dark"] .attendee-row:active,
+html[data-acd-theme="dark"] [class*="attendee-item"]:active,
+html[data-acd-theme="dark"] [class*="attendee-row"]:active {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Selected Attendee Row */
+html[data-acd-theme="dark"] .attendee-item[aria-selected="true"],
+html[data-acd-theme="dark"] .attendee-row[aria-selected="true"],
+html[data-acd-theme="dark"] [class*="attendee-item"][aria-selected="true"],
+html[data-acd-theme="dark"] [class*="attendee-row"][aria-selected="true"],
+html[data-acd-theme="dark"] .attendee-item.selected,
+html[data-acd-theme="dark"] .attendee-row.selected,
+html[data-acd-theme="dark"] [class*="attendee-item"].selected,
+html[data-acd-theme="dark"] [class*="attendee-row"].selected,
+html[data-acd-theme="dark"] [class*="attendee-item"].is-selected,
+html[data-acd-theme="dark"] [class*="attendee-row"].is-selected {
+  background-color: var(--acd-bg-selected) !important;
+  color: var(--acd-text-primary) !important;
+  border-left: 3px solid var(--acd-accent) !important;
+}
+
+/* Action buttons inside attendee rows (Mute, 3-dots menu, permissions) */
+html[data-acd-theme="dark"] [class*="attendee-item"] button,
+html[data-acd-theme="dark"] [class*="attendee-row"] button,
+html[data-acd-theme="dark"] [class*="attendee-item"] [role="button"],
+html[data-acd-theme="dark"] [class*="attendee-row"] [role="button"] {
+  background-color: transparent !important;
+  color: var(--acd-text-secondary) !important;
+  border: none !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] [class*="attendee-item"] button:hover,
+html[data-acd-theme="dark"] [class*="attendee-row"] button:hover,
+html[data-acd-theme="dark"] [class*="attendee-item"] [role="button"]:hover,
+html[data-acd-theme="dark"] [class*="attendee-row"] [role="button"]:hover {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
 }
 
 /* Search Attendees Box */
@@ -283,13 +692,9 @@ html[data-acd-theme="dark"] [class*="attendee-search"] input {
   border: 1px solid var(--acd-border) !important;
 }
 
-/* User Count Badges */
-html[data-acd-theme="dark"] .user-count,
-html[data-acd-theme="dark"] [class*="count-badge"],
-html[data-acd-theme="dark"] [class*="role-count"] {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-muted) !important;
-  border-radius: 10px;
+html[data-acd-theme="dark"] .attendee-search:focus-within,
+html[data-acd-theme="dark"] [class*="attendee-search"] input:focus {
+  border-color: var(--acd-border-focus) !important;
 }
 
 /* ==========================================================================
@@ -310,14 +715,38 @@ html[data-acd-theme="dark"] .ql-toolbar {
 }
 
 html[data-acd-theme="dark"] .notes-toolbar button,
+html[data-acd-theme="dark"] [class*="notes-toolbar"] button,
 html[data-acd-theme="dark"] .ql-toolbar button {
   color: var(--acd-text-secondary) !important;
+  border-radius: 3px;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] .notes-toolbar button:hover,
+html[data-acd-theme="dark"] [class*="notes-toolbar"] button:hover,
 html[data-acd-theme="dark"] .ql-toolbar button:hover {
   color: var(--acd-text-primary) !important;
   background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] .notes-toolbar button:focus-visible,
+html[data-acd-theme="dark"] [class*="notes-toolbar"] button:focus-visible,
+html[data-acd-theme="dark"] .ql-toolbar button:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+html[data-acd-theme="dark"] .notes-toolbar button:active,
+html[data-acd-theme="dark"] [class*="notes-toolbar"] button:active,
+html[data-acd-theme="dark"] .ql-toolbar button:active {
+  background-color: var(--acd-bg-active) !important;
+}
+
+html[data-acd-theme="dark"] .notes-toolbar button.active,
+html[data-acd-theme="dark"] .notes-toolbar button[aria-pressed="true"],
+html[data-acd-theme="dark"] .ql-toolbar button.ql-active {
+  background-color: var(--acd-accent-bg) !important;
+  color: var(--acd-accent) !important;
 }
 
 /* Notes Text Editor Area */
@@ -345,12 +774,39 @@ html[data-acd-theme="dark"] [class*="question-item"] {
   background-color: var(--acd-bg-secondary) !important;
   border: 1px solid var(--acd-border) !important;
   border-radius: 4px;
+  transition: background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .qna-question-item:hover,
+html[data-acd-theme="dark"] [class*="question-item"]:hover {
+  background-color: var(--acd-bg-hover) !important;
 }
 
 html[data-acd-theme="dark"] .qna-answer-item,
 html[data-acd-theme="dark"] [class*="answer-item"] {
   background-color: var(--acd-bg-panel) !important;
   border-left: 2px solid var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] .qna-pod button,
+html[data-acd-theme="dark"] .qa-pod button,
+html[data-acd-theme="dark"] [class*="qna-pod"] button,
+html[data-acd-theme="dark"] [class*="qa-pod"] button {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] .qna-pod button:hover,
+html[data-acd-theme="dark"] .qa-pod button:hover,
+html[data-acd-theme="dark"] [class*="qna-pod"] button:hover,
+html[data-acd-theme="dark"] [class*="qa-pod"] button:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .qna-pod button:focus-visible,
+html[data-acd-theme="dark"] .qa-pod button:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
 }
 
 /* ==========================================================================
@@ -372,6 +828,15 @@ html[data-acd-theme="dark"] .poll-option,
 html[data-acd-theme="dark"] [class*="poll-option"],
 html[data-acd-theme="dark"] [class*="poll-answer"] {
   color: var(--acd-text-secondary) !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .poll-option:hover,
+html[data-acd-theme="dark"] [class*="poll-option"]:hover,
+html[data-acd-theme="dark"] [class*="poll-answer"]:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+  border-radius: 4px;
 }
 
 /* Poll Results Bar */
@@ -406,8 +871,39 @@ html[data-acd-theme="dark"] [class*="draw-toolbar"] {
   border-radius: 6px;
 }
 
-html[data-acd-theme="dark"] .whiteboard-toolbar button:hover {
+html[data-acd-theme="dark"] .whiteboard-toolbar button,
+html[data-acd-theme="dark"] [class*="whiteboard-toolbar"] button,
+html[data-acd-theme="dark"] [class*="draw-toolbar"] button {
+  color: var(--acd-text-secondary) !important;
+  border-radius: 4px;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .whiteboard-toolbar button:hover,
+html[data-acd-theme="dark"] [class*="whiteboard-toolbar"] button:hover,
+html[data-acd-theme="dark"] [class*="draw-toolbar"] button:hover {
+  color: var(--acd-text-primary) !important;
   background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] .whiteboard-toolbar button:focus-visible,
+html[data-acd-theme="dark"] [class*="draw-toolbar"] button:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+html[data-acd-theme="dark"] .whiteboard-toolbar button:active,
+html[data-acd-theme="dark"] [class*="draw-toolbar"] button:active {
+  background-color: var(--acd-bg-active) !important;
+}
+
+html[data-acd-theme="dark"] .whiteboard-toolbar button.active,
+html[data-acd-theme="dark"] .whiteboard-toolbar button[aria-pressed="true"],
+html[data-acd-theme="dark"] [class*="draw-toolbar"] button.active,
+html[data-acd-theme="dark"] [class*="draw-toolbar"] button[aria-pressed="true"] {
+  background-color: var(--acd-accent-bg) !important;
+  color: var(--acd-accent) !important;
+  border: 1px solid var(--acd-accent-border) !important;
 }
 
 /* Share Pod Control Toolbar */
@@ -446,21 +942,159 @@ html[data-acd-theme="dark"] [class*="spectrum-Popover"] {
   color: var(--acd-text-primary) !important;
 }
 
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:hover {
-  background-color: var(--acd-bg-hover) !important;
+/* Spectrum Accordion - Primary component in Adobe Connect pods */
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"] {
+  background-color: var(--acd-bg-secondary) !important;
+  color: var(--acd-text-primary) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
 }
 
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:focus,
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:focus-visible,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:focus,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:focus-visible {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:active,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:active {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader.is-open,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"].is-open {
+  background-color: var(--acd-bg-secondary) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader.is-open:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"].is-open:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Spectrum Menu Items */
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"] {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:focus,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-focused,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-highlighted {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:active {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-selected,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"][aria-selected="true"] {
+  background-color: var(--acd-bg-selected) !important;
+  color: var(--acd-accent) !important;
+}
+
+/* Spectrum Buttons & ActionButtons */
+html[data-acd-theme="dark"] [class*="spectrum-ActionButton"],
 html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"] {
   background-color: var(--acd-bg-panel) !important;
   border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
+html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:focus-visible,
+html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:active,
+html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"]:active {
+  background-color: var(--acd-bg-active) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-ActionButton"].is-selected,
+html[data-acd-theme="dark"] [class*="spectrum-ActionButton"][aria-pressed="true"] {
+  background-color: var(--acd-accent-bg) !important;
+  color: var(--acd-accent) !important;
+  border-color: var(--acd-accent-border) !important;
+}
+
+/* Spectrum Tabs */
 html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"] {
   color: var(--acd-text-secondary) !important;
+  transition: color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"]:hover {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"].is-selected {
   color: var(--acd-accent) !important;
   border-bottom-color: var(--acd-accent) !important;
+}
+
+/* ==========================================================================
+   12. Generic Expandable Headers & Accordions
+   ========================================================================== */
+html[data-acd-theme="dark"] summary,
+html[data-acd-theme="dark"] [class*="expandable-header"],
+html[data-acd-theme="dark"] [class*="section-header"][role="button"],
+html[data-acd-theme="dark"] [class*="collapse-header"] {
+  background-color: var(--acd-bg-secondary) !important;
+  color: var(--acd-text-primary) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  cursor: pointer;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] summary:hover,
+html[data-acd-theme="dark"] [class*="expandable-header"]:hover,
+html[data-acd-theme="dark"] [class*="section-header"][role="button"]:hover,
+html[data-acd-theme="dark"] [class*="collapse-header"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] summary:focus-visible,
+html[data-acd-theme="dark"] [class*="expandable-header"]:focus-visible,
+html[data-acd-theme="dark"] [class*="collapse-header"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+html[data-acd-theme="dark"] summary:active,
+html[data-acd-theme="dark"] [class*="expandable-header"]:active,
+html[data-acd-theme="dark"] [class*="collapse-header"]:active {
+  background-color: var(--acd-bg-active) !important;
 }

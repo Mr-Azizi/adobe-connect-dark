@@ -63,11 +63,112 @@ button,
 [role="button"] {
   color: var(--acd-text-primary);
   border-color: var(--acd-border);
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
 button:hover,
 [role="button"]:hover {
   background-color: var(--acd-bg-hover) !important;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+button:active,
+[role="button"]:active {
+  background-color: var(--acd-bg-active) !important;
+}
+
+/* Role / Group Headers & Accordions inside Shadow DOM */
+[class*="role-header"],
+[class*="group-header"],
+[class*="category-header"],
+.spectrum-Accordion-itemHeader,
+[class*="spectrum-Accordion-itemHeader"] {
+  background-color: var(--acd-bg-secondary) !important;
+  color: var(--acd-text-primary) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  cursor: pointer;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+[class*="role-header"]:hover,
+[class*="group-header"]:hover,
+[class*="category-header"]:hover,
+.spectrum-Accordion-itemHeader:hover,
+[class*="spectrum-Accordion-itemHeader"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+[class*="role-header"]:focus-visible,
+[class*="group-header"]:focus-visible,
+.spectrum-Accordion-itemHeader:focus-visible,
+[class*="spectrum-Accordion-itemHeader"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+[class*="role-header"]:active,
+[class*="group-header"]:active,
+.spectrum-Accordion-itemHeader:active,
+[class*="spectrum-Accordion-itemHeader"]:active {
+  background-color: var(--acd-bg-active) !important;
+}
+
+[class*="role-header"][aria-expanded="true"],
+[class*="group-header"][aria-expanded="true"],
+.spectrum-Accordion-itemHeader.is-open,
+[class*="spectrum-Accordion-itemHeader"].is-open {
+  background-color: var(--acd-bg-secondary) !important;
+  border-left: 3px solid var(--acd-accent) !important;
+}
+
+[class*="role-header"][aria-expanded="true"]:hover,
+[class*="group-header"][aria-expanded="true"]:hover,
+.spectrum-Accordion-itemHeader.is-open:hover,
+[class*="spectrum-Accordion-itemHeader"].is-open:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Attendee Rows inside Shadow DOM */
+[class*="attendee-item"],
+[class*="attendee-row"],
+[class*="participant-item"],
+[class*="user-row"] {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast);
+}
+
+[class*="attendee-item"]:hover,
+[class*="attendee-row"]:hover,
+[class*="participant-item"]:hover,
+[class*="user-row"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+[class*="attendee-item"]:focus-visible,
+[class*="attendee-row"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+[class*="attendee-item"]:active,
+[class*="attendee-row"]:active {
+  background-color: var(--acd-bg-active) !important;
+}
+
+[class*="attendee-item"][aria-selected="true"],
+[class*="attendee-row"][aria-selected="true"],
+[class*="attendee-item"].is-selected,
+[class*="attendee-row"].is-selected {
+  background-color: var(--acd-bg-selected) !important;
+  color: var(--acd-text-primary) !important;
+  border-left: 3px solid var(--acd-accent) !important;
 }
 
 /* Menus & Popovers */
@@ -80,10 +181,38 @@ button:hover,
   color: var(--acd-text-primary) !important;
 }
 
+[role="menuitem"],
+[role="option"] {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast);
+}
+
 [role="menuitem"]:hover,
-[role="option"]:hover {
+[role="option"]:hover,
+[role="menuitem"]:focus,
+[role="option"]:focus {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
+}
+
+[role="menuitem"]:focus-visible,
+[role="option"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+[role="menuitem"]:active,
+[role="option"]:active {
+  background-color: var(--acd-bg-active) !important;
+}
+
+[role="menuitem"][aria-selected="true"],
+[role="option"][aria-selected="true"],
+[role="menuitem"].is-selected,
+[role="option"].is-selected {
+  background-color: var(--acd-bg-selected) !important;
+  color: var(--acd-accent) !important;
 }
 
 /* ==========================================================================

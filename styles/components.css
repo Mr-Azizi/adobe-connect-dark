@@ -26,7 +26,8 @@ html[data-acd-theme="dark"] [role="menuitem"],
 html[data-acd-theme="dark"] [role="option"],
 html[data-acd-theme="dark"] .menu-item,
 html[data-acd-theme="dark"] [class*="menu-item"],
-html[data-acd-theme="dark"] [class*="dropdown-item"] {
+html[data-acd-theme="dark"] [class*="dropdown-item"],
+html[data-acd-theme="dark"] [class*="popover-item"] {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
   border-radius: 4px !important;
@@ -38,10 +39,39 @@ html[data-acd-theme="dark"] [role="option"]:hover,
 html[data-acd-theme="dark"] .menu-item:hover,
 html[data-acd-theme="dark"] [class*="menu-item"]:hover,
 html[data-acd-theme="dark"] [class*="dropdown-item"]:hover,
+html[data-acd-theme="dark"] [class*="popover-item"]:hover,
 html[data-acd-theme="dark"] [role="menuitem"]:focus,
-html[data-acd-theme="dark"] [role="option"][aria-selected="true"] {
+html[data-acd-theme="dark"] [role="option"]:focus {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [role="menuitem"]:focus-visible,
+html[data-acd-theme="dark"] [role="option"]:focus-visible,
+html[data-acd-theme="dark"] .menu-item:focus-visible,
+html[data-acd-theme="dark"] [class*="menu-item"]:focus-visible {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+html[data-acd-theme="dark"] [role="menuitem"]:active,
+html[data-acd-theme="dark"] [role="option"]:active,
+html[data-acd-theme="dark"] .menu-item:active,
+html[data-acd-theme="dark"] [class*="menu-item"]:active {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [role="menuitem"][aria-selected="true"],
+html[data-acd-theme="dark"] [role="option"][aria-selected="true"],
+html[data-acd-theme="dark"] .menu-item.selected,
+html[data-acd-theme="dark"] [class*="menu-item"].selected,
+html[data-acd-theme="dark"] [class*="dropdown-item"].selected,
+html[data-acd-theme="dark"] [class*="menu-item"].is-selected {
+  background-color: var(--acd-bg-selected) !important;
+  color: var(--acd-accent) !important;
 }
 
 /* Menu Dividers */
@@ -161,6 +191,19 @@ html[data-acd-theme="dark"] [class*="btn-secondary"]:hover {
   border-color: var(--acd-border) !important;
 }
 
+html[data-acd-theme="dark"] .btn-secondary:focus-visible,
+html[data-acd-theme="dark"] button.secondary:focus-visible,
+html[data-acd-theme="dark"] [class*="btn-secondary"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+html[data-acd-theme="dark"] .btn-secondary:active,
+html[data-acd-theme="dark"] button.secondary:active,
+html[data-acd-theme="dark"] [class*="btn-secondary"]:active {
+  background-color: var(--acd-bg-active) !important;
+}
+
 /* ==========================================================================
    5. Tabs & Segmented Controls
    ========================================================================== */
@@ -176,11 +219,26 @@ html[data-acd-theme="dark"] [class*="tab-item"] {
   color: var(--acd-text-secondary) !important;
   background-color: transparent !important;
   border: none !important;
-  transition: color var(--acd-transition-fast);
+  transition: color var(--acd-transition-fast), background-color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] [role="tab"]:hover,
 html[data-acd-theme="dark"] .tab-item:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] [role="tab"]:focus-visible,
+html[data-acd-theme="dark"] .tab-item:focus-visible,
+html[data-acd-theme="dark"] [class*="tab-item"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [role="tab"]:active,
+html[data-acd-theme="dark"] .tab-item:active {
+  background-color: var(--acd-bg-active) !important;
   color: var(--acd-text-primary) !important;
 }
 
