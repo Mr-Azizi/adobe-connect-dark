@@ -12,6 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const rtlToggleEl = document.getElementById('rtl-toggle');
   const resetBtnEl = document.getElementById('reset-btn');
   const toastEl = document.getElementById('toast');
+  const versionEl = document.getElementById('extension-version');
+
+  // Synchronize version display with manifest.json
+  if (versionEl) {
+    try {
+      const manifest = chrome.runtime.getManifest();
+      if (manifest && manifest.version) {
+        versionEl.textContent = `v${manifest.version}`;
+      }
+    } catch (err) {
+      console.warn('[ACD] Failed to read manifest version:', err);
+    }
+  }
 
   let currentTab = null;
   let currentUrl = null;
