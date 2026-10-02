@@ -1,0 +1,237 @@
+/**
+ * Adobe Connect Dark Mode - Adobe Connect Central Stylesheet
+ * Component-aware styling for Adobe Connect Central administration,
+ * legacy global navigation, search, and Week Calendar grid.
+ */
+
+/* ==========================================================================
+   1. Legacy Global Navigation
+   ========================================================================== */
+
+/* Main Navigation Bar Container & Slices */
+html[data-acd-theme="dark"] #gnWrapper,
+html[data-acd-theme="dark"] #gnMiddle,
+html[data-acd-theme="dark"] #gnLeft,
+html[data-acd-theme="dark"] #gnRight {
+  background-color: var(--acd-bg-secondary) !important;
+  background-image: none !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] #gnWrapper {
+  border-bottom: 1px solid var(--acd-border) !important;
+}
+
+/* Navigation Tab List */
+html[data-acd-theme="dark"] #globalnav {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/* Unselected Navigation Tabs */
+html[data-acd-theme="dark"] #globalnav li.tabNotSel,
+html[data-acd-theme="dark"] #globalnav li.tabNotSel a,
+html[data-acd-theme="dark"] #globalnav li.tabNotSel a.aTab {
+  background-color: transparent !important;
+  background-image: none !important;
+  color: var(--acd-text-secondary) !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+/* Unselected Tab Hover State */
+html[data-acd-theme="dark"] #globalnav li.tabNotSel:hover,
+html[data-acd-theme="dark"] #globalnav li.tabNotSel a:hover,
+html[data-acd-theme="dark"] #globalnav li.tabNotSel a.aTab:hover {
+  background-color: var(--acd-bg-hover) !important;
+  background-image: none !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Tab Focus & Active States */
+html[data-acd-theme="dark"] #globalnav li a.aTab:focus,
+html[data-acd-theme="dark"] #globalnav li a.aTab:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -2px !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] #globalnav li a.aTab:active {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Selected Navigation Tab */
+html[data-acd-theme="dark"] #globalnav li.tabSel,
+html[data-acd-theme="dark"] #globalnav li.tabSel a,
+html[data-acd-theme="dark"] #globalnav li.tabSel a.aTab {
+  background-color: var(--acd-bg-panel) !important;
+  background-image: none !important;
+  color: var(--acd-text-primary) !important;
+  font-weight: 600;
+  border-bottom: 2px solid var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] #globalnav li.tabSel:hover,
+html[data-acd-theme="dark"] #globalnav li.tabSel a.aTab:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+
+/* ==========================================================================
+   2. Central Search
+   ========================================================================== */
+
+/* Search Form and Container */
+html[data-acd-theme="dark"] #searchContentForm,
+html[data-acd-theme="dark"] #searchContent {
+  background-color: transparent !important;
+  background-image: none !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Search Textfield Input */
+html[data-acd-theme="dark"] #searchContent input.textfield,
+html[data-acd-theme="dark"] #searchContent .textfield {
+  background-color: var(--acd-bg-input) !important;
+  background-image: none !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 4px;
+  transition: border-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] #searchContent input.textfield::placeholder,
+html[data-acd-theme="dark"] #searchContent .textfield::placeholder {
+  color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] #searchContent input.textfield:focus,
+html[data-acd-theme="dark"] #searchContent input.textfield:focus-visible,
+html[data-acd-theme="dark"] #searchContent .textfield:focus,
+html[data-acd-theme="dark"] #searchContent .textfield:focus-visible {
+  border-color: var(--acd-border-focus) !important;
+  outline: 1px solid var(--acd-border-focus) !important;
+}
+
+/* Search Submit Button */
+html[data-acd-theme="dark"] #searchContent input#submit,
+html[data-acd-theme="dark"] #searchContent #submit.tabNotSel,
+html[data-acd-theme="dark"] #searchContent input[type="submit"] {
+  background-color: var(--acd-bg-hover) !important;
+  background-image: none !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] #searchContent input#submit:hover,
+html[data-acd-theme="dark"] #searchContent #submit.tabNotSel:hover,
+html[data-acd-theme="dark"] #searchContent input[type="submit"]:hover {
+  background-color: var(--acd-bg-active) !important;
+  color: var(--acd-text-primary) !important;
+  border-color: var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] #searchContent input#submit:focus-visible,
+html[data-acd-theme="dark"] #searchContent #submit.tabNotSel:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+html[data-acd-theme="dark"] #searchContent input#submit:active,
+html[data-acd-theme="dark"] #searchContent #submit.tabNotSel:active {
+  background-color: var(--acd-accent-bg) !important;
+}
+
+/* Advanced Search Link */
+html[data-acd-theme="dark"] #searchContent a {
+  color: var(--acd-accent) !important;
+  text-decoration: none;
+  transition: color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] #searchContent a:hover,
+html[data-acd-theme="dark"] #searchContent a:focus-visible {
+  color: var(--acd-accent-hover) !important;
+  text-decoration: underline;
+}
+
+
+/* ==========================================================================
+   3. Central Calendar - Week View
+   ========================================================================== */
+
+/* Calendar Week Grid Container */
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] {
+  background: var(--acd-bg-panel) !important;
+  background-color: var(--acd-bg-panel) !important;
+  background-image: none !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Calendar Week List Items / Day Columns */
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__listItem--"],
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__listItem--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__listItem--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__listItem--"] {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast);
+}
+
+/* Day Column Interactive Hover State */
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__listItem--"]:hover,
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__listItem--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__listItem--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__listItem--"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Default Week Day Text */
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDay--"],
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDay--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDay--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDay--"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+/* Past Day Label (Muted Text) */
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDayPast--"],
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDayPast--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDayPast--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDayPast--"] {
+  color: var(--acd-text-muted) !important;
+}
+
+/* Future Day Label (Secondary Text) */
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDayFuture--"],
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDayFuture--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDayFuture--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDayFuture--"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+/* Current Day Label (Accent Text) */
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDayCurrent--"],
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDayCurrent--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDayCurrent--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDayCurrent--"] {
+  color: var(--acd-accent) !important;
+  font-weight: 600;
+}
+
+/* Current Day Vertical Border Indicator */
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDayBorderCurrent--"],
+html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDayBorderCurrent--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDayBorderCurrent--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDayBorderCurrent--"] {
+  border-color: var(--acd-accent) !important;
+}

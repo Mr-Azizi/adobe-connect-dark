@@ -15,7 +15,8 @@
     'styles/variables.css',
     'styles/base.css',
     'styles/adobe-connect.css',
-    'styles/components.css'
+    'styles/components.css',
+    'styles/connect-central.css'
   ];
 
   const SHADOW_STYLESHEET_PATH = 'styles/shadow-dom.css';
