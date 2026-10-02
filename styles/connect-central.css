@@ -1,14 +1,46 @@
 /**
  * Adobe Connect Dark Mode - Adobe Connect Central Stylesheet
- * Component-aware styling for Adobe Connect Central administration,
- * legacy global navigation, search, and Week Calendar grid.
+ * Source-Driven Component Styling for Adobe Connect Central administration,
+ * legacy navigation, AppLayout, Calendar week grid, Reports, and HelpMenu.
+ * Authoritative references: adobe-connect-dom-admin-home-homepage.html,
+ * adobe-connect-dom-admin-reportManager.html, adobe-connect-styles-admin-*.json
  */
 
 /* ==========================================================================
-   1. Legacy Global Navigation
+   0. Central Page Structure (Banner, Content, Footer)
    ========================================================================== */
+html[data-acd-theme="dark"] .banner,
+html[data-acd-theme="dark"] #banner {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
 
-/* Main Navigation Bar Container & Slices */
+html[data-acd-theme="dark"] .pageContent,
+html[data-acd-theme="dark"] #pageContent,
+html[data-acd-theme="dark"] .reportManager,
+html[data-acd-theme="dark"] [class*="reportManager"] {
+  background-color: var(--acd-bg-main) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .pageFooter,
+html[data-acd-theme="dark"] #pageFooter {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-top: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-muted) !important;
+}
+
+/* React Spectrum TabView within Central */
+html[data-acd-theme="dark"] .react-spectrum-TabView,
+html[data-acd-theme="dark"] .react-spectrum-TabView-body {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* ==========================================================================
+   1. Legacy Global Navigation (#gnWrapper, #globalnav)
+   ========================================================================== */
 html[data-acd-theme="dark"] #gnWrapper,
 html[data-acd-theme="dark"] #gnMiddle,
 html[data-acd-theme="dark"] #gnLeft,
@@ -39,7 +71,6 @@ html[data-acd-theme="dark"] #globalnav li.tabNotSel a.aTab {
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
-/* Unselected Tab Hover State */
 html[data-acd-theme="dark"] #globalnav li.tabNotSel:hover,
 html[data-acd-theme="dark"] #globalnav li.tabNotSel a:hover,
 html[data-acd-theme="dark"] #globalnav li.tabNotSel a.aTab:hover {
@@ -48,7 +79,6 @@ html[data-acd-theme="dark"] #globalnav li.tabNotSel a.aTab:hover {
   color: var(--acd-text-primary) !important;
 }
 
-/* Tab Focus & Active States */
 html[data-acd-theme="dark"] #globalnav li a.aTab:focus,
 html[data-acd-theme="dark"] #globalnav li a.aTab:focus-visible {
   outline: 2px solid var(--acd-border-focus) !important;
@@ -78,12 +108,9 @@ html[data-acd-theme="dark"] #globalnav li.tabSel a.aTab:hover {
   color: var(--acd-text-primary) !important;
 }
 
-
 /* ==========================================================================
    2. Central Search
    ========================================================================== */
-
-/* Search Form and Container */
 html[data-acd-theme="dark"] #searchContentForm,
 html[data-acd-theme="dark"] #searchContent {
   background-color: transparent !important;
@@ -91,9 +118,9 @@ html[data-acd-theme="dark"] #searchContent {
   color: var(--acd-text-primary) !important;
 }
 
-/* Search Textfield Input */
 html[data-acd-theme="dark"] #searchContent input.textfield,
-html[data-acd-theme="dark"] #searchContent .textfield {
+html[data-acd-theme="dark"] #searchContent .textfield,
+html[data-acd-theme="dark"] input.textfield {
   background-color: var(--acd-bg-input) !important;
   background-image: none !important;
   color: var(--acd-text-primary) !important;
@@ -103,19 +130,18 @@ html[data-acd-theme="dark"] #searchContent .textfield {
 }
 
 html[data-acd-theme="dark"] #searchContent input.textfield::placeholder,
-html[data-acd-theme="dark"] #searchContent .textfield::placeholder {
+html[data-acd-theme="dark"] #searchContent .textfield::placeholder,
+html[data-acd-theme="dark"] input.textfield::placeholder {
   color: var(--acd-text-muted) !important;
 }
 
 html[data-acd-theme="dark"] #searchContent input.textfield:focus,
 html[data-acd-theme="dark"] #searchContent input.textfield:focus-visible,
-html[data-acd-theme="dark"] #searchContent .textfield:focus,
-html[data-acd-theme="dark"] #searchContent .textfield:focus-visible {
+html[data-acd-theme="dark"] input.textfield:focus {
   border-color: var(--acd-border-focus) !important;
   outline: 1px solid var(--acd-border-focus) !important;
 }
 
-/* Search Submit Button */
 html[data-acd-theme="dark"] #searchContent input#submit,
 html[data-acd-theme="dark"] #searchContent #submit.tabNotSel,
 html[data-acd-theme="dark"] #searchContent input[type="submit"] {
@@ -129,25 +155,12 @@ html[data-acd-theme="dark"] #searchContent input[type="submit"] {
 }
 
 html[data-acd-theme="dark"] #searchContent input#submit:hover,
-html[data-acd-theme="dark"] #searchContent #submit.tabNotSel:hover,
 html[data-acd-theme="dark"] #searchContent input[type="submit"]:hover {
   background-color: var(--acd-bg-active) !important;
   color: var(--acd-text-primary) !important;
   border-color: var(--acd-border) !important;
 }
 
-html[data-acd-theme="dark"] #searchContent input#submit:focus-visible,
-html[data-acd-theme="dark"] #searchContent #submit.tabNotSel:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -1px !important;
-}
-
-html[data-acd-theme="dark"] #searchContent input#submit:active,
-html[data-acd-theme="dark"] #searchContent #submit.tabNotSel:active {
-  background-color: var(--acd-accent-bg) !important;
-}
-
-/* Advanced Search Link */
 html[data-acd-theme="dark"] #searchContent a {
   color: var(--acd-accent) !important;
   text-decoration: none;
@@ -160,78 +173,170 @@ html[data-acd-theme="dark"] #searchContent a:focus-visible {
   text-decoration: underline;
 }
 
+/* ==========================================================================
+   3. Central AppLayout (Home Page Layout, Tabs, Create New Item)
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="AppLayout__homePageLayout--"],
+html[data-acd-theme="dark"] [class*=" AppLayout__homePageLayout--"] {
+  background-color: var(--acd-bg-main) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="AppLayout__tabViewLayout--"],
+html[data-acd-theme="dark"] [class*=" AppLayout__tabViewLayout--"],
+html[data-acd-theme="dark"] [class^="AppLayout__homepageTabView--"],
+html[data-acd-theme="dark"] [class*=" AppLayout__homepageTabView--"] {
+  background-color: var(--acd-bg-panel) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="AppLayout__homepageTopView--"],
+html[data-acd-theme="dark"] [class*=" AppLayout__homepageTopView--"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Create New Item Button */
+html[data-acd-theme="dark"] [class^="AppLayout__createNewItem--"],
+html[data-acd-theme="dark"] [class*=" AppLayout__createNewItem--"] {
+  background-color: var(--acd-accent-bg) !important;
+  color: var(--acd-accent) !important;
+  border: 1px solid var(--acd-accent-border) !important;
+  border-radius: 4px !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="AppLayout__createNewItem--"]:hover,
+html[data-acd-theme="dark"] [class*=" AppLayout__createNewItem--"]:hover {
+  background-color: rgba(110, 155, 255, 0.22) !important;
+  color: var(--acd-accent-hover) !important;
+}
+
+/* Timezone info */
+html[data-acd-theme="dark"] [class^="AppLayout__timeZoneInfo--"],
+html[data-acd-theme="dark"] [class*=" AppLayout__timeZoneInfo--"],
+html[data-acd-theme="dark"] [class^="AppLayout__zoneInfo--"],
+html[data-acd-theme="dark"] [class*=" AppLayout__zoneInfo--"] {
+  color: var(--acd-text-muted) !important;
+}
 
 /* ==========================================================================
-   3. Central Calendar - Week View
+   4. Central Calendar - Week View Grid
    ========================================================================== */
-
-/* Calendar Week Grid Container */
+html[data-acd-theme="dark"] [class^="Calendar__wrapper--"],
+html[data-acd-theme="dark"] [class*=" Calendar__wrapper--"],
 html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"],
 html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] {
   background: var(--acd-bg-panel) !important;
   background-color: var(--acd-bg-panel) !important;
-  background-image: none !important;
   border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
 }
 
-/* Calendar Week List Items / Day Columns */
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__listItem--"],
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__listItem--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__listItem--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__listItem--"] {
+html[data-acd-theme="dark"] [class^="Calendar__calendarHeading--"],
+html[data-acd-theme="dark"] [class*=" Calendar__calendarHeading--"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__listItem--"],
+html[data-acd-theme="dark"] [class*=" Calendar__listItem--"] {
   background-color: transparent !important;
-  background-image: none !important;
-  border-color: var(--acd-border) !important;
+  border-color: var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
   transition: background-color var(--acd-transition-fast);
 }
 
-/* Day Column Interactive Hover State */
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__listItem--"]:hover,
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__listItem--"]:hover,
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__listItem--"]:hover,
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__listItem--"]:hover {
+html[data-acd-theme="dark"] [class^="Calendar__listItem--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__listItem--"]:hover {
   background-color: var(--acd-bg-hover) !important;
 }
 
-/* Default Week Day Text */
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDay--"],
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDay--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDay--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDay--"] {
+html[data-acd-theme="dark"] [class^="Calendar__weekDay--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekDay--"] {
   color: var(--acd-text-secondary) !important;
 }
 
-/* Past Day Label (Muted Text) */
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDayPast--"],
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDayPast--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDayPast--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDayPast--"] {
+html[data-acd-theme="dark"] [class^="Calendar__weekDayPast--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekDayPast--"] {
   color: var(--acd-text-muted) !important;
 }
 
-/* Future Day Label (Secondary Text) */
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDayFuture--"],
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDayFuture--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDayFuture--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDayFuture--"] {
+html[data-acd-theme="dark"] [class^="Calendar__weekDayFuture--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekDayFuture--"] {
   color: var(--acd-text-secondary) !important;
 }
 
-/* Current Day Label (Accent Text) */
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDayCurrent--"],
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDayCurrent--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDayCurrent--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDayCurrent--"] {
+html[data-acd-theme="dark"] [class^="Calendar__weekDayCurrent--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekDayCurrent--"] {
   color: var(--acd-accent) !important;
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 
-/* Current Day Vertical Border Indicator */
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class^="Calendar__weekDayBorderCurrent--"],
-html[data-acd-theme="dark"] [class^="Calendar__weekViewContainer--"] [class*=" Calendar__weekDayBorderCurrent--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class^="Calendar__weekDayBorderCurrent--"],
-html[data-acd-theme="dark"] [class*=" Calendar__weekViewContainer--"] [class*=" Calendar__weekDayBorderCurrent--"] {
+html[data-acd-theme="dark"] [class^="Calendar__weekDayBorderCurrent--"],
+html[data-acd-theme="dark"] [class*=" Calendar__weekDayBorderCurrent--"] {
   border-color: var(--acd-accent) !important;
+}
+
+/* ==========================================================================
+   5. Central Reports Management (MainViewComponent, ReportTypePanel)
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="MainViewComponent__report-Type-tab--"],
+html[data-acd-theme="dark"] [class*=" MainViewComponent__report-Type-tab--"],
+html[data-acd-theme="dark"] [class^="ReportTypePanelComponent__report-Type-pnl--"],
+html[data-acd-theme="dark"] [class*=" ReportTypePanelComponent__report-Type-pnl--"] {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="MainViewComponent__report-Type-gridrow--"],
+html[data-acd-theme="dark"] [class*=" MainViewComponent__report-Type-gridrow--"] {
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="MainViewComponent__report-Type-gridrow--"]:hover,
+html[data-acd-theme="dark"] [class*=" MainViewComponent__report-Type-gridrow--"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] [class^="MainViewComponent__manager-Reports-lnk--"],
+html[data-acd-theme="dark"] [class*=" MainViewComponent__manager-Reports-lnk--"] {
+  color: var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] [class^="ReportTypePanelComponent__report-Type-hdng--"],
+html[data-acd-theme="dark"] [class*=" ReportTypePanelComponent__report-Type-hdng--"],
+html[data-acd-theme="dark"] [class^="ReportTypePanelComponent__report-Type-ttl--"],
+html[data-acd-theme="dark"] [class*=" ReportTypePanelComponent__report-Type-ttl--"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+html[data-acd-theme="dark"] [class^="ReportTypePanelComponent__report-Type-txt--"],
+html[data-acd-theme="dark"] [class*=" ReportTypePanelComponent__report-Type-txt--"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="ReportTypePanelComponent__report-Type-disabled--"],
+html[data-acd-theme="dark"] [class*=" ReportTypePanelComponent__report-Type-disabled--"] {
+  color: var(--acd-text-disabled) !important;
+  opacity: 0.5;
+}
+
+/* ==========================================================================
+   6. Help Menu Combobox
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="HelpMenu__helpCombobox--"],
+html[data-acd-theme="dark"] [class*=" HelpMenu__helpCombobox--"],
+html[data-acd-theme="dark"] .loginHelp {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="HelpMenu__helpCombobox--"]:hover,
+html[data-acd-theme="dark"] [class*=" HelpMenu__helpCombobox--"]:hover {
+  color: var(--acd-text-primary) !important;
 }

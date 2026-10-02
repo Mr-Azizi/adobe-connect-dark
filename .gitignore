@@ -1,0 +1,15 @@
+# Reference / Diagnostic Files (Read-Only)
+*.html
+!popup/popup.html
+*.json
+!manifest.json
+*.har
+*.log
+*.tmp
+node_modules/
+.DS_Store
+Thumbs.db
+reference/
+diagnostic/
+source-snapshots/
+scratch/

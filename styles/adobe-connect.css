@@ -1,10 +1,48 @@
 /**
  * Adobe Connect Dark Mode - Adobe Connect Specific Stylesheet (Layer 2)
- * Component-aware styling for Adobe Connect HTML5 / Web Client
+ * Source-Driven Component Styling for Adobe Connect 11.2.x HTML5 Web Client & Recording
+ * Authoritative references: recording-inner-dom.html, recording-inner-styles.json, outer launcher snapshots
  */
 
 /* ==========================================================================
-   1. Main Application Header & Top Toolbar
+   0. Spectrum Root & Application Shell
+   ========================================================================== */
+html[data-acd-theme="dark"] #container,
+html[data-acd-theme="dark"] .spectrum,
+html[data-acd-theme="dark"] .react-spectrum-provider,
+html[data-acd-theme="dark"] .spectrum--light,
+html[data-acd-theme="dark"] [class*="spectrum--light--"],
+html[data-acd-theme="dark"] [class^="client__spectrum--"],
+html[data-acd-theme="dark"] [class*=" client__spectrum--"] {
+  background-color: var(--acd-bg-main) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Main Viewport & Room Shell */
+html[data-acd-theme="dark"] [class^="recordingPlayer--"],
+html[data-acd-theme="dark"] [class*=" recordingPlayer--"],
+html[data-acd-theme="dark"] [class^="recordingPlayer--"] > [class^="body--"],
+html[data-acd-theme="dark"] [class*=" recordingPlayer--"] > [class*=" body--"],
+html[data-acd-theme="dark"] [class^="root--"],
+html[data-acd-theme="dark"] [class*=" root--"],
+html[data-acd-theme="dark"] #mainRoomRecording,
+html[data-acd-theme="dark"] [class^="mainRoomRecording--"],
+html[data-acd-theme="dark"] [class*=" mainRoomRecording--"],
+html[data-acd-theme="dark"] [class^="defaultStyle--"],
+html[data-acd-theme="dark"] [class*=" defaultStyle--"],
+html[data-acd-theme="dark"] #podAreaRecording,
+html[data-acd-theme="dark"] [class^="podAreaRecording--"],
+html[data-acd-theme="dark"] [class*=" podAreaRecording--"],
+html[data-acd-theme="dark"] [class^="podsNormal--"],
+html[data-acd-theme="dark"] [class*=" podsNormal--"],
+html[data-acd-theme="dark"] [class^="podsNormalTransparent--"],
+html[data-acd-theme="dark"] [class*=" podsNormalTransparent--"] {
+  background-color: var(--acd-bg-main) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* ==========================================================================
+   1. Live Meeting Top Toolbar & Header Bar
    ========================================================================== */
 html[data-acd-theme="dark"] header,
 html[data-acd-theme="dark"] .meeting-header,
@@ -21,7 +59,7 @@ html[data-acd-theme="dark"] [class*="top-toolbar"] {
   color: var(--acd-text-primary) !important;
 }
 
-/* Meeting Title & Information */
+/* Meeting Title & Room Info */
 html[data-acd-theme="dark"] .meeting-title,
 html[data-acd-theme="dark"] .room-title,
 html[data-acd-theme="dark"] [class*="meeting-name"],
@@ -83,7 +121,6 @@ html[data-acd-theme="dark"] .main-toolbar [role="button"]:active {
   border-radius: 4px;
 }
 
-/* Open / Expanded Popover Menu Attached to Toolbar Button */
 html[data-acd-theme="dark"] .main-toolbar button[aria-expanded="true"],
 html[data-acd-theme="dark"] .top-bar button[aria-expanded="true"],
 html[data-acd-theme="dark"] [class*="header-bar"] button[aria-expanded="true"],
@@ -93,7 +130,6 @@ html[data-acd-theme="dark"] [class*="action-button"][aria-expanded="true"] {
   border-radius: 4px;
 }
 
-/* Active State for Audio/Mic/Webcam Buttons */
 html[data-acd-theme="dark"] .main-toolbar button.active,
 html[data-acd-theme="dark"] .main-toolbar button[aria-pressed="true"],
 html[data-acd-theme="dark"] [class*="header-bar"] button.active,
@@ -113,9 +149,7 @@ html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"]:ho
   color: var(--acd-accent-hover) !important;
 }
 
-/* ==========================================================================
-   2. Layout Selector / Sidebar
-   ========================================================================== */
+/* Layout Selector Sidebar */
 html[data-acd-theme="dark"] .layout-bar,
 html[data-acd-theme="dark"] .layout-sidebar,
 html[data-acd-theme="dark"] [class*="layout-sidebar"],
@@ -145,8 +179,165 @@ html[data-acd-theme="dark"] .layout-item.selected {
 }
 
 /* ==========================================================================
-   3. Pod Containers & Frames (Generic Pod Structure)
+   2. Recording Player Event Index & Sidebar
    ========================================================================== */
+html[data-acd-theme="dark"] [class^="sidebar--"],
+html[data-acd-theme="dark"] [class*=" sidebar--"],
+html[data-acd-theme="dark"] [class^="eventIndex--"],
+html[data-acd-theme="dark"] [class*=" eventIndex--"],
+html[data-acd-theme="dark"] [class^="indexes--"],
+html[data-acd-theme="dark"] [class*=" indexes--"],
+html[data-acd-theme="dark"] [class^="eventTree--"],
+html[data-acd-theme="dark"] [class*=" eventTree--"] {
+  background-color: var(--acd-bg-secondary) !important;
+  color: var(--acd-text-primary) !important;
+  border-right: 1px solid var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="eventsIndexTitle--"],
+html[data-acd-theme="dark"] [class*=" eventsIndexTitle--"],
+html[data-acd-theme="dark"] [class^="heading--"],
+html[data-acd-theme="dark"] [class*=" heading--"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+html[data-acd-theme="dark"] [class^="hLine--"],
+html[data-acd-theme="dark"] [class*=" hLine--"] {
+  border-color: var(--acd-border-subtle) !important;
+  background-color: var(--acd-border-subtle) !important;
+  margin: 0 !important;
+}
+
+html[data-acd-theme="dark"] [class^="resizeHandle--"],
+html[data-acd-theme="dark"] [class*=" resizeHandle--"] {
+  background-color: var(--acd-border) !important;
+  transition: background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="resizeHandle--"]:hover,
+html[data-acd-theme="dark"] [class*=" resizeHandle--"]:hover {
+  background-color: var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] [class^="eventTime--"],
+html[data-acd-theme="dark"] [class*=" eventTime--"] {
+  color: var(--acd-text-muted) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-acd-theme="dark"] [class^="treeItem--"],
+html[data-acd-theme="dark"] [class*=" treeItem--"],
+html[data-acd-theme="dark"] .spectrum-TreeView-item {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="treeItem--"]:hover,
+html[data-acd-theme="dark"] [class*=" treeItem--"]:hover,
+html[data-acd-theme="dark"] .spectrum-TreeView-item:hover,
+html[data-acd-theme="dark"] .spectrum-TreeView-itemLink:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] .spectrum-TreeView-item.is-selected,
+html[data-acd-theme="dark"] .spectrum-TreeView-itemLink.is-selected {
+  background-color: var(--acd-bg-selected) !important;
+  color: var(--acd-accent) !important;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   3. Recording Playbar & Audio Volume Controls
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="footer--"],
+html[data-acd-theme="dark"] [class*=" footer--"],
+html[data-acd-theme="dark"] [class^="playBar--"],
+html[data-acd-theme="dark"] [class*=" playBar--"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-top: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="verticalBar--"],
+html[data-acd-theme="dark"] [class*=" verticalBar--"] {
+  border-left: 1px solid var(--acd-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="recordingButtonStyle--"],
+html[data-acd-theme="dark"] [class*=" recordingButtonStyle--"],
+html[data-acd-theme="dark"] [class^="menuBarIcon--"],
+html[data-acd-theme="dark"] [class*=" menuBarIcon--"],
+html[data-acd-theme="dark"] [class^="searchButton--"],
+html[data-acd-theme="dark"] [class*=" searchButton--"] {
+  color: var(--acd-text-secondary) !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  transition: color var(--acd-transition-fast), background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="recordingButtonStyle--"]:hover,
+html[data-acd-theme="dark"] [class*=" recordingButtonStyle--"]:hover,
+html[data-acd-theme="dark"] [class^="menuBarIcon--"]:hover,
+html[data-acd-theme="dark"] [class*=" menuBarIcon--"]:hover,
+html[data-acd-theme="dark"] [class^="searchButton--"]:hover,
+html[data-acd-theme="dark"] [class*=" searchButton--"]:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] [class^="progressBar--"],
+html[data-acd-theme="dark"] [class*=" progressBar--"] {
+  background-color: var(--acd-bg-input) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+}
+
+html[data-acd-theme="dark"] [class^="currentPlayFiller--"],
+html[data-acd-theme="dark"] [class*=" currentPlayFiller--"] {
+  background-color: var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] [class^="cutRangeFiller--"],
+html[data-acd-theme="dark"] [class*=" cutRangeFiller--"] {
+  background-color: rgba(248, 81, 73, 0.45) !important;
+}
+
+html[data-acd-theme="dark"] [class^="timeText--"],
+html[data-acd-theme="dark"] [class*=" timeText--"] {
+  color: var(--acd-text-secondary) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Recording Volume Popover & Slider */
+html[data-acd-theme="dark"] [class^="volumeSlider--"],
+html[data-acd-theme="dark"] [class*=" volumeSlider--"] {
+  background-color: var(--acd-bg-elevated) !important;
+  border: 1px solid var(--acd-border) !important;
+  box-shadow: var(--acd-shadow-lg) !important;
+  border-radius: 6px !important;
+}
+
+html[data-acd-theme="dark"] [class^="volumeBarHeaderText--"],
+html[data-acd-theme="dark"] [class*=" volumeBarHeaderText--"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+html[data-acd-theme="dark"] [class^="volumeValue--"],
+html[data-acd-theme="dark"] [class*=" volumeValue--"],
+html[data-acd-theme="dark"] [class^="volumeLabel--"],
+html[data-acd-theme="dark"] [class*=" volumeLabel--"] {
+  color: var(--acd-text-muted) !important;
+}
+
+/* ==========================================================================
+   4. Authoritative Pod Chrome (Containers, Primary Bar, Title, Controls)
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="pod--"],
+html[data-acd-theme="dark"] [class*=" pod--"],
+html[data-acd-theme="dark"] [id^="connectPod"],
 html[data-acd-theme="dark"] .pod,
 html[data-acd-theme="dark"] .ac-pod,
 html[data-acd-theme="dark"] .pod-container,
@@ -161,7 +352,9 @@ html[data-acd-theme="dark"] div[data-pod-type] {
   overflow: hidden;
 }
 
-/* Pod Header Bar */
+/* Pod Primary Bar / Header Bar (Overrides native light rgb(245,245,245) inline styles) */
+html[data-acd-theme="dark"] [class^="podPrimaryBar--"],
+html[data-acd-theme="dark"] [class*=" podPrimaryBar--"],
 html[data-acd-theme="dark"] .pod-header,
 html[data-acd-theme="dark"] .pod-title-bar,
 html[data-acd-theme="dark"] [class*="pod-header"],
@@ -170,30 +363,34 @@ html[data-acd-theme="dark"] .title-bar {
   background-color: var(--acd-bg-toolbar) !important;
   border-bottom: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
-  min-height: 36px;
+  min-height: 34px;
 }
 
 /* Pod Title Text */
+html[data-acd-theme="dark"] [class^="podTitle--"],
+html[data-acd-theme="dark"] [class*=" podTitle--"],
 html[data-acd-theme="dark"] .pod-title,
 html[data-acd-theme="dark"] [class*="pod-title"],
 html[data-acd-theme="dark"] .pod-header h2,
 html[data-acd-theme="dark"] .pod-header h3 {
   color: var(--acd-text-primary) !important;
-  font-size: 13px !important;
   font-weight: 600 !important;
+  font-size: 13px !important;
 }
 
-/* Pod Header Controls (Menu, Minimize, Maximize, Close, Pod Options) */
+/* Pod Controls & Action Buttons */
+html[data-acd-theme="dark"] [class^="podControls--"],
+html[data-acd-theme="dark"] [class*=" podControls--"],
+html[data-acd-theme="dark"] [class*="pod-controls"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="podControls--"] button,
+html[data-acd-theme="dark"] [class*=" podControls--"] button,
 html[data-acd-theme="dark"] .pod-header button,
 html[data-acd-theme="dark"] .pod-header [role="button"],
 html[data-acd-theme="dark"] [class*="pod-header"] button,
-html[data-acd-theme="dark"] [class*="pod-header"] [role="button"],
-html[data-acd-theme="dark"] [class*="pod_header"] button,
-html[data-acd-theme="dark"] [class*="pod_header"] [role="button"],
-html[data-acd-theme="dark"] [class*="pod-title-bar"] button,
-html[data-acd-theme="dark"] [class*="pod-title-bar"] [role="button"],
-html[data-acd-theme="dark"] [class*="pod-controls"] button,
-html[data-acd-theme="dark"] [class*="pod-controls"] [role="button"] {
+html[data-acd-theme="dark"] [class*="pod-controls"] button {
   color: var(--acd-text-muted) !important;
   background-color: transparent !important;
   border: 1px solid transparent !important;
@@ -201,88 +398,131 @@ html[data-acd-theme="dark"] [class*="pod-controls"] [role="button"] {
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
+html[data-acd-theme="dark"] [class^="podControls--"] button:hover,
+html[data-acd-theme="dark"] [class*=" podControls--"] button:hover,
 html[data-acd-theme="dark"] .pod-header button:hover,
-html[data-acd-theme="dark"] .pod-header [role="button"]:hover,
 html[data-acd-theme="dark"] [class*="pod-header"] button:hover,
-html[data-acd-theme="dark"] [class*="pod-header"] [role="button"]:hover,
-html[data-acd-theme="dark"] [class*="pod_header"] button:hover,
-html[data-acd-theme="dark"] [class*="pod_header"] [role="button"]:hover,
-html[data-acd-theme="dark"] [class*="pod-title-bar"] button:hover,
 html[data-acd-theme="dark"] [class*="pod-controls"] button:hover {
   color: var(--acd-text-primary) !important;
   background-color: var(--acd-bg-hover) !important;
 }
 
+html[data-acd-theme="dark"] [class^="podControls--"] button:focus-visible,
+html[data-acd-theme="dark"] [class*=" podControls--"] button:focus-visible,
 html[data-acd-theme="dark"] .pod-header button:focus-visible,
-html[data-acd-theme="dark"] .pod-header [role="button"]:focus-visible,
-html[data-acd-theme="dark"] [class*="pod-header"] button:focus-visible,
-html[data-acd-theme="dark"] [class*="pod-header"] [role="button"]:focus-visible,
-html[data-acd-theme="dark"] [class*="pod-controls"] button:focus-visible {
+html[data-acd-theme="dark"] [class*="pod-header"] button:focus-visible {
   color: var(--acd-text-primary) !important;
   background-color: var(--acd-bg-hover) !important;
   outline: 2px solid var(--acd-border-focus) !important;
   outline-offset: -1px !important;
 }
 
-html[data-acd-theme="dark"] .pod-header button:active,
-html[data-acd-theme="dark"] .pod-header [role="button"]:active,
-html[data-acd-theme="dark"] [class*="pod-header"] button:active,
-html[data-acd-theme="dark"] [class*="pod-header"] [role="button"]:active {
+html[data-acd-theme="dark"] [class^="podControls--"] button:active,
+html[data-acd-theme="dark"] [class*=" podControls--"] button:active,
+html[data-acd-theme="dark"] .pod-header button:active {
   color: var(--acd-text-primary) !important;
   background-color: var(--acd-bg-active) !important;
 }
 
-html[data-acd-theme="dark"] .pod-header button[aria-expanded="true"],
-html[data-acd-theme="dark"] .pod-header [role="button"][aria-expanded="true"],
-html[data-acd-theme="dark"] [class*="pod-header"] button[aria-expanded="true"],
-html[data-acd-theme="dark"] [class*="pod-header"] [role="button"][aria-expanded="true"] {
-  color: var(--acd-text-primary) !important;
-  background-color: var(--acd-bg-active) !important;
-}
-
-/* Pod Body / Content Area (Excludes sensitive presentation/canvas content) */
-html[data-acd-theme="dark"] .pod-body:not([data-acd-preserve="true"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *),
-html[data-acd-theme="dark"] .pod-content:not([data-acd-preserve="true"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *),
-html[data-acd-theme="dark"] [class*="pod-body"]:not([data-acd-preserve="true"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *),
-html[data-acd-theme="dark"] [class*="pod-content"]:not([data-acd-preserve="true"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *) {
+/* Pod Body / Content Area (Excludes sensitive presentation / canvas content) */
+html[data-acd-theme="dark"] [class^="podContent--"]:not([data-acd-preserve="true"]):not(.acd-preserve),
+html[data-acd-theme="dark"] [class*=" podContent--"]:not([data-acd-preserve="true"]):not(.acd-preserve),
+html[data-acd-theme="dark"] .pod-body:not([data-acd-preserve="true"]):not(.acd-preserve),
+html[data-acd-theme="dark"] .pod-content:not([data-acd-preserve="true"]):not(.acd-preserve),
+html[data-acd-theme="dark"] [class*="pod-body"]:not([data-acd-preserve="true"]):not(.acd-preserve),
+html[data-acd-theme="dark"] [class*="pod-content"]:not([data-acd-preserve="true"]):not(.acd-preserve) {
   background-color: var(--acd-bg-panel) !important;
   color: var(--acd-text-primary) !important;
 }
 
 /* ==========================================================================
-   4. Chat Pod
+   5. Chat Pod (Real Adobe Connect 11.2 Selectors & Fallbacks)
    ========================================================================== */
+html[data-acd-theme="dark"] #chatPod,
+html[data-acd-theme="dark"] [class^="chatPod--"],
+html[data-acd-theme="dark"] [class*=" chatPod--"],
 html[data-acd-theme="dark"] .chat-pod,
 html[data-acd-theme="dark"] [class*="chat-pod"],
-html[data-acd-theme="dark"] [class*="chat_pod"],
 html[data-acd-theme="dark"] [data-pod-type="chat"] {
   background-color: var(--acd-bg-panel) !important;
 }
 
-/* Chat Message List Area */
-html[data-acd-theme="dark"] .chat-messages,
-html[data-acd-theme="dark"] .chat-message-list,
-html[data-acd-theme="dark"] .chat-history,
-html[data-acd-theme="dark"] [class*="chat-messages"],
-html[data-acd-theme="dark"] [class*="chat-scroll"] {
-  background-color: var(--acd-bg-panel) !important;
+/* Chat Tab Bar */
+html[data-acd-theme="dark"] #chatTabBar,
+html[data-acd-theme="dark"] [class^="chatTabBar--"],
+html[data-acd-theme="dark"] [class*=" chatTabBar--"],
+html[data-acd-theme="dark"] #ChatTabList,
+html[data-acd-theme="dark"] [class^="ChatTabList--"],
+html[data-acd-theme="dark"] [class*=" ChatTabList--"],
+html[data-acd-theme="dark"] .chat-tabs,
+html[data-acd-theme="dark"] [class*="chat-tab-bar"] {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
 }
 
-/* Chat Messages - Real Adobe Connect CSS-Module DOM & Semantic Fallbacks */
+/* Chat Tab Items & Buttons */
+html[data-acd-theme="dark"] [class^="chatTab--"],
+html[data-acd-theme="dark"] [class*=" chatTab--"],
+html[data-acd-theme="dark"] [class^="chatTabButton--"],
+html[data-acd-theme="dark"] [class*=" chatTabButton--"],
+html[data-acd-theme="dark"] [class^="chatTabDisplayName--"],
+html[data-acd-theme="dark"] [class*=" chatTabDisplayName--"],
+html[data-acd-theme="dark"] .chat-tabs button,
+html[data-acd-theme="dark"] [class*="chat-tab-item"] {
+  color: var(--acd-text-secondary) !important;
+  transition: color var(--acd-transition-fast), background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="chatTab--"]:hover,
+html[data-acd-theme="dark"] [class*=" chatTab--"]:hover,
+html[data-acd-theme="dark"] [class^="chatTabButton--"]:hover,
+html[data-acd-theme="dark"] [class*=" chatTabButton--"]:hover,
+html[data-acd-theme="dark"] .chat-tabs button:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatTabDisplayNameSelected--"],
+html[data-acd-theme="dark"] [class*=" chatTabDisplayNameSelected--"],
+html[data-acd-theme="dark"] .chat-tabs button[aria-selected="true"],
+html[data-acd-theme="dark"] .chat-tabs button.active {
+  color: var(--acd-accent) !important;
+  font-weight: 600 !important;
+}
+
+/* Chat Content Area & Message List */
+html[data-acd-theme="dark"] [class^="chatContentAreaContainer--"],
+html[data-acd-theme="dark"] [class*=" chatContentAreaContainer--"],
+html[data-acd-theme="dark"] [class^="chatContentArea--"],
+html[data-acd-theme="dark"] [class*=" chatContentArea--"],
+html[data-acd-theme="dark"] .chat-messages,
+html[data-acd-theme="dark"] .chat-history {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatContentAreaWithNoMessage--"],
+html[data-acd-theme="dark"] [class*=" chatContentAreaWithNoMessage--"],
+html[data-acd-theme="dark"] [class^="chatHistoryCleared--"],
+html[data-acd-theme="dark"] [class*=" chatHistoryCleared--"],
+html[data-acd-theme="dark"] [class^="contentAreaDate--"],
+html[data-acd-theme="dark"] [class*=" contentAreaDate--"] {
+  color: var(--acd-text-muted) !important;
+}
+
+/* Real Chat Messages */
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"],
 html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"],
 html[data-acd-theme="dark"] .chat-message,
 html[data-acd-theme="dark"] .message-item,
-html[data-acd-theme="dark"] [class*="chat-message"],
-html[data-acd-theme="dark"] [class*="chat-item"] {
+html[data-acd-theme="dark"] [class*="chat-message"] {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border-subtle) !important;
-  border-radius: 4px;
+  border-radius: 4px !important;
   transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
-/* Chat Message Hover State */
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:hover,
 html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]:hover,
 html[data-acd-theme="dark"] .chat-message:hover {
@@ -290,7 +530,6 @@ html[data-acd-theme="dark"] .chat-message:hover {
   border-color: var(--acd-border) !important;
 }
 
-/* Chat Message Focus / Selected States (if supported) */
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:focus-visible,
 html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]:focus-visible {
   outline: 2px solid var(--acd-border-focus) !important;
@@ -303,7 +542,7 @@ html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]
   border-left: 2px solid var(--acd-accent) !important;
 }
 
-/* Chat Message Sender - Real DOM & Fallbacks */
+/* Message Sender */
 html[data-acd-theme="dark"] [class^="chatMessageSender--"],
 html[data-acd-theme="dark"] [class*=" chatMessageSender--"],
 html[data-acd-theme="dark"] .chat-user-name,
@@ -313,541 +552,349 @@ html[data-acd-theme="dark"] [class*="chat-sender"] {
   font-weight: 600 !important;
 }
 
-/* Chat Message Content Text - Real DOM */
+/* Message Content Text */
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContent--"],
 html[data-acd-theme="dark"] [class*=" chatIndividualMessageContent--"] {
   color: var(--acd-text-primary) !important;
 }
 
-/* Chat Message Timestamps - Real DOM & Fallbacks */
+/* Message Timestamps */
 html[data-acd-theme="dark"] [class^="chatMessageTime--"],
 html[data-acd-theme="dark"] [class*=" chatMessageTime--"],
 html[data-acd-theme="dark"] .chat-time,
 html[data-acd-theme="dark"] .message-time,
-html[data-acd-theme="dark"] [class*="chat-time"],
-html[data-acd-theme="dark"] [class*="timestamp"] {
+html[data-acd-theme="dark"] [class*="chat-time"] {
   color: var(--acd-text-muted) !important;
 }
 
-/* Chat Input Container */
-html[data-acd-theme="dark"] .chat-input-container,
-html[data-acd-theme="dark"] .chat-input-wrapper,
-html[data-acd-theme="dark"] [class*="chat-input"] {
+/* Chat Compose / Input Area */
+html[data-acd-theme="dark"] [class^="chatComposeArea--"],
+html[data-acd-theme="dark"] [class*=" chatComposeArea--"],
+html[data-acd-theme="dark"] .chat-input-container {
   background-color: var(--acd-bg-secondary) !important;
   border-top: 1px solid var(--acd-border) !important;
 }
 
-/* Chat Input Field */
+html[data-acd-theme="dark"] [class^="childContainerDiv--"],
+html[data-acd-theme="dark"] [class*=" childContainerDiv--"],
+html[data-acd-theme="dark"] [class^="typingArea--"],
+html[data-acd-theme="dark"] [class*=" typingArea--"],
 html[data-acd-theme="dark"] .chat-input-container textarea,
-html[data-acd-theme="dark"] .chat-input-container input,
-html[data-acd-theme="dark"] [class*="chat-input"] textarea,
-html[data-acd-theme="dark"] [class*="chat-input"] input {
+html[data-acd-theme="dark"] .chat-input-container input {
   background-color: var(--acd-bg-input) !important;
   color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border) !important;
 }
 
-html[data-acd-theme="dark"] .chat-input-container textarea:focus,
-html[data-acd-theme="dark"] [class*="chat-input"] textarea:focus {
+html[data-acd-theme="dark"] [class^="childContainerDivSelected--"],
+html[data-acd-theme="dark"] [class*=" childContainerDivSelected--"],
+html[data-acd-theme="dark"] [class^="typingAreaHasText--"],
+html[data-acd-theme="dark"] [class*=" typingAreaHasText--"],
+html[data-acd-theme="dark"] .chat-input-container textarea:focus {
   border-color: var(--acd-border-focus) !important;
 }
 
-/* Chat Tabs (Everyone / Private) */
-html[data-acd-theme="dark"] .chat-tabs,
-html[data-acd-theme="dark"] [class*="chat-tab-bar"],
-html[data-acd-theme="dark"] [class*="chat-tab-container"] {
-  background-color: var(--acd-bg-toolbar) !important;
-  border-bottom: 1px solid var(--acd-border) !important;
-}
-
-html[data-acd-theme="dark"] .chat-tabs button,
-html[data-acd-theme="dark"] .chat-tabs [role="tab"],
-html[data-acd-theme="dark"] [class*="chat-tab-item"],
-html[data-acd-theme="dark"] [class*="chat-tab"] button {
-  background-color: transparent !important;
-  color: var(--acd-text-secondary) !important;
-  border: none !important;
-  border-bottom: 2px solid transparent !important;
-  padding: 6px 12px !important;
-  transition: color var(--acd-transition-fast), background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
-}
-
-html[data-acd-theme="dark"] .chat-tabs button:hover,
-html[data-acd-theme="dark"] .chat-tabs [role="tab"]:hover,
-html[data-acd-theme="dark"] [class*="chat-tab-item"]:hover,
-html[data-acd-theme="dark"] [class*="chat-tab"] button:hover {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] .chat-tabs button:focus-visible,
-html[data-acd-theme="dark"] .chat-tabs [role="tab"]:focus-visible,
-html[data-acd-theme="dark"] [class*="chat-tab-item"]:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -2px !important;
-  color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] .chat-tabs button:active,
-html[data-acd-theme="dark"] .chat-tabs [role="tab"]:active {
-  background-color: var(--acd-bg-active) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] .chat-tabs button[aria-selected="true"],
-html[data-acd-theme="dark"] .chat-tabs [role="tab"][aria-selected="true"],
-html[data-acd-theme="dark"] .chat-tabs button.active,
-html[data-acd-theme="dark"] .chat-tabs [role="tab"].active,
-html[data-acd-theme="dark"] [class*="chat-tab-item"].active,
-html[data-acd-theme="dark"] [class*="chat-tab-item"][aria-selected="true"] {
-  background-color: var(--acd-bg-panel) !important;
+/* Send Buttons */
+html[data-acd-theme="dark"] [class^="sendButton--"],
+html[data-acd-theme="dark"] [class*=" sendButton--"],
+html[data-acd-theme="dark"] [class^="secondSendButton--"],
+html[data-acd-theme="dark"] [class*=" secondSendButton--"],
+html[data-acd-theme="dark"] [class^="chatSendButtonIcon--"],
+html[data-acd-theme="dark"] [class*=" chatSendButtonIcon--"] {
   color: var(--acd-accent) !important;
-  border-bottom: 2px solid var(--acd-accent) !important;
-  font-weight: 600 !important;
+  background-color: transparent !important;
+}
+
+html[data-acd-theme="dark"] [class^="sendButton--"]:hover,
+html[data-acd-theme="dark"] [class*=" sendButton--"]:hover,
+html[data-acd-theme="dark"] [class^="secondSendButton--"]:hover,
+html[data-acd-theme="dark"] [class*=" secondSendButton--"]:hover {
+  color: var(--acd-accent-hover) !important;
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* Unread Message Notification Badges */
+html[data-acd-theme="dark"] [class^="newMessageNotificationContiner--"],
+html[data-acd-theme="dark"] [class*=" newMessageNotificationContiner--"],
+html[data-acd-theme="dark"] [class^="chatNewMessageNotification--"],
+html[data-acd-theme="dark"] [class*=" chatNewMessageNotification--"],
+html[data-acd-theme="dark"] [class^="dropDownTabNewMessageNotification--"],
+html[data-acd-theme="dark"] [class*=" dropDownTabNewMessageNotification--"] {
+  background-color: var(--acd-accent) !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+}
+
+/* Who is typing indicator */
+html[data-acd-theme="dark"] [class^="chatWhoIsTypingArea--"],
+html[data-acd-theme="dark"] [class*=" chatWhoIsTypingArea--"],
+html[data-acd-theme="dark"] [class^="chatWhoIsTypingAreaContainer--"],
+html[data-acd-theme="dark"] [class*=" chatWhoIsTypingAreaContainer--"] {
+  color: var(--acd-text-muted) !important;
+  background-color: transparent !important;
 }
 
 /* ==========================================================================
-   5. Attendees / Participants Pod
+   6. Attendees / Participants Pod (Real Adobe Connect 11.2 Accordion & Grid)
    ========================================================================== */
+html[data-acd-theme="dark"] #attendeePodContainerDiv,
+html[data-acd-theme="dark"] [class^="attendee---"],
+html[data-acd-theme="dark"] [class*=" attendee---"],
+html[data-acd-theme="dark"] [class^="tabControllerDiv--"],
+html[data-acd-theme="dark"] [class*=" tabControllerDiv--"],
+html[data-acd-theme="dark"] [class^="connectAccordion--"],
+html[data-acd-theme="dark"] [class*=" connectAccordion--"],
+html[data-acd-theme="dark"] .ReactVirtualized__Grid,
+html[data-acd-theme="dark"] .ReactVirtualized__Grid__innerScrollContainer,
 html[data-acd-theme="dark"] .attendees-pod,
-html[data-acd-theme="dark"] .participant-pod,
 html[data-acd-theme="dark"] [class*="attendee-pod"],
-html[data-acd-theme="dark"] [data-pod-type="attendee"],
-html[data-acd-theme="dark"] [data-pod-type="participants"] {
+html[data-acd-theme="dark"] [data-pod-type="attendee"] {
   background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
 }
 
-/* 5.1 Real Attendees Group Headers (CSS-module hashed) & Semantic Fallbacks */
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]),
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]),
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class^="customAttendeeGroupText--"]),
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class^="customAttendeeGroupText--"]),
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]),
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]),
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"],
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"],
-html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="group-header"],
-html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="role-header"],
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader {
+/* Attendee Group Headers (Hosts, Presenters, Participants) */
+html[data-acd-theme="dark"] [class^="headerContainer--"],
+html[data-acd-theme="dark"] [class*=" headerContainer--"],
+html[data-acd-theme="dark"] [class^="customAccordionHeader--"],
+html[data-acd-theme="dark"] [class*=" customAccordionHeader--"] {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
   font-weight: 600 !important;
   border-top: 1px solid var(--acd-border-subtle) !important;
   border-bottom: 1px solid var(--acd-border-subtle) !important;
-  border-left: 3px solid transparent !important;
   cursor: pointer;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast), border-color var(--acd-transition-fast);
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
-/* Hover: Overrides Adobe Connect native light hover background */
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):hover,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):hover,
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class^="customAttendeeGroupText--"]):hover,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class^="customAttendeeGroupText--"]):hover,
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]):hover,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]):hover,
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"]:hover,
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"]:hover,
-html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="group-header"]:hover,
-html[data-acd-theme="dark"] [class*="attendee-pod"] [class*="role-header"]:hover,
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover {
+html[data-acd-theme="dark"] [class^="headerContainer--"]:hover,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:hover,
+html[data-acd-theme="dark"] [class^="customAccordionHeader--"]:hover,
+html[data-acd-theme="dark"] [class*=" customAccordionHeader--"]:hover {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
-  border-top-color: var(--acd-border) !important;
-  border-bottom-color: var(--acd-border) !important;
 }
 
-/* Focus and Keyboard Focus for Group Headers */
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):focus,
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):focus-visible,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):focus,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):focus-visible,
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]):focus,
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]):focus-visible,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]):focus,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]):focus-visible,
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"]:focus-visible,
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"]:focus-visible {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
+html[data-acd-theme="dark"] [class^="headerContainer--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:focus-visible,
+html[data-acd-theme="dark"] [class^="customAccordionHeader--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" customAccordionHeader--"]:focus-visible {
   outline: 2px solid var(--acd-border-focus) !important;
   outline-offset: -2px !important;
 }
 
-/* Active / Pressed State */
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):active,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):active,
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([role="rowheader"]):active,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([role="rowheader"]):active,
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"]:active,
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"]:active {
+html[data-acd-theme="dark"] [class^="headerContainer--"]:active,
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:active {
   background-color: var(--acd-bg-active) !important;
-  color: var(--acd-text-primary) !important;
 }
 
-/* Open / Expanded State */
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="headerChevronIconIsOpen--"]),
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="headerChevronIconIsOpen--"]),
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"])[aria-expanded="true"],
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"])[aria-expanded="true"],
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"][aria-expanded="true"],
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"][aria-expanded="true"] {
-  background-color: var(--acd-bg-secondary) !important;
+html[data-acd-theme="dark"] [class^="customAttendeeGroupText--"],
+html[data-acd-theme="dark"] [class*=" customAttendeeGroupText--"] {
   color: var(--acd-text-primary) !important;
-  border-left: 3px solid var(--acd-accent) !important;
+  font-weight: 600 !important;
 }
 
-/* Open / Expanded State on Hover */
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="headerChevronIconIsOpen--"]):hover,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="headerChevronIconIsOpen--"]):hover,
-html[data-acd-theme="dark"] [class^="headerContainer--"]:has([class*="customAttendeeGroupText--"])[aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"])[aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] .attendees-pod [class*="group-header"][aria-expanded="true"]:hover,
-html[data-acd-theme="dark"] .attendees-pod [class*="role-header"][aria-expanded="true"]:hover {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-/* Chevron within Real Attendee Group Header */
-html[data-acd-theme="dark"] [class^="headerContainer--"] [class^="headerChevronIcon--"],
-html[data-acd-theme="dark"] [class^="headerContainer--"] [class*=" headerChevronIcon--"],
-html[data-acd-theme="dark"] [class*=" headerContainer--"] [class^="headerChevronIcon--"],
-html[data-acd-theme="dark"] [class*=" headerContainer--"] [class*=" headerChevronIcon--"],
-html[data-acd-theme="dark"] [class*="group-header"] [class*="chevron"],
-html[data-acd-theme="dark"] [class*="group-header"] [class*="indicator"] {
+html[data-acd-theme="dark"] [class^="headerChevronIcon--"],
+html[data-acd-theme="dark"] [class*=" headerChevronIcon--"] {
   color: var(--acd-text-secondary) !important;
   fill: currentColor !important;
   transition: color var(--acd-transition-fast), transform var(--acd-transition-fast);
 }
 
-html[data-acd-theme="dark"] [class^="headerContainer--"] [class^="headerChevronIcon--"] path,
-html[data-acd-theme="dark"] [class^="headerContainer--"] [class*=" headerChevronIcon--"] path,
-html[data-acd-theme="dark"] [class*=" headerContainer--"] [class^="headerChevronIcon--"] path,
-html[data-acd-theme="dark"] [class*=" headerContainer--"] [class*=" headerChevronIcon--"] path {
-  fill: currentColor !important;
-}
-
-/* Chevron Hover */
 html[data-acd-theme="dark"] [class^="headerContainer--"]:hover [class^="headerChevronIcon--"],
-html[data-acd-theme="dark"] [class^="headerContainer--"]:hover [class*=" headerChevronIcon--"],
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:hover [class^="headerChevronIcon--"],
-html[data-acd-theme="dark"] [class*=" headerContainer--"]:hover [class*=" headerChevronIcon--"],
-html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="chevron"],
-html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="indicator"] {
+html[data-acd-theme="dark"] [class*=" headerContainer--"]:hover [class*=" headerChevronIcon--"] {
   color: var(--acd-text-primary) !important;
-  fill: currentColor !important;
 }
 
-/* Attendee Group Text Container & Span (e.g. Hosts (1)) */
-html[data-acd-theme="dark"] [class^="customAttendeeGroupText--"],
-html[data-acd-theme="dark"] [class*=" customAttendeeGroupText--"],
-html[data-acd-theme="dark"] [class^="headerContainer--"] [class^="customAttendeeGroupText--"],
-html[data-acd-theme="dark"] [class*=" headerContainer--"] [class^="customAttendeeGroupText--"],
-html[data-acd-theme="dark"] [class^="headerContainer--"] [class*=" customAttendeeGroupText--"],
-html[data-acd-theme="dark"] [class*=" headerContainer--"] [class*=" customAttendeeGroupText--"] {
-  color: inherit !important;
-  background-color: transparent !important;
-}
-
-html[data-acd-theme="dark"] [class^="customAttendeeGroupText--"] span,
-html[data-acd-theme="dark"] [class*=" customAttendeeGroupText--"] span,
-html[data-acd-theme="dark"] [class*="group-header"] span {
-  color: inherit !important;
-  background-color: transparent !important;
-}
-
-/* User Count Badges (Fallback for pods using separate badge elements) */
-html[data-acd-theme="dark"] .user-count,
-html[data-acd-theme="dark"] [class*="count-badge"],
-html[data-acd-theme="dark"] [class*="role-count"],
-html[data-acd-theme="dark"] [class*="user-count"],
-html[data-acd-theme="dark"] [class*="attendee-count"] {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-secondary) !important;
-  border: 1px solid var(--acd-border-subtle) !important;
-  border-radius: 10px !important;
-  padding: 1px 7px !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
-}
-
-html[data-acd-theme="dark"] [class*="group-header"]:hover .user-count,
-html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="count-badge"],
-html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="role-count"],
-html[data-acd-theme="dark"] [class*="group-header"]:hover [class*="user-count"] {
-  background-color: var(--acd-bg-active) !important;
-  color: var(--acd-text-primary) !important;
-  border-color: var(--acd-border) !important;
-}
-
-/* 5.2 Individual Attendee Rows */
+/* Attendee Rows & Virtualized Items */
+html[data-acd-theme="dark"] [class^="attendeeItemContainer1--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer1--"],
+html[data-acd-theme="dark"] [class^="attendeeItemContainer2--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2--"],
+html[data-acd-theme="dark"] [class^="attendeeItem--"],
+html[data-acd-theme="dark"] [class*=" attendeeItem--"],
+html[data-acd-theme="dark"] [class^="userListItem--"],
+html[data-acd-theme="dark"] [class*=" userListItem--"],
 html[data-acd-theme="dark"] .attendee-item,
-html[data-acd-theme="dark"] .attendee-row,
-html[data-acd-theme="dark"] .user-row,
 html[data-acd-theme="dark"] [class*="attendee-item"],
-html[data-acd-theme="dark"] [class*="attendee-row"],
-html[data-acd-theme="dark"] [class*="participant-item"],
-html[data-acd-theme="dark"] [class*="participant-row"],
-html[data-acd-theme="dark"] [class*="user-row"],
-html[data-acd-theme="dark"] [class*="attendee-list-item"],
-html[data-acd-theme="dark"] [class*="attendee-entry"] {
+html[data-acd-theme="dark"] [class*="attendee-row"] {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
-  border-left: 3px solid transparent !important;
-  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
-}
-
-html[data-acd-theme="dark"] .attendee-item:hover,
-html[data-acd-theme="dark"] .attendee-row:hover,
-html[data-acd-theme="dark"] .user-row:hover,
-html[data-acd-theme="dark"] [class*="attendee-item"]:hover,
-html[data-acd-theme="dark"] [class*="attendee-row"]:hover,
-html[data-acd-theme="dark"] [class*="participant-item"]:hover,
-html[data-acd-theme="dark"] [class*="participant-row"]:hover,
-html[data-acd-theme="dark"] [class*="user-row"]:hover,
-html[data-acd-theme="dark"] [class*="attendee-list-item"]:hover,
-html[data-acd-theme="dark"] [class*="attendee-entry"]:hover {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] .attendee-item:focus,
-html[data-acd-theme="dark"] .attendee-item:focus-visible,
-html[data-acd-theme="dark"] .attendee-row:focus,
-html[data-acd-theme="dark"] .attendee-row:focus-visible,
-html[data-acd-theme="dark"] [class*="attendee-item"]:focus,
-html[data-acd-theme="dark"] [class*="attendee-item"]:focus-visible,
-html[data-acd-theme="dark"] [class*="attendee-row"]:focus,
-html[data-acd-theme="dark"] [class*="attendee-row"]:focus-visible {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -2px !important;
-}
-
-html[data-acd-theme="dark"] .attendee-item:active,
-html[data-acd-theme="dark"] .attendee-row:active,
-html[data-acd-theme="dark"] [class*="attendee-item"]:active,
-html[data-acd-theme="dark"] [class*="attendee-row"]:active {
-  background-color: var(--acd-bg-active) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-/* Selected Attendee Row */
-html[data-acd-theme="dark"] .attendee-item[aria-selected="true"],
-html[data-acd-theme="dark"] .attendee-row[aria-selected="true"],
-html[data-acd-theme="dark"] [class*="attendee-item"][aria-selected="true"],
-html[data-acd-theme="dark"] [class*="attendee-row"][aria-selected="true"],
-html[data-acd-theme="dark"] .attendee-item.selected,
-html[data-acd-theme="dark"] .attendee-row.selected,
-html[data-acd-theme="dark"] [class*="attendee-item"].selected,
-html[data-acd-theme="dark"] [class*="attendee-row"].selected,
-html[data-acd-theme="dark"] [class*="attendee-item"].is-selected,
-html[data-acd-theme="dark"] [class*="attendee-row"].is-selected {
-  background-color: var(--acd-bg-selected) !important;
-  color: var(--acd-text-primary) !important;
-  border-left: 3px solid var(--acd-accent) !important;
-}
-
-/* Action buttons inside attendee rows (Mute, 3-dots menu, permissions) */
-html[data-acd-theme="dark"] [class*="attendee-item"] button,
-html[data-acd-theme="dark"] [class*="attendee-row"] button,
-html[data-acd-theme="dark"] [class*="attendee-item"] [role="button"],
-html[data-acd-theme="dark"] [class*="attendee-row"] [role="button"] {
-  background-color: transparent !important;
-  color: var(--acd-text-secondary) !important;
-  border: none !important;
-  border-radius: 4px;
-}
-
-html[data-acd-theme="dark"] [class*="attendee-item"] button:hover,
-html[data-acd-theme="dark"] [class*="attendee-row"] button:hover,
-html[data-acd-theme="dark"] [class*="attendee-item"] [role="button"]:hover,
-html[data-acd-theme="dark"] [class*="attendee-row"] [role="button"]:hover {
-  background-color: var(--acd-bg-active) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-/* Search Attendees Box */
-html[data-acd-theme="dark"] .attendee-search,
-html[data-acd-theme="dark"] [class*="attendee-search"] input {
-  background-color: var(--acd-bg-input) !important;
-  color: var(--acd-text-primary) !important;
-  border: 1px solid var(--acd-border) !important;
-}
-
-html[data-acd-theme="dark"] .attendee-search:focus-within,
-html[data-acd-theme="dark"] [class*="attendee-search"] input:focus {
-  border-color: var(--acd-border-focus) !important;
-}
-
-/* ==========================================================================
-   6. Notes Pod
-   ========================================================================== */
-html[data-acd-theme="dark"] .notes-pod,
-html[data-acd-theme="dark"] [class*="notes-pod"],
-html[data-acd-theme="dark"] [data-pod-type="notes"] {
-  background-color: var(--acd-bg-panel) !important;
-}
-
-/* Notes Formatting Toolbar */
-html[data-acd-theme="dark"] .notes-toolbar,
-html[data-acd-theme="dark"] [class*="notes-toolbar"],
-html[data-acd-theme="dark"] .ql-toolbar {
-  background-color: var(--acd-bg-secondary) !important;
-  border-bottom: 1px solid var(--acd-border) !important;
-}
-
-html[data-acd-theme="dark"] .notes-toolbar button,
-html[data-acd-theme="dark"] [class*="notes-toolbar"] button,
-html[data-acd-theme="dark"] .ql-toolbar button {
-  color: var(--acd-text-secondary) !important;
-  border-radius: 3px;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
-}
-
-html[data-acd-theme="dark"] .notes-toolbar button:hover,
-html[data-acd-theme="dark"] [class*="notes-toolbar"] button:hover,
-html[data-acd-theme="dark"] .ql-toolbar button:hover {
-  color: var(--acd-text-primary) !important;
-  background-color: var(--acd-bg-hover) !important;
-}
-
-html[data-acd-theme="dark"] .notes-toolbar button:focus-visible,
-html[data-acd-theme="dark"] [class*="notes-toolbar"] button:focus-visible,
-html[data-acd-theme="dark"] .ql-toolbar button:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -1px !important;
-}
-
-html[data-acd-theme="dark"] .notes-toolbar button:active,
-html[data-acd-theme="dark"] [class*="notes-toolbar"] button:active,
-html[data-acd-theme="dark"] .ql-toolbar button:active {
-  background-color: var(--acd-bg-active) !important;
-}
-
-html[data-acd-theme="dark"] .notes-toolbar button.active,
-html[data-acd-theme="dark"] .notes-toolbar button[aria-pressed="true"],
-html[data-acd-theme="dark"] .ql-toolbar button.ql-active {
-  background-color: var(--acd-accent-bg) !important;
-  color: var(--acd-accent) !important;
-}
-
-/* Notes Text Editor Area */
-html[data-acd-theme="dark"] .note-editor,
-html[data-acd-theme="dark"] .notes-content,
-html[data-acd-theme="dark"] .ql-editor,
-html[data-acd-theme="dark"] [class*="note-editor"],
-html[data-acd-theme="dark"] [class*="notes-content"] {
-  background-color: var(--acd-bg-panel) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-/* ==========================================================================
-   7. Q&A (Questions & Answers) Pod
-   ========================================================================== */
-html[data-acd-theme="dark"] .qna-pod,
-html[data-acd-theme="dark"] .qa-pod,
-html[data-acd-theme="dark"] [class*="qna-pod"],
-html[data-acd-theme="dark"] [class*="qa-pod"] {
-  background-color: var(--acd-bg-panel) !important;
-}
-
-html[data-acd-theme="dark"] .qna-question-item,
-html[data-acd-theme="dark"] [class*="question-item"] {
-  background-color: var(--acd-bg-secondary) !important;
-  border: 1px solid var(--acd-border) !important;
-  border-radius: 4px;
   transition: background-color var(--acd-transition-fast);
 }
 
-html[data-acd-theme="dark"] .qna-question-item:hover,
-html[data-acd-theme="dark"] [class*="question-item"]:hover {
+html[data-acd-theme="dark"] [class^="attendeeItemContainer1--"]:hover,
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer1--"]:hover,
+html[data-acd-theme="dark"] [class^="attendeeItemContainer2--"]:hover,
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2--"]:hover,
+html[data-acd-theme="dark"] [class^="attendeeItem--"]:hover,
+html[data-acd-theme="dark"] [class*=" attendeeItem--"]:hover,
+html[data-acd-theme="dark"] [class^="userListItem--"]:hover,
+html[data-acd-theme="dark"] [class*=" userListItem--"]:hover,
+html[data-acd-theme="dark"] .attendee-item:hover,
+html[data-acd-theme="dark"] [class*="attendee-item"]:hover {
   background-color: var(--acd-bg-hover) !important;
 }
 
-html[data-acd-theme="dark"] .qna-answer-item,
-html[data-acd-theme="dark"] [class*="answer-item"] {
-  background-color: var(--acd-bg-panel) !important;
-  border-left: 2px solid var(--acd-accent) !important;
-}
-
-html[data-acd-theme="dark"] .qna-pod button,
-html[data-acd-theme="dark"] .qa-pod button,
-html[data-acd-theme="dark"] [class*="qna-pod"] button,
-html[data-acd-theme="dark"] [class*="qa-pod"] button {
-  color: var(--acd-text-secondary) !important;
-}
-
-html[data-acd-theme="dark"] .qna-pod button:hover,
-html[data-acd-theme="dark"] .qa-pod button:hover,
-html[data-acd-theme="dark"] [class*="qna-pod"] button:hover,
-html[data-acd-theme="dark"] [class*="qa-pod"] button:hover {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] .qna-pod button:focus-visible,
-html[data-acd-theme="dark"] .qa-pod button:focus-visible {
+html[data-acd-theme="dark"] [class^="attendeeItem--"]:focus,
+html[data-acd-theme="dark"] [class*=" attendeeItem--"]:focus,
+html[data-acd-theme="dark"] [class^="attendeeItem--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" attendeeItem--"]:focus-visible {
   outline: 2px solid var(--acd-border-focus) !important;
   outline-offset: -1px !important;
 }
 
-/* ==========================================================================
-   8. Poll Pod
-   ========================================================================== */
-html[data-acd-theme="dark"] .poll-pod,
-html[data-acd-theme="dark"] [class*="poll-pod"],
-html[data-acd-theme="dark"] [data-pod-type="poll"] {
-  background-color: var(--acd-bg-panel) !important;
+html[data-acd-theme="dark"] [class^="attendeeItem--"][aria-selected="true"],
+html[data-acd-theme="dark"] [class*=" attendeeItem--"][aria-selected="true"],
+html[data-acd-theme="dark"] [class^="attendeeItem--"].is-selected,
+html[data-acd-theme="dark"] [class*=" attendeeItem--"].is-selected {
+  background-color: var(--acd-bg-selected) !important;
+  border-left: 3px solid var(--acd-accent) !important;
 }
 
-html[data-acd-theme="dark"] .poll-question,
-html[data-acd-theme="dark"] [class*="poll-question"] {
+/* User Name */
+html[data-acd-theme="dark"] [class^="attendeeUserName--"],
+html[data-acd-theme="dark"] [class*=" attendeeUserName--"],
+html[data-acd-theme="dark"] [class^="attendeeUserNameDiv--"],
+html[data-acd-theme="dark"] [class*=" attendeeUserNameDiv--"],
+html[data-acd-theme="dark"] [class^="attendeeUserNameInnerDiv--"],
+html[data-acd-theme="dark"] [class*=" attendeeUserNameInnerDiv--"],
+html[data-acd-theme="dark"] [class^="userName--"],
+html[data-acd-theme="dark"] [class*=" userName--"] {
   color: var(--acd-text-primary) !important;
-  font-weight: 600;
 }
 
-html[data-acd-theme="dark"] .poll-option,
-html[data-acd-theme="dark"] [class*="poll-option"],
-html[data-acd-theme="dark"] [class*="poll-answer"] {
+/* Role & Status Icons */
+html[data-acd-theme="dark"] [class^="attendeeItemLeftIconContainer--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemLeftIconContainer--"],
+html[data-acd-theme="dark"] [class^="attendeeItemRightIcon--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemRightIcon--"],
+html[data-acd-theme="dark"] [class^="attendeeItemRightIconContainer--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemRightIconContainer--"],
+html[data-acd-theme="dark"] [class^="userStatusMenuItemIcon--"],
+html[data-acd-theme="dark"] [class*=" userStatusMenuItemIcon--"] {
   color: var(--acd-text-secondary) !important;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+  fill: currentColor !important;
 }
 
-html[data-acd-theme="dark"] .poll-option:hover,
-html[data-acd-theme="dark"] [class*="poll-option"]:hover,
-html[data-acd-theme="dark"] [class*="poll-answer"]:hover {
+/* Dividers */
+html[data-acd-theme="dark"] [class^="attendeeItemList--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemList--"],
+html[data-acd-theme="dark"] [class^="attendeeItemContainer2TopBottomBorder--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2TopBottomBorder--"] {
+  border-color: var(--acd-border-subtle) !important;
+}
+
+/* ==========================================================================
+   7. Video / Webcam Pod (FRAME ONLY - NEVER ALTER VIDEO STREAM CANVAS)
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="videoLayoutContainer--"],
+html[data-acd-theme="dark"] [class*=" videoLayoutContainer--"],
+html[data-acd-theme="dark"] [class^="videoLayout--"],
+html[data-acd-theme="dark"] [class*=" videoLayout--"],
+html[data-acd-theme="dark"] [class^="videoLayoutWithButton--"],
+html[data-acd-theme="dark"] [class*=" videoLayoutWithButton--"],
+html[data-acd-theme="dark"] .video-pod,
+html[data-acd-theme="dark"] [class*="video-pod"],
+html[data-acd-theme="dark"] [data-pod-type="video"] {
+  background-color: var(--acd-bg-panel) !important;
   color: var(--acd-text-primary) !important;
+}
+
+/* Empty Video Placeholder */
+html[data-acd-theme="dark"] [class^="noContentTitle--"],
+html[data-acd-theme="dark"] [class*=" noContentTitle--"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+html[data-acd-theme="dark"] [class^="noContentInfo--"],
+html[data-acd-theme="dark"] [class*=" noContentInfo--"] {
+  color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] [class^="emptyVideoCell--"],
+html[data-acd-theme="dark"] [class*=" emptyVideoCell--"] {
+  background: var(--acd-bg-secondary) !important;
+}
+
+/* Start Webcam Buttons */
+html[data-acd-theme="dark"] [class^="videoPodStartWebcamBtn--"],
+html[data-acd-theme="dark"] [class*=" videoPodStartWebcamBtn--"],
+html[data-acd-theme="dark"] [class^="videoPodPrimaryBarStartWebCamBtn--"],
+html[data-acd-theme="dark"] [class*=" videoPodPrimaryBarStartWebCamBtn--"] {
+  background-color: var(--acd-bg-secondary) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 4px !important;
+  transition: background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="videoPodStartWebcamBtn--"]:hover,
+html[data-acd-theme="dark"] [class*=" videoPodStartWebcamBtn--"]:hover,
+html[data-acd-theme="dark"] [class^="videoPodPrimaryBarStartWebCamBtn--"]:hover,
+html[data-acd-theme="dark"] [class*=" videoPodPrimaryBarStartWebCamBtn--"]:hover {
   background-color: var(--acd-bg-hover) !important;
-  border-radius: 4px;
+  color: var(--acd-text-primary) !important;
 }
 
-/* Poll Results Bar */
-html[data-acd-theme="dark"] .poll-bar-container,
-html[data-acd-theme="dark"] [class*="poll-bar-container"] {
-  background-color: var(--acd-bg-input) !important;
-  border-radius: 4px;
+html[data-acd-theme="dark"] [class^="videoPodStartWebcamBtnSeparator--"],
+html[data-acd-theme="dark"] [class*=" videoPodStartWebcamBtnSeparator--"],
+html[data-acd-theme="dark"] [class^="videoPodContentSeparator--"],
+html[data-acd-theme="dark"] [class*=" videoPodContentSeparator--"] {
+  background-color: var(--acd-border-subtle) !important;
 }
 
-html[data-acd-theme="dark"] .poll-bar,
-html[data-acd-theme="dark"] [class*="poll-bar"],
-html[data-acd-theme="dark"] [class*="poll-progress"] {
-  background-color: var(--acd-accent) !important;
+/* Participant Video Overlay Tag */
+html[data-acd-theme="dark"] [class^="videoCell--"] [class^="name--"],
+html[data-acd-theme="dark"] [class*=" videoCell--"] [class*=" name--"],
+html[data-acd-theme="dark"] .video-user-tag,
+html[data-acd-theme="dark"] [class*="video-user-label"] {
+  background: rgba(17, 20, 24, 0.8) !important;
+  color: var(--acd-text-primary) !important;
   border-radius: 4px;
 }
 
 /* ==========================================================================
-   9. Share Pod Frame & Whiteboard Controls (FRAME ONLY - PRESERVE CONTENT!)
+   8. Share Pod, Presentation Viewport & Whiteboard (FRAME ONLY)
    ========================================================================== */
+html[data-acd-theme="dark"] [class^="shareContent--"],
+html[data-acd-theme="dark"] [class*=" shareContent--"],
+html[data-acd-theme="dark"] [class^="whiteboardWrapper--"],
+html[data-acd-theme="dark"] [class*=" whiteboardWrapper--"],
 html[data-acd-theme="dark"] .share-pod,
-html[data-acd-theme="dark"] [class*="share-pod"],
 html[data-acd-theme="dark"] [data-pod-type="share"] {
   background-color: var(--acd-bg-panel) !important;
 }
 
-/* Whiteboard Drawing Tools Palette */
+/* PDF Screen Loader Background */
+html[data-acd-theme="dark"] [class^="pdfLoaderScreen--"],
+html[data-acd-theme="dark"] [class*=" pdfLoaderScreen--"] {
+  background-color: #14181d !important;
+}
+
+/* PDF / Presentation Bottom Bar */
+html[data-acd-theme="dark"] [class^="pdfBottomBar--"],
+html[data-acd-theme="dark"] [class*=" pdfBottomBar--"],
+html[data-acd-theme="dark"] .share-toolbar {
+  background-color: var(--acd-bg-toolbar) !important;
+  border-top: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Wait Screens & Loaders */
+html[data-acd-theme="dark"] [class^="waitScreen--"],
+html[data-acd-theme="dark"] [class*=" waitScreen--"] {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="waitingComponent--"],
+html[data-acd-theme="dark"] [class*=" waitingComponent--"] {
+  color: var(--acd-text-muted) !important;
+}
+
+/* Whiteboard Toolbar */
 html[data-acd-theme="dark"] .whiteboard-toolbar,
 html[data-acd-theme="dark"] [class*="whiteboard-toolbar"],
 html[data-acd-theme="dark"] [class*="draw-toolbar"] {
@@ -857,169 +904,271 @@ html[data-acd-theme="dark"] [class*="draw-toolbar"] {
 }
 
 html[data-acd-theme="dark"] .whiteboard-toolbar button,
-html[data-acd-theme="dark"] [class*="whiteboard-toolbar"] button,
-html[data-acd-theme="dark"] [class*="draw-toolbar"] button {
+html[data-acd-theme="dark"] [class*="whiteboard-toolbar"] button {
   color: var(--acd-text-secondary) !important;
   border-radius: 4px;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] .whiteboard-toolbar button:hover,
-html[data-acd-theme="dark"] [class*="whiteboard-toolbar"] button:hover,
-html[data-acd-theme="dark"] [class*="draw-toolbar"] button:hover {
+html[data-acd-theme="dark"] [class*="whiteboard-toolbar"] button:hover {
   color: var(--acd-text-primary) !important;
   background-color: var(--acd-bg-hover) !important;
 }
 
-html[data-acd-theme="dark"] .whiteboard-toolbar button:focus-visible,
-html[data-acd-theme="dark"] [class*="draw-toolbar"] button:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -1px !important;
-}
-
-html[data-acd-theme="dark"] .whiteboard-toolbar button:active,
-html[data-acd-theme="dark"] [class*="draw-toolbar"] button:active {
-  background-color: var(--acd-bg-active) !important;
-}
-
 html[data-acd-theme="dark"] .whiteboard-toolbar button.active,
-html[data-acd-theme="dark"] .whiteboard-toolbar button[aria-pressed="true"],
-html[data-acd-theme="dark"] [class*="draw-toolbar"] button.active,
-html[data-acd-theme="dark"] [class*="draw-toolbar"] button[aria-pressed="true"] {
+html[data-acd-theme="dark"] .whiteboard-toolbar button[aria-pressed="true"] {
   background-color: var(--acd-accent-bg) !important;
   color: var(--acd-accent) !important;
   border: 1px solid var(--acd-accent-border) !important;
 }
 
-/* Share Pod Control Toolbar */
-html[data-acd-theme="dark"] .share-toolbar,
-html[data-acd-theme="dark"] [class*="share-toolbar"] {
-  background-color: var(--acd-bg-toolbar) !important;
-  border-top: 1px solid var(--acd-border) !important;
-}
-
 /* ==========================================================================
-   10. Video / Webcam Pod Frame (FRAME ONLY - NEVER TOUCH VIDEO ELEMENTS)
+   9. Notes Pod
    ========================================================================== */
-html[data-acd-theme="dark"] .video-pod,
-html[data-acd-theme="dark"] [class*="video-pod"],
-html[data-acd-theme="dark"] [data-pod-type="video"] {
+html[data-acd-theme="dark"] .notes-pod,
+html[data-acd-theme="dark"] [class*="notes-pod"],
+html[data-acd-theme="dark"] [data-pod-type="notes"] {
   background-color: var(--acd-bg-panel) !important;
 }
 
-/* Participant Video Overlay Tag (e.g. name over webcam) */
-html[data-acd-theme="dark"] .video-user-tag,
-html[data-acd-theme="dark"] [class*="video-user-label"],
-html[data-acd-theme="dark"] [class*="webcam-label"] {
-  background-color: rgba(17, 20, 24, 0.75) !important;
+html[data-acd-theme="dark"] .note-editor-root,
+html[data-acd-theme="dark"] .DraftEditor-root,
+html[data-acd-theme="dark"] .ql-editor {
+  background-color: var(--acd-bg-panel) !important;
   color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .note-editor-root font,
+html[data-acd-theme="dark"] .note-editor-root p,
+html[data-acd-theme="dark"] .note-editor-root li {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .notes-format-action {
+  color: var(--acd-text-secondary) !important;
+  transition: color var(--acd-transition-fast), background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .notes-format-action:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] .notes-format-action-active {
+  color: var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] .notespod-dialog,
+html[data-acd-theme="dark"] .export-notes-dialog {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+}
+
+/* ==========================================================================
+   10. Files Pod (Real Adobe Connect 11.2 Selectors)
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="fileListItemBox--"],
+html[data-acd-theme="dark"] [class*=" fileListItemBox--"],
+html[data-acd-theme="dark"] #fileListItemBox,
+html[data-acd-theme="dark"] [class^="uploadFileListItemBox--"],
+html[data-acd-theme="dark"] [class*=" uploadFileListItemBox--"] {
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  background-color: transparent !important;
+}
+
+html[data-acd-theme="dark"] [class^="fileListItem--"],
+html[data-acd-theme="dark"] [class*=" fileListItem--"],
+html[data-acd-theme="dark"] [class^="uploadFileListItem--"],
+html[data-acd-theme="dark"] [class*=" uploadFileListItem--"] {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="fileListItemNameHeader--"],
+html[data-acd-theme="dark"] [class*=" fileListItemNameHeader--"],
+html[data-acd-theme="dark"] [class^="uploadFileListItemNameHeader--"],
+html[data-acd-theme="dark"] [class*=" uploadFileListItemNameHeader--"] {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="fileListItemSize--"],
+html[data-acd-theme="dark"] [class*=" fileListItemSize--"] {
+  color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] [class^="fileListItemButtons--"] button,
+html[data-acd-theme="dark"] [class*=" fileListItemButtons--"] button {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="fileListItemButtons--"] button:hover,
+html[data-acd-theme="dark"] [class*=" fileListItemButtons--"] button:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+}
+
+/* ==========================================================================
+   11. Web Links Pod (Real Adobe Connect 11.2 Selectors)
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="urlListClass--"],
+html[data-acd-theme="dark"] [class*=" urlListClass--"] {
+  border-top: 1px solid var(--acd-border-subtle) !important;
+  background-color: var(--acd-bg-panel) !important;
+}
+
+html[data-acd-theme="dark"] [class^="urlListItemBox--"],
+html[data-acd-theme="dark"] [class*=" urlListItemBox--"],
+html[data-acd-theme="dark"] #urlListItemBox {
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  background-color: transparent !important;
+}
+
+html[data-acd-theme="dark"] [class^="urlListItem--"],
+html[data-acd-theme="dark"] [class*=" urlListItem--"] {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="urlListItemNameHeader--"],
+html[data-acd-theme="dark"] [class*=" urlListItemNameHeader--"] {
+  color: var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] [class^="urlListItemNameHeader--"]:hover,
+html[data-acd-theme="dark"] [class*=" urlListItemNameHeader--"]:hover,
+html[data-acd-theme="dark"] [class^="urlListItemNameHeader--"]:focus,
+html[data-acd-theme="dark"] [class*=" urlListItemNameHeader--"]:focus {
+  color: var(--acd-accent-hover) !important;
+  text-decoration: underline !important;
+}
+
+html[data-acd-theme="dark"] [class^="weblinkEmptyPod--"],
+html[data-acd-theme="dark"] [class*=" weblinkEmptyPod--"],
+html[data-acd-theme="dark"] [class^="webLinkEmptyPodContainerParticipant--"],
+html[data-acd-theme="dark"] [class*=" webLinkEmptyPodContainerParticipant--"] {
+  color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] [class^="addRenameWebLinkDialog--"],
+html[data-acd-theme="dark"] [class*=" addRenameWebLinkDialog--"],
+html[data-acd-theme="dark"] #webLinkPodClearAllLinksDialog {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
+}
+
+/* ==========================================================================
+   12. Poll Pod (Real Adobe Connect 11.2 Selectors)
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="pollPod--"],
+html[data-acd-theme="dark"] [class*=" pollPod--"],
+html[data-acd-theme="dark"] .poll-pod,
+html[data-acd-theme="dark"] [data-pod-type="poll"] {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="pollToolbarHostDiv--"],
+html[data-acd-theme="dark"] [class*=" pollToolbarHostDiv--"] {
+  background-color: var(--acd-bg-secondary) !important;
+  border-top: 1px solid var(--acd-border-subtle) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="pollQuestion--"],
+html[data-acd-theme="dark"] [class*=" pollQuestion--"],
+html[data-acd-theme="dark"] .poll-question {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+html[data-acd-theme="dark"] [class^="pollAnswer--"],
+html[data-acd-theme="dark"] [class*=" pollAnswer--"],
+html[data-acd-theme="dark"] .poll-option {
+  color: var(--acd-text-secondary) !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="pollAnswer--"]:hover,
+html[data-acd-theme="dark"] [class*=" pollAnswer--"]:hover,
+html[data-acd-theme="dark"] .poll-option:hover {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] [class^="choiceOptionProgressBar--"],
+html[data-acd-theme="dark"] [class*=" choiceOptionProgressBar--"] {
+  background-color: var(--acd-accent) !important;
   border-radius: 4px;
 }
 
 /* ==========================================================================
-   11. Adobe Spectrum Components Support
+   13. Adobe Spectrum 11.2 Components In-Depth Overrides
    ========================================================================== */
 html[data-acd-theme="dark"] [class*="spectrum-Picker"],
 html[data-acd-theme="dark"] [class*="spectrum-Menu"],
-html[data-acd-theme="dark"] [class*="spectrum-Popover"] {
+html[data-acd-theme="dark"] [class*="spectrum-Popover"],
+html[data-acd-theme="dark"] [class*="spectrum-Dropdown"] {
   background-color: var(--acd-bg-elevated) !important;
   border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
+  box-shadow: var(--acd-shadow-lg) !important;
 }
 
-/* Spectrum Accordion - Primary component in Adobe Connect pods */
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"] {
-  background-color: var(--acd-bg-secondary) !important;
+html[data-acd-theme="dark"] [class*="spectrum-Dialog"] {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
-  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  box-shadow: var(--acd-shadow-lg) !important;
 }
 
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:hover,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:hover {
-  background-color: var(--acd-bg-hover) !important;
+html[data-acd-theme="dark"] .spectrum-Dialog-title {
   color: var(--acd-text-primary) !important;
 }
 
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:focus,
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:focus-visible,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:focus,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:focus-visible {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -2px !important;
+html[data-acd-theme="dark"] .spectrum-Dialog-content {
+  color: var(--acd-text-secondary) !important;
 }
 
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader:active,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"]:active {
-  background-color: var(--acd-bg-active) !important;
+html[data-acd-theme="dark"] .spectrum-Textfield,
+html[data-acd-theme="dark"] [class*="spectrum-Textfield"] {
+  background-color: var(--acd-bg-input) !important;
   color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border) !important;
 }
 
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader.is-open,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"].is-open {
-  background-color: var(--acd-bg-secondary) !important;
-  color: var(--acd-text-primary) !important;
+html[data-acd-theme="dark"] .spectrum-Textfield:focus,
+html[data-acd-theme="dark"] [class*="spectrum-Textfield"]:focus {
+  border-color: var(--acd-border-focus) !important;
 }
 
-html[data-acd-theme="dark"] .spectrum-Accordion-itemHeader.is-open:hover,
-html[data-acd-theme="dark"] [class*="spectrum-Accordion-itemHeader"].is-open:hover {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-/* Spectrum Menu Items */
 html[data-acd-theme="dark"] [class*="spectrum-Menu-item"] {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:hover,
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:focus,
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-focused,
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-highlighted {
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-focused {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
 }
 
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:active {
-  background-color: var(--acd-bg-active) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-selected,
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"][aria-selected="true"] {
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-selected {
   background-color: var(--acd-bg-selected) !important;
   color: var(--acd-accent) !important;
 }
 
-/* Spectrum Buttons & ActionButtons */
 html[data-acd-theme="dark"] [class*="spectrum-ActionButton"],
 html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"] {
   background-color: var(--acd-bg-panel) !important;
   border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
-  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:hover,
 html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"]:hover {
   background-color: var(--acd-bg-hover) !important;
-  border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:focus-visible,
-html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"]:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -1px !important;
-}
-
-html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:active,
-html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"]:active {
-  background-color: var(--acd-bg-active) !important;
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-ActionButton"].is-selected,
@@ -1029,19 +1178,12 @@ html[data-acd-theme="dark"] [class*="spectrum-ActionButton"][aria-pressed="true"
   border-color: var(--acd-accent-border) !important;
 }
 
-/* Spectrum Tabs */
 html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"] {
   color: var(--acd-text-secondary) !important;
-  transition: color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"]:hover {
   color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"]:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -2px !important;
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"].is-selected {
@@ -1050,36 +1192,67 @@ html[data-acd-theme="dark"] [class*="spectrum-Tabs-item"].is-selected {
 }
 
 /* ==========================================================================
-   12. Generic Expandable Headers & Accordions
+   14. Outer Recording Launcher Coral UI
    ========================================================================== */
-html[data-acd-theme="dark"] summary,
-html[data-acd-theme="dark"] [class*="expandable-header"],
-html[data-acd-theme="dark"] [class*="section-header"][role="button"],
-html[data-acd-theme="dark"] [class*="collapse-header"] {
-  background-color: var(--acd-bg-secondary) !important;
+html[data-acd-theme="dark"] .coral--light {
+  background-color: var(--acd-bg-main) !important;
   color: var(--acd-text-primary) !important;
-  border-bottom: 1px solid var(--acd-border-subtle) !important;
-  cursor: pointer;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
-html[data-acd-theme="dark"] summary:hover,
-html[data-acd-theme="dark"] [class*="expandable-header"]:hover,
-html[data-acd-theme="dark"] [class*="section-header"][role="button"]:hover,
-html[data-acd-theme="dark"] [class*="collapse-header"]:hover {
+html[data-acd-theme="dark"] .big-buttons,
+html[data-acd-theme="dark"] .button-style,
+html[data-acd-theme="dark"] .button-div {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+  border-radius: 8px !important;
+  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] .big-buttons:hover,
+html[data-acd-theme="dark"] .button-style:hover {
+  background-color: var(--acd-bg-hover) !important;
+  border-color: var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] .button-text,
+html[data-acd-theme="dark"] .button-text-all,
+html[data-acd-theme="dark"] .button-content {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .coral-Heading,
+html[data-acd-theme="dark"] .coral-Heading--2 {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .coral3-Button {
+  background-color: var(--acd-bg-panel) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .coral3-Button:hover {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
 }
 
-html[data-acd-theme="dark"] summary:focus-visible,
-html[data-acd-theme="dark"] [class*="expandable-header"]:focus-visible,
-html[data-acd-theme="dark"] [class*="collapse-header"]:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -2px !important;
+html[data-acd-theme="dark"] .coral3-Button--minimal {
+  background-color: transparent !important;
+  color: var(--acd-text-secondary) !important;
 }
 
-html[data-acd-theme="dark"] summary:active,
-html[data-acd-theme="dark"] [class*="expandable-header"]:active,
-html[data-acd-theme="dark"] [class*="collapse-header"]:active {
-  background-color: var(--acd-bg-active) !important;
+html[data-acd-theme="dark"] .coral3-Checkbox-description {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] .coral3-Dialog {
+  background-color: var(--acd-bg-panel) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .copy-right,
+html[data-acd-theme="dark"] .after-download-instructions {
+  color: var(--acd-text-muted) !important;
 }

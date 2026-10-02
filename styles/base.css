@@ -33,7 +33,12 @@ html[data-acd-theme="dark"] .shared-content-viewport,
 html[data-acd-theme="dark"] .video-stream-element,
 html[data-acd-theme="dark"] [data-ac-role="presentation"],
 html[data-acd-theme="dark"] [data-ac-role="whiteboard"],
-html[data-acd-theme="dark"] [data-ac-role="screenshare"] {
+html[data-acd-theme="dark"] [data-ac-role="screenshare"],
+html[data-acd-theme="dark"] .canvasHTMLPDF,
+html[data-acd-theme="dark"] .canvasSingleHTMLPDF,
+html[data-acd-theme="dark"] [class*="shareContent--"] canvas,
+html[data-acd-theme="dark"] [class*="whiteboardWrapper--"] canvas,
+html[data-acd-theme="dark"] [class*="wbShapesWrapper--"] svg {
   filter: none !important;
   mix-blend-mode: normal !important;
 }

@@ -25,6 +25,17 @@
 /* ==========================================================================
    Common Containers & Structural Elements inside Shadow Roots
    ========================================================================== */
+[class^="pod--"],
+[class*=" pod--"],
+[id^="connectPod"],
+[class*="pod-container"] {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+[class^="podPrimaryBar--"],
+[class*=" podPrimaryBar--"],
 [class*="pod-header"],
 [class*="header-bar"],
 [class*="toolbar"],
@@ -34,6 +45,19 @@
   border-color: var(--acd-border) !important;
 }
 
+[class^="podTitle--"],
+[class*=" podTitle--"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+[class^="podControls--"],
+[class*=" podControls--"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+[class^="podContent--"],
+[class*=" podContent--"],
 [class*="pod-body"],
 [class*="pod-content"],
 [class*="panel-content"],
@@ -42,7 +66,14 @@
   color: var(--acd-text-primary) !important;
 }
 
-/* Real Chat Message Wrapper inside Shadow DOM */
+/* ==========================================================================
+   Real Chat Message Wrapper inside Shadow DOM
+   ========================================================================== */
+[class^="chatPod--"],
+[class*=" chatPod--"] {
+  background-color: var(--acd-bg-panel) !important;
+}
+
 [class^="chatIndividualMessageContentWrapperDiv--"],
 [class*=" chatIndividualMessageContentWrapperDiv--"] {
   background-color: var(--acd-bg-secondary) !important;
@@ -76,7 +107,8 @@
 input[type="text"],
 input[type="search"],
 textarea,
-select {
+select,
+.spectrum-Textfield {
   background-color: var(--acd-bg-input) !important;
   color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border) !important;
@@ -84,42 +116,49 @@ select {
 
 input:focus,
 textarea:focus,
-select:focus {
+select:focus,
+.spectrum-Textfield:focus {
   border-color: var(--acd-border-focus) !important;
 }
 
 /* Buttons and interactive elements */
 button,
-[role="button"] {
+[role="button"],
+.spectrum-ActionButton,
+.spectrum-Button {
   color: var(--acd-text-primary);
   border-color: var(--acd-border);
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
 button:hover,
-[role="button"]:hover {
+[role="button"]:hover,
+.spectrum-ActionButton:hover {
   background-color: var(--acd-bg-hover) !important;
 }
 
 button:focus-visible,
-[role="button"]:focus-visible {
+[role="button"]:focus-visible,
+.spectrum-ActionButton:focus-visible {
   outline: 2px solid var(--acd-border-focus) !important;
   outline-offset: -1px !important;
 }
 
 button:active,
-[role="button"]:active {
+[role="button"]:active,
+.spectrum-ActionButton:active {
   background-color: var(--acd-bg-active) !important;
 }
 
-/* Real Attendees Group Headers & Accordions inside Shadow DOM */
-[class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]),
-[class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]),
-[class^="headerContainer--"]:has([role="rowheader"]),
-[class*=" headerContainer--"]:has([role="rowheader"]),
+/* ==========================================================================
+   Real Attendees Group Headers & Rows inside Shadow DOM
+   ========================================================================== */
+[class^="headerContainer--"],
+[class*=" headerContainer--"],
+[class^="customAccordionHeader--"],
+[class*=" customAccordionHeader--"],
 [class*="role-header"],
 [class*="group-header"],
-[class*="category-header"],
 .spectrum-Accordion-itemHeader {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
@@ -128,114 +167,77 @@ button:active,
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
-[class^="headerContainer--"]:has([class*="customAttendeeGroupText--"]):hover,
-[class*=" headerContainer--"]:has([class*="customAttendeeGroupText--"]):hover,
-[class^="headerContainer--"]:has([role="rowheader"]):hover,
-[class*=" headerContainer--"]:has([role="rowheader"]):hover,
+[class^="headerContainer--"]:hover,
+[class*=" headerContainer--"]:hover,
+[class^="customAccordionHeader--"]:hover,
+[class*=" customAccordionHeader--"]:hover,
 [class*="role-header"]:hover,
 [class*="group-header"]:hover {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
 }
 
-[class^="headerContainer--"] [class^="headerChevronIcon--"],
-[class*=" headerContainer--"] [class*="headerChevronIcon--"] {
+[class^="headerChevronIcon--"],
+[class*=" headerChevronIcon--"] {
   color: var(--acd-text-secondary) !important;
-}
-
-[class^="headerContainer--"] [class^="headerChevronIcon--"] path,
-[class*=" headerContainer--"] [class*="headerChevronIcon--"] path {
   fill: currentColor !important;
 }
 
-[class^="headerContainer--"]:hover [class^="headerChevronIcon--"],
-[class*=" headerContainer--"]:hover [class*="headerChevronIcon--"] {
-  color: var(--acd-text-primary) !important;
-}
-
 [class^="customAttendeeGroupText--"],
-[class*=" customAttendeeGroupText--"],
-[class^="customAttendeeGroupText--"] span,
-[class*=" customAttendeeGroupText--"] span {
+[class*=" customAttendeeGroupText--"] {
   color: inherit !important;
   background-color: transparent !important;
-}
-
-[class*="role-header"]:focus-visible,
-[class*="group-header"]:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -2px !important;
-}
-
-[class*="role-header"]:active,
-[class*="group-header"]:active {
-  background-color: var(--acd-bg-active) !important;
-}
-
-[class^="headerContainer--"]:has([class*="headerChevronIconIsOpen--"]),
-[class*=" headerContainer--"]:has([class*="headerChevronIconIsOpen--"]),
-[class*="role-header"][aria-expanded="true"],
-[class*="group-header"][aria-expanded="true"] {
-  background-color: var(--acd-bg-secondary) !important;
-  border-left: 3px solid var(--acd-accent) !important;
-}
-
-[class^="headerContainer--"]:has([class*="headerChevronIconIsOpen--"]):hover,
-[class*=" headerContainer--"]:has([class*="headerChevronIconIsOpen--"]):hover,
-[class*="role-header"][aria-expanded="true"]:hover,
-[class*="group-header"][aria-expanded="true"]:hover {
-  background-color: var(--acd-bg-hover) !important;
+  font-weight: 600 !important;
 }
 
 /* Attendee Rows inside Shadow DOM */
+[class^="attendeeItemContainer1--"],
+[class*=" attendeeItemContainer1--"],
+[class^="attendeeItemContainer2--"],
+[class*=" attendeeItemContainer2--"],
+[class^="attendeeItem--"],
+[class*=" attendeeItem--"],
 [class*="attendee-item"],
-[class*="attendee-row"],
-[class*="participant-item"],
-[class*="user-row"] {
+[class*="attendee-row"] {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
   transition: background-color var(--acd-transition-fast);
 }
 
-[class*="attendee-item"]:hover,
-[class*="attendee-row"]:hover,
-[class*="participant-item"]:hover,
-[class*="user-row"]:hover {
+[class^="attendeeItem--"]:hover,
+[class*=" attendeeItem--"]:hover,
+[class*="attendee-item"]:hover {
   background-color: var(--acd-bg-hover) !important;
 }
 
-[class*="attendee-item"]:focus-visible,
-[class*="attendee-row"]:focus-visible {
+[class^="attendeeItem--"]:focus-visible,
+[class*="attendee-item"]:focus-visible {
   outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -2px !important;
+  outline-offset: -1px !important;
 }
 
-[class*="attendee-item"]:active,
-[class*="attendee-row"]:active {
-  background-color: var(--acd-bg-active) !important;
-}
-
-[class*="attendee-item"][aria-selected="true"],
-[class*="attendee-row"][aria-selected="true"],
-[class*="attendee-item"].is-selected,
-[class*="attendee-row"].is-selected {
-  background-color: var(--acd-bg-selected) !important;
+[class^="attendeeUserName--"],
+[class*=" attendeeUserName--"],
+[class^="attendeeUserNameDiv--"],
+[class*=" attendeeUserNameDiv--"] {
   color: var(--acd-text-primary) !important;
-  border-left: 3px solid var(--acd-accent) !important;
 }
 
 /* Menus & Popovers */
 [role="menu"],
 [role="listbox"],
 [class*="popover"],
-[class*="dropdown"] {
+[class*="dropdown"],
+.spectrum-Popover,
+.spectrum-Menu {
   background-color: var(--acd-bg-elevated) !important;
   border: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
 }
 
 [role="menuitem"],
-[role="option"] {
+[role="option"],
+.spectrum-Menu-item {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
   transition: background-color var(--acd-transition-fast);
@@ -243,37 +245,23 @@ button:active,
 
 [role="menuitem"]:hover,
 [role="option"]:hover,
-[role="menuitem"]:focus,
-[role="option"]:focus {
+.spectrum-Menu-item:hover {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
 }
 
-[role="menuitem"]:focus-visible,
-[role="option"]:focus-visible {
-  outline: 2px solid var(--acd-border-focus) !important;
-  outline-offset: -2px !important;
-}
-
-[role="menuitem"]:active,
-[role="option"]:active {
-  background-color: var(--acd-bg-active) !important;
-}
-
 [role="menuitem"][aria-selected="true"],
 [role="option"][aria-selected="true"],
-[role="menuitem"].is-selected,
-[role="option"].is-selected {
+.spectrum-Menu-item.is-selected {
   background-color: var(--acd-bg-selected) !important;
   color: var(--acd-accent) !important;
 }
 
-/* ==========================================================================
-   UI SVGs vs Content SVGs inside Shadow DOM
-   ========================================================================== */
+/* UI SVGs inside Shadow DOM */
 button svg,
 [role="button"] svg,
-[class*="icon"] svg {
+[class*="icon"] svg,
+.spectrum-Icon {
   color: var(--acd-text-secondary);
 }
 
@@ -282,9 +270,7 @@ button:hover svg,
   color: var(--acd-text-primary);
 }
 
-/* ==========================================================================
-   STRICT Media Preservation inside Shadow DOM (Non-destructive)
-   ========================================================================== */
+/* STRICT Media & Presentation Preservation inside Shadow DOM */
 video,
 canvas,
 img,
@@ -295,7 +281,11 @@ picture,
 [data-ac-role="whiteboard"],
 [data-ac-role="screenshare"],
 .presentation-content,
-.whiteboard-canvas {
+.whiteboard-canvas,
+.canvasHTMLPDF,
+.canvasSingleHTMLPDF,
+[class*="shareContent--"] canvas,
+[class*="whiteboardWrapper--"] canvas {
   filter: none !important;
   mix-blend-mode: normal !important;
 }

@@ -48,6 +48,11 @@
     '[data-ac-role="presentation"]',
     '[data-ac-role="whiteboard"]',
     '[data-ac-role="screenshare"]',
+    '.canvasHTMLPDF',
+    '.canvasSingleHTMLPDF',
+    '[class*="shareContent--"] canvas',
+    '[class*="whiteboardWrapper--"]',
+    '[class*="wbShapesWrapper--"]',
     '[data-acd-preserve="true"]',
     '.acd-preserve'
   ].join(', ');
