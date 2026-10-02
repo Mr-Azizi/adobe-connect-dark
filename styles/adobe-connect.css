@@ -59,7 +59,7 @@ html[data-acd-theme="dark"] [class*="header-bar"],
 html[data-acd-theme="dark"] [class*="meeting-bar"],
 html[data-acd-theme="dark"] [class*="top-toolbar"] {
   background-color: var(--acd-bg-toolbar) !important;
-  border-bottom: 1px solid var(--acd-border) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
 }
 
@@ -149,7 +149,7 @@ html[data-acd-theme="dark"] .main-toolbar button.active:hover,
 html[data-acd-theme="dark"] .main-toolbar button[aria-pressed="true"]:hover,
 html[data-acd-theme="dark"] [class*="header-bar"] button.active:hover,
 html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"]:hover {
-  background-color: rgba(110, 155, 255, 0.22) !important;
+  background-color: rgba(110, 168, 254, 0.18) !important;
   color: var(--acd-accent-hover) !important;
 }
 
@@ -159,16 +159,16 @@ html[data-acd-theme="dark"] .layout-sidebar,
 html[data-acd-theme="dark"] [class*="layout-sidebar"],
 html[data-acd-theme="dark"] [class*="layouts-panel"] {
   background-color: var(--acd-bg-secondary) !important;
-  border-left: 1px solid var(--acd-border) !important;
-  border-right: 1px solid var(--acd-border) !important;
+  border-left: 1px solid var(--acd-border-subtle) !important;
+  border-right: 1px solid var(--acd-border-subtle) !important;
 }
 
 html[data-acd-theme="dark"] .layout-item,
 html[data-acd-theme="dark"] [class*="layout-item"] {
   background-color: var(--acd-bg-panel) !important;
-  border: 1px solid var(--acd-border) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
   color: var(--acd-text-secondary) !important;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 html[data-acd-theme="dark"] .layout-item:hover {
@@ -195,7 +195,7 @@ html[data-acd-theme="dark"] [class^="eventTree--"],
 html[data-acd-theme="dark"] [class*=" eventTree--"] {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
-  border-right: 1px solid var(--acd-border) !important;
+  border-right: 1px solid var(--acd-border-subtle) !important;
 }
 
 html[data-acd-theme="dark"] [class^="eventsIndexTitle--"],
@@ -217,7 +217,7 @@ html[data-acd-theme="dark"] [class*=" hLine--"] {
 
 html[data-acd-theme="dark"] [class^="resizeHandle--"],
 html[data-acd-theme="dark"] [class*=" resizeHandle--"] {
-  background-color: var(--acd-border) !important;
+  background-color: var(--acd-border-subtle) !important;
   transition: background-color var(--acd-transition-fast);
 }
 
@@ -262,13 +262,13 @@ html[data-acd-theme="dark"] [class*=" footer--"],
 html[data-acd-theme="dark"] [class^="playBar--"],
 html[data-acd-theme="dark"] [class*=" playBar--"] {
   background-color: var(--acd-bg-toolbar) !important;
-  border-top: 1px solid var(--acd-border) !important;
+  border-top: 1px solid var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
 }
 
 html[data-acd-theme="dark"] [class^="verticalBar--"],
 html[data-acd-theme="dark"] [class*=" verticalBar--"] {
-  border-left: 1px solid var(--acd-border) !important;
+  border-left: 1px solid var(--acd-border-subtle) !important;
 }
 
 html[data-acd-theme="dark"] [class^="recordingButtonStyle--"],
@@ -294,6 +294,17 @@ html[data-acd-theme="dark"] [class*=" searchButton--"]:hover {
   border-radius: 4px;
 }
 
+html[data-acd-theme="dark"] [class^="recordingButtonStyle--"]:active,
+html[data-acd-theme="dark"] [class*=" recordingButtonStyle--"]:active,
+html[data-acd-theme="dark"] [class^="menuBarIcon--"]:active,
+html[data-acd-theme="dark"] [class*=" menuBarIcon--"]:active,
+html[data-acd-theme="dark"] [class^="searchButton--"]:active,
+html[data-acd-theme="dark"] [class*=" searchButton--"]:active {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-active) !important;
+  border-radius: 4px;
+}
+
 html[data-acd-theme="dark"] [class^="recordingButtonStyle--"]:focus-visible,
 html[data-acd-theme="dark"] [class*=" recordingButtonStyle--"]:focus-visible,
 html[data-acd-theme="dark"] [class^="menuBarIcon--"]:focus-visible,
@@ -309,7 +320,7 @@ html[data-acd-theme="dark"] [class*=" searchButton--"]:focus-visible {
 
 html[data-acd-theme="dark"] [class^="progressBar--"],
 html[data-acd-theme="dark"] [class*=" progressBar--"] {
-  background-color: var(--acd-bg-input) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid var(--acd-border-subtle) !important;
 }
 
@@ -334,8 +345,8 @@ html[data-acd-theme="dark"] [class^="volumeSlider--"],
 html[data-acd-theme="dark"] [class*=" volumeSlider--"] {
   background-color: var(--acd-bg-elevated) !important;
   border: 1px solid var(--acd-border) !important;
-  box-shadow: var(--acd-shadow-lg) !important;
-  border-radius: 6px !important;
+  box-shadow: var(--acd-shadow-md) !important;
+  border-radius: 4px !important;
 }
 
 html[data-acd-theme="dark"] [class^="volumeBarHeaderText--"],
@@ -366,8 +377,8 @@ html[data-acd-theme="dark"] [class*="pod-wrapper"],
 html[data-acd-theme="dark"] div[data-pod-type] {
   background-color: var(--acd-bg-panel) !important;
   border: 1px solid var(--acd-border) !important;
-  border-radius: 6px !important;
-  box-shadow: var(--acd-shadow-sm) !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
   overflow: hidden;
 }
 
@@ -380,7 +391,7 @@ html[data-acd-theme="dark"] [class*="pod-header"],
 html[data-acd-theme="dark"] [class*="pod_header"],
 html[data-acd-theme="dark"] .title-bar {
   background-color: var(--acd-bg-toolbar) !important;
-  border-bottom: 1px solid var(--acd-border) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
   min-height: 34px;
 }
@@ -393,7 +404,8 @@ html[data-acd-theme="dark"] [class*="pod-title"],
 html[data-acd-theme="dark"] .pod-header h2,
 html[data-acd-theme="dark"] .pod-header h3 {
   color: var(--acd-text-primary) !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
   font-size: 13px !important;
 }
 
@@ -410,7 +422,7 @@ html[data-acd-theme="dark"] .pod-header button,
 html[data-acd-theme="dark"] .pod-header [role="button"],
 html[data-acd-theme="dark"] [class*="pod-header"] button,
 html[data-acd-theme="dark"] [class*="pod-controls"] button {
-  color: var(--acd-text-muted) !important;
+  color: var(--acd-text-secondary) !important;
   background-color: transparent !important;
   border: 1px solid transparent !important;
   border-radius: 4px;
@@ -476,7 +488,7 @@ html[data-acd-theme="dark"] [class*=" ChatTabList--"],
 html[data-acd-theme="dark"] .chat-tabs,
 html[data-acd-theme="dark"] [class*="chat-tab-bar"] {
   background-color: var(--acd-bg-toolbar) !important;
-  border-bottom: 1px solid var(--acd-border) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
 }
 
 /* Chat Tab Items & Buttons */
@@ -505,8 +517,9 @@ html[data-acd-theme="dark"] [class^="chatTabDisplayNameSelected--"],
 html[data-acd-theme="dark"] [class*=" chatTabDisplayNameSelected--"],
 html[data-acd-theme="dark"] .chat-tabs button[aria-selected="true"],
 html[data-acd-theme="dark"] .chat-tabs button.active {
-  color: var(--acd-accent) !important;
+  color: var(--acd-text-primary) !important;
   font-weight: 600 !important;
+  border-bottom: 2px solid var(--acd-accent) !important;
 }
 
 /* Chat Content Area & Message List */
@@ -535,7 +548,7 @@ html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]
 html[data-acd-theme="dark"] .chat-message,
 html[data-acd-theme="dark"] .message-item,
 html[data-acd-theme="dark"] [class*="chat-message"] {
-  background-color: var(--acd-bg-secondary) !important;
+  background-color: rgba(255, 255, 255, 0.02) !important;
   color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border-subtle) !important;
   border-radius: 4px !important;
@@ -546,7 +559,7 @@ html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:
 html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]:hover,
 html[data-acd-theme="dark"] .chat-message:hover {
   background-color: var(--acd-bg-hover) !important;
-  border-color: var(--acd-border) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:focus-visible,
@@ -590,8 +603,8 @@ html[data-acd-theme="dark"] [class*="chat-time"] {
 html[data-acd-theme="dark"] [class^="chatComposeArea--"],
 html[data-acd-theme="dark"] [class*=" chatComposeArea--"],
 html[data-acd-theme="dark"] .chat-input-container {
-  background-color: var(--acd-bg-secondary) !important;
-  border-top: 1px solid var(--acd-border) !important;
+  background-color: var(--acd-bg-panel) !important;
+  border-top: 1px solid var(--acd-border-subtle) !important;
 }
 
 html[data-acd-theme="dark"] [class^="childContainerDiv--"],
@@ -602,15 +615,20 @@ html[data-acd-theme="dark"] .chat-input-container textarea,
 html[data-acd-theme="dark"] .chat-input-container input {
   background-color: var(--acd-bg-input) !important;
   color: var(--acd-text-primary) !important;
-  border: 1px solid var(--acd-border) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 4px;
+  transition: border-color var(--acd-transition-fast), box-shadow var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] [class^="childContainerDivSelected--"],
 html[data-acd-theme="dark"] [class*=" childContainerDivSelected--"],
 html[data-acd-theme="dark"] [class^="typingAreaHasText--"],
 html[data-acd-theme="dark"] [class*=" typingAreaHasText--"],
-html[data-acd-theme="dark"] .chat-input-container textarea:focus {
+html[data-acd-theme="dark"] .chat-input-container textarea:focus,
+html[data-acd-theme="dark"] .chat-input-container input:focus {
   border-color: var(--acd-border-focus) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--acd-focus-ring) !important;
 }
 
 /* Send Buttons */
@@ -622,6 +640,8 @@ html[data-acd-theme="dark"] [class^="chatSendButtonIcon--"],
 html[data-acd-theme="dark"] [class*=" chatSendButtonIcon--"] {
   color: var(--acd-accent) !important;
   background-color: transparent !important;
+  border-radius: 4px;
+  transition: color var(--acd-transition-fast), background-color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] [class^="sendButton--"]:hover,
@@ -680,7 +700,7 @@ html[data-acd-theme="dark"] [class*=" customAccordionHeader--"] {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
   font-weight: 600 !important;
-  border-top: 1px solid var(--acd-border-subtle) !important;
+  border-top: none !important;
   border-bottom: 1px solid var(--acd-border-subtle) !important;
   cursor: pointer;
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
@@ -768,7 +788,7 @@ html[data-acd-theme="dark"] [class*=" attendeeItem--"][aria-selected="true"],
 html[data-acd-theme="dark"] [class^="attendeeItem--"].is-selected,
 html[data-acd-theme="dark"] [class*=" attendeeItem--"].is-selected {
   background-color: var(--acd-bg-selected) !important;
-  border-left: 3px solid var(--acd-accent) !important;
+  border-left: 2px solid var(--acd-accent) !important;
 }
 
 /* User Name */
@@ -801,7 +821,8 @@ html[data-acd-theme="dark"] [class^="attendeeItemList--"],
 html[data-acd-theme="dark"] [class*=" attendeeItemList--"],
 html[data-acd-theme="dark"] [class^="attendeeItemContainer2TopBottomBorder--"],
 html[data-acd-theme="dark"] [class*=" attendeeItemContainer2TopBottomBorder--"] {
-  border-color: var(--acd-border-subtle) !important;
+  border-top: none !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
 }
 
 /* ==========================================================================
@@ -823,7 +844,7 @@ html[data-acd-theme="dark"] [data-pod-type="video"] {
 /* Empty Video Placeholder */
 html[data-acd-theme="dark"] [class^="noContentTitle--"],
 html[data-acd-theme="dark"] [class*=" noContentTitle--"] {
-  color: var(--acd-text-primary) !important;
+  color: var(--acd-text-secondary) !important;
   font-weight: 600 !important;
 }
 
@@ -844,9 +865,9 @@ html[data-acd-theme="dark"] [class^="videoPodPrimaryBarStartWebCamBtn--"],
 html[data-acd-theme="dark"] [class*=" videoPodPrimaryBarStartWebCamBtn--"] {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
-  border: 1px solid var(--acd-border) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
   border-radius: 4px !important;
-  transition: background-color var(--acd-transition-fast);
+  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] [class^="videoPodStartWebcamBtn--"]:hover,
@@ -854,6 +875,7 @@ html[data-acd-theme="dark"] [class*=" videoPodStartWebcamBtn--"]:hover,
 html[data-acd-theme="dark"] [class^="videoPodPrimaryBarStartWebCamBtn--"]:hover,
 html[data-acd-theme="dark"] [class*=" videoPodPrimaryBarStartWebCamBtn--"]:hover {
   background-color: var(--acd-bg-hover) !important;
+  border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
 }
 
@@ -869,8 +891,9 @@ html[data-acd-theme="dark"] [class^="videoCell--"] [class^="name--"],
 html[data-acd-theme="dark"] [class*=" videoCell--"] [class*=" name--"],
 html[data-acd-theme="dark"] .video-user-tag,
 html[data-acd-theme="dark"] [class*="video-user-label"] {
-  background: rgba(17, 20, 24, 0.8) !important;
+  background: rgba(15, 20, 26, 0.85) !important;
   color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
   border-radius: 4px;
 }
 
@@ -883,13 +906,13 @@ html[data-acd-theme="dark"] [class^="whiteboardWrapper--"],
 html[data-acd-theme="dark"] [class*=" whiteboardWrapper--"],
 html[data-acd-theme="dark"] .share-pod,
 html[data-acd-theme="dark"] [data-pod-type="share"] {
-  background-color: var(--acd-bg-panel) !important;
+  background-color: #12161D !important;
 }
 
 /* PDF Screen Loader Background */
 html[data-acd-theme="dark"] [class^="pdfLoaderScreen--"],
 html[data-acd-theme="dark"] [class*=" pdfLoaderScreen--"] {
-  background-color: #14181d !important;
+  background-color: #12161D !important;
 }
 
 /* PDF / Presentation Bottom Bar */
@@ -897,7 +920,7 @@ html[data-acd-theme="dark"] [class^="pdfBottomBar--"],
 html[data-acd-theme="dark"] [class*=" pdfBottomBar--"],
 html[data-acd-theme="dark"] .share-toolbar {
   background-color: var(--acd-bg-toolbar) !important;
-  border-top: 1px solid var(--acd-border) !important;
+  border-top: 1px solid var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
 }
 
@@ -918,8 +941,8 @@ html[data-acd-theme="dark"] .whiteboard-toolbar,
 html[data-acd-theme="dark"] [class*="whiteboard-toolbar"],
 html[data-acd-theme="dark"] [class*="draw-toolbar"] {
   background-color: var(--acd-bg-toolbar) !important;
-  border: 1px solid var(--acd-border) !important;
-  border-radius: 6px;
+  border: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 4px;
 }
 
 html[data-acd-theme="dark"] .whiteboard-toolbar button,
@@ -1131,7 +1154,8 @@ html[data-acd-theme="dark"] [class*="spectrum-Dropdown"] {
   background-color: var(--acd-bg-elevated) !important;
   border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
-  box-shadow: var(--acd-shadow-lg) !important;
+  box-shadow: var(--acd-shadow-md) !important;
+  border-radius: 4px !important;
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-Dialog"] {
@@ -1139,6 +1163,7 @@ html[data-acd-theme="dark"] [class*="spectrum-Dialog"] {
   border: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
   box-shadow: var(--acd-shadow-lg) !important;
+  border-radius: 6px !important;
 }
 
 html[data-acd-theme="dark"] .spectrum-Dialog-title {
@@ -1153,12 +1178,16 @@ html[data-acd-theme="dark"] .spectrum-Textfield,
 html[data-acd-theme="dark"] [class*="spectrum-Textfield"] {
   background-color: var(--acd-bg-input) !important;
   color: var(--acd-text-primary) !important;
-  border: 1px solid var(--acd-border) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 4px;
+  transition: border-color var(--acd-transition-fast), box-shadow var(--acd-transition-fast);
 }
 
 html[data-acd-theme="dark"] .spectrum-Textfield:focus,
 html[data-acd-theme="dark"] [class*="spectrum-Textfield"]:focus {
   border-color: var(--acd-border-focus) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--acd-focus-ring) !important;
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-Menu-item"] {
@@ -1180,13 +1209,15 @@ html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-selected {
 html[data-acd-theme="dark"] [class*="spectrum-ActionButton"],
 html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"] {
   background-color: var(--acd-bg-panel) !important;
-  border-color: var(--acd-border) !important;
+  border-color: var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
+  border-radius: 4px;
 }
 
 html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:hover,
 html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"]:hover {
   background-color: var(--acd-bg-hover) !important;
+  border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
 }
 
@@ -1222,9 +1253,9 @@ html[data-acd-theme="dark"] .big-buttons,
 html[data-acd-theme="dark"] .button-style,
 html[data-acd-theme="dark"] .button-div {
   background-color: var(--acd-bg-panel) !important;
-  border: 1px solid var(--acd-border) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 

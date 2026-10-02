@@ -31,6 +31,7 @@
 [class*="pod-container"] {
   background-color: var(--acd-bg-panel) !important;
   border: 1px solid var(--acd-border) !important;
+  border-radius: 4px !important;
   color: var(--acd-text-primary) !important;
 }
 
@@ -42,13 +43,14 @@
 [class*="title-bar"] {
   background-color: var(--acd-bg-toolbar) !important;
   color: var(--acd-text-primary) !important;
-  border-color: var(--acd-border) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
 }
 
 [class^="podTitle--"],
 [class*=" podTitle--"] {
   color: var(--acd-text-primary) !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
 }
 
 [class^="podControls--"],
@@ -76,7 +78,7 @@
 
 [class^="chatIndividualMessageContentWrapperDiv--"],
 [class*=" chatIndividualMessageContentWrapperDiv--"] {
-  background-color: var(--acd-bg-secondary) !important;
+  background-color: rgba(255, 255, 255, 0.02) !important;
   color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border-subtle) !important;
   border-radius: 4px;
@@ -85,6 +87,7 @@
 [class^="chatIndividualMessageContentWrapperDiv--"]:hover,
 [class*=" chatIndividualMessageContentWrapperDiv--"]:hover {
   background-color: var(--acd-bg-hover) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 [class^="chatMessageSender--"],
@@ -111,7 +114,9 @@ select,
 .spectrum-Textfield {
   background-color: var(--acd-bg-input) !important;
   color: var(--acd-text-primary) !important;
-  border: 1px solid var(--acd-border) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 4px;
+  transition: border-color var(--acd-transition-fast), box-shadow var(--acd-transition-fast);
 }
 
 input:focus,
@@ -119,6 +124,8 @@ textarea:focus,
 select:focus,
 .spectrum-Textfield:focus {
   border-color: var(--acd-border-focus) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--acd-focus-ring) !important;
 }
 
 /* Buttons and interactive elements */
@@ -162,6 +169,7 @@ button:active,
 .spectrum-Accordion-itemHeader {
   background-color: var(--acd-bg-secondary) !important;
   color: var(--acd-text-primary) !important;
+  border-top: none !important;
   border-bottom: 1px solid var(--acd-border-subtle) !important;
   cursor: pointer;
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
@@ -216,6 +224,14 @@ button:active,
   outline-offset: -1px !important;
 }
 
+[class^="attendeeItem--"][aria-selected="true"],
+[class*=" attendeeItem--"][aria-selected="true"],
+[class^="attendeeItem--"].is-selected,
+[class*=" attendeeItem--"].is-selected {
+  background-color: var(--acd-bg-selected) !important;
+  border-left: 2px solid var(--acd-accent) !important;
+}
+
 [class^="attendeeUserName--"],
 [class*=" attendeeUserName--"],
 [class^="attendeeUserNameDiv--"],
@@ -232,6 +248,8 @@ button:active,
 .spectrum-Menu {
   background-color: var(--acd-bg-elevated) !important;
   border: 1px solid var(--acd-border) !important;
+  border-radius: 4px !important;
+  box-shadow: var(--acd-shadow-md) !important;
   color: var(--acd-text-primary) !important;
 }
 
@@ -240,6 +258,7 @@ button:active,
 .spectrum-Menu-item {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
+  border-radius: 3px !important;
   transition: background-color var(--acd-transition-fast);
 }
 

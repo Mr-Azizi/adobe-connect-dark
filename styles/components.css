@@ -16,8 +16,8 @@ html[data-acd-theme="dark"] [class*="menu-container"],
 html[data-acd-theme="dark"] [class*="options-menu"] {
   background-color: var(--acd-bg-elevated) !important;
   border: 1px solid var(--acd-border) !important;
-  border-radius: 6px !important;
-  box-shadow: var(--acd-shadow-lg) !important;
+  border-radius: 4px !important;
+  box-shadow: var(--acd-shadow-md) !important;
   padding: 4px !important;
 }
 
@@ -30,7 +30,7 @@ html[data-acd-theme="dark"] [class*="dropdown-item"],
 html[data-acd-theme="dark"] [class*="popover-item"] {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
-  border-radius: 4px !important;
+  border-radius: 3px !important;
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
@@ -94,7 +94,7 @@ html[data-acd-theme="dark"] [class*="modal-content"],
 html[data-acd-theme="dark"] [class*="dialog-content"] {
   background-color: var(--acd-bg-panel) !important;
   border: 1px solid var(--acd-border) !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   box-shadow: var(--acd-shadow-lg) !important;
   color: var(--acd-text-primary) !important;
 }
@@ -104,7 +104,7 @@ html[data-acd-theme="dark"] .modal-backdrop,
 html[data-acd-theme="dark"] [class*="backdrop"],
 html[data-acd-theme="dark"] [class*="underlay"],
 html[data-acd-theme="dark"] .overlay {
-  background-color: rgba(0, 0, 0, 0.72) !important;
+  background-color: rgba(0, 0, 0, 0.65) !important;
 }
 
 /* Modal Headers & Footers */
@@ -112,7 +112,7 @@ html[data-acd-theme="dark"] .modal-header,
 html[data-acd-theme="dark"] [class*="modal-header"],
 html[data-acd-theme="dark"] [class*="dialog-header"] {
   background-color: var(--acd-bg-toolbar) !important;
-  border-bottom: 1px solid var(--acd-border) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
 }
 
@@ -120,7 +120,7 @@ html[data-acd-theme="dark"] .modal-footer,
 html[data-acd-theme="dark"] [class*="modal-footer"],
 html[data-acd-theme="dark"] [class*="dialog-footer"] {
   background-color: var(--acd-bg-secondary) !important;
-  border-top: 1px solid var(--acd-border) !important;
+  border-top: 1px solid var(--acd-border-subtle) !important;
 }
 
 /* ==========================================================================
@@ -134,7 +134,7 @@ html[data-acd-theme="dark"] [class*="popover"] {
   background-color: var(--acd-bg-elevated) !important;
   color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border) !important;
-  border-radius: 5px !important;
+  border-radius: 4px !important;
   box-shadow: var(--acd-shadow-md) !important;
 }
 
@@ -180,7 +180,7 @@ html[data-acd-theme="dark"] [class*="btn-secondary"],
 html[data-acd-theme="dark"] [class*="btn-default"] {
   background-color: var(--acd-bg-panel) !important;
   color: var(--acd-text-primary) !important;
-  border: 1px solid var(--acd-border) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
   border-radius: 4px;
 }
 
@@ -210,7 +210,7 @@ html[data-acd-theme="dark"] [class*="btn-secondary"]:active {
 html[data-acd-theme="dark"] [role="tablist"],
 html[data-acd-theme="dark"] .tabs-header,
 html[data-acd-theme="dark"] [class*="tab-container"] {
-  border-bottom: 1px solid var(--acd-border) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
 }
 
 html[data-acd-theme="dark"] [role="tab"],
@@ -244,7 +244,7 @@ html[data-acd-theme="dark"] .tab-item:active {
 
 html[data-acd-theme="dark"] [role="tab"][aria-selected="true"],
 html[data-acd-theme="dark"] .tab-item.active {
-  color: var(--acd-accent) !important;
+  color: var(--acd-text-primary) !important;
   border-bottom: 2px solid var(--acd-accent) !important;
   font-weight: 600;
 }
@@ -259,6 +259,6 @@ html[data-acd-theme="dark"] [class*="notification-banner"] {
   background-color: var(--acd-bg-elevated) !important;
   color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border) !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   box-shadow: var(--acd-shadow-md) !important;
 }

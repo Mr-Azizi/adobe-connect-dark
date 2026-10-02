@@ -5,74 +5,89 @@
 
 :root {
   /* ==========================================================================
-     Base Backgrounds
+     Base Backgrounds (Surface Hierarchy)
+     LEVEL 0: Page / Application Background (#0F141A)
+     LEVEL 1: Pod / Card / Dialog Surfaces (#161B22)
+     LEVEL 2: Header / Toolbar / Secondary Surfaces (#1C222B)
+     LEVEL 3: Elevated Surfaces & Hover States (#222A34)
+     LEVEL 4: Active / Pressed Surfaces (#27313C)
      ========================================================================== */
-  --acd-bg-main: #111418;        /* Main page & viewport background */
-  --acd-bg-secondary: #181C21;   /* Secondary containers & sidebars */
-  --acd-bg-panel: #1D2228;       /* Pods, cards, dialog surfaces */
-  --acd-bg-toolbar: #20252B;     /* Top header bar & pod headers */
-  --acd-bg-elevated: #242B33;    /* Popovers, dropdown menus, modals */
-  --acd-bg-input: #15191E;       /* Inputs, textareas, search boxes */
+  --acd-bg-main: #0F141A;        /* Main page & viewport background (Level 0) */
+  --acd-bg-panel: #161B22;       /* Pods, cards, dialog surfaces (Level 1 / Primary surface) */
+  --acd-bg-secondary: #1C222B;   /* Secondary containers, sidebars, group headers (Level 2) */
+  --acd-bg-toolbar: #1C222B;     /* Top header bar & pod headers (Level 2) */
+  --acd-bg-elevated: #222A34;    /* Popovers, dropdown menus, modals (Level 3) */
+  --acd-bg-input: #12161D;       /* Inputs, textareas, search boxes */
 
   /* ==========================================================================
      Interactive & State Backgrounds
      ========================================================================== */
-  --acd-bg-hover: #292F36;       /* Hover state on list items, buttons */
-  --acd-bg-active: #323942;      /* Active / pressed state */
-  --acd-bg-selected: #242E3E;    /* Selected row / item */
+  --acd-bg-hover: #222A34;       /* Hover state on list items, buttons (Level 3) */
+  --acd-bg-active: #27313C;      /* Active / pressed state (Level 4) */
+  --acd-bg-selected: rgba(110, 168, 254, 0.10); /* Restrained selected row / item tint */
 
   /* ==========================================================================
      Typography & Text Colors
      ========================================================================== */
-  --acd-text-primary: #EDF1F5;   /* High contrast primary text */
-  --acd-text-secondary: #B7C0CA; /* Medium contrast secondary text */
-  --acd-text-muted: #8B949E;     /* Low contrast metadata, timestamps */
-  --acd-text-disabled: #5E6773;  /* Disabled text */
-  --acd-text-placeholder: #68727F;/* Input placeholder text */
+  --acd-text-primary: #F0F3F6;   /* Clean high-contrast primary text */
+  --acd-text-secondary: #B8C0CA; /* Medium contrast secondary text */
+  --acd-text-muted: #7F8A96;     /* Low contrast metadata, timestamps */
+  --acd-text-disabled: #545E6B;  /* Disabled text */
+  --acd-text-placeholder: #636F7D; /* Input placeholder text */
 
   /* ==========================================================================
      Borders & Dividers
+     Tone-first separation: subtle dividers reduce visual clutter
      ========================================================================== */
-  --acd-border: #30363D;         /* Standard container & pod border */
-  --acd-border-subtle: #21262D;  /* Subtle internal dividers */
-  --acd-border-focus: #6E9BFF;   /* Focus outline / border */
+  --acd-border: #29323D;         /* Stronger structural container border */
+  --acd-border-subtle: rgba(255, 255, 255, 0.055); /* Subtle internal dividers */
+  --acd-border-focus: #6EA8FE;   /* Focus outline / border */
+  --acd-focus-ring: rgba(110, 168, 254, 0.22); /* Accessible soft focus ring */
 
   /* ==========================================================================
      Accent & Branding Colors
+     Enterprise blue family, softened and restrained
      ========================================================================== */
-  --acd-accent: #6E9BFF;         /* Brand accent color */
-  --acd-accent-hover: #86ACFF;   /* Hover accent */
-  --acd-accent-active: #5B84E0;  /* Pressed accent */
-  --acd-accent-bg: rgba(110, 155, 255, 0.14); /* Soft accent tint */
-  --acd-accent-border: rgba(110, 155, 255, 0.35);
+  --acd-accent: #6EA8FE;         /* Brand accent color */
+  --acd-accent-hover: #8AB8FE;   /* Hover accent */
+  --acd-accent-active: #5B94E8;  /* Pressed accent */
+  --acd-accent-bg: rgba(110, 168, 254, 0.10); /* Soft muted accent tint */
+  --acd-accent-border: rgba(110, 168, 254, 0.28); /* Restrained accent boundary */
 
   /* ==========================================================================
      Functional & Status Colors
      ========================================================================== */
   --acd-success: #3FB950;
-  --acd-success-bg: rgba(63, 185, 80, 0.15);
+  --acd-success-bg: rgba(63, 185, 80, 0.12);
   --acd-warning: #D29922;
-  --acd-warning-bg: rgba(210, 153, 34, 0.15);
+  --acd-warning-bg: rgba(210, 153, 34, 0.12);
   --acd-danger: #F85149;
-  --acd-danger-bg: rgba(248, 81, 73, 0.15);
+  --acd-danger-bg: rgba(248, 81, 73, 0.12);
 
   /* ==========================================================================
-     Shadows & Elevation
+     Shadows & Elevation (Used sparingly for popovers, menus, dialogs)
      ========================================================================== */
-  --acd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
-  --acd-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.55);
-  --acd-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.7);
+  --acd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.20);
+  --acd-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(255, 255, 255, 0.025);
+  --acd-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.035);
 
   /* ==========================================================================
      Scrollbars
      ========================================================================== */
-  --acd-scrollbar-thumb: #30363D;
-  --acd-scrollbar-thumb-hover: #48515B;
-  --acd-scrollbar-track: #14181D;
+  --acd-scrollbar-thumb: #29323D;
+  --acd-scrollbar-thumb-hover: #3D4856;
+  --acd-scrollbar-track: #0F141A;
 
   /* ==========================================================================
-     Animation / Transitions
+     Animation / Transitions (Micro-transitions only, 120ms-150ms)
      ========================================================================== */
   --acd-transition-fast: 120ms ease;
-  --acd-transition-normal: 200ms ease;
+  --acd-transition-normal: 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --acd-transition-fast: 0ms !important;
+    --acd-transition-normal: 0ms !important;
+  }
 }
