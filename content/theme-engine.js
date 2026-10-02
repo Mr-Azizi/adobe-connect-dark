@@ -68,6 +68,7 @@
   class ACDThemeEngine {
     constructor() {
       this.enabled = false;
+      this.chatRtlEnabled = false;
       this.observer = null; // Associated ACDObserver
       this.injectedElements = new Set();
       this.attachedShadowRoots = new Set();
@@ -92,6 +93,13 @@
      */
     isEnabled() {
       return this.enabled;
+    }
+
+    /**
+     * Check if RTL chat is currently active
+     */
+    isChatRtlEnabled() {
+      return this.chatRtlEnabled;
     }
 
     /**
@@ -151,17 +159,10 @@
         root.removeAttribute('data-acd-theme');
       }
 
-      // 4. Remove all injected document stylesheet elements
-      this.injectedElements.forEach((el) => {
-        try {
-          if (el && el.parentNode) {
-            el.parentNode.removeChild(el);
-          }
-        } catch (e) {
-          // Element might already have been removed
-        }
-      });
-      this.injectedElements.clear();
+      // 4. Remove all injected document stylesheet elements ONLY if chat RTL is not active
+      if (!this.chatRtlEnabled) {
+        this.cleanupStylesheets();
+      }
 
       // 5. Clean up Layer 1 attributes in main document
       try {
@@ -196,10 +197,61 @@
     }
 
     /**
+     * CONSOLIDATED ACTIVATION PATH FOR RTL CHAT
+     */
+    applyChatRtl() {
+      this.chatRtlEnabled = true;
+      this.applyChatRtlAttribute();
+      this.injectStylesheets(document);
+    }
+
+    /**
+     * CONSOLIDATED DEACTIVATION PATH FOR RTL CHAT
+     */
+    removeChatRtl() {
+      this.chatRtlEnabled = false;
+      const root = document.documentElement;
+      if (root) {
+        root.removeAttribute('data-acd-chat-rtl');
+      }
+
+      // If neither dark mode nor RTL is active, clean up injected stylesheets
+      if (!this.enabled && !this.chatRtlEnabled) {
+        this.cleanupStylesheets();
+      }
+    }
+
+    /**
+     * Set RTL attribute on html element
+     */
+    applyChatRtlAttribute() {
+      const root = document.documentElement;
+      if (root && !root.hasAttribute('data-acd-chat-rtl')) {
+        root.setAttribute('data-acd-chat-rtl', 'true');
+      }
+    }
+
+    /**
+     * Remove all injected document stylesheet link elements
+     */
+    cleanupStylesheets() {
+      this.injectedElements.forEach((el) => {
+        try {
+          if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        } catch (e) {
+          // Element might already have been removed
+        }
+      });
+      this.injectedElements.clear();
+    }
+
+    /**
      * Inject extension stylesheets into the document
      */
     injectStylesheets(target) {
-      if (!this.enabled) return;
+      if (!this.enabled && !this.chatRtlEnabled) return;
 
       const container = target === document
         ? (document.head || document.documentElement)

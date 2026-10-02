@@ -1275,3 +1275,73 @@ html[data-acd-theme="dark"] .copy-right,
 html[data-acd-theme="dark"] .after-download-instructions {
   color: var(--acd-text-muted) !important;
 }
+
+/* ==========================================================================
+   Optional RTL Chat Text (Right-to-Left Persian / Arabic Presentation)
+   Independent from Dark Mode - Activated via html[data-acd-chat-rtl="true"]
+   ========================================================================== */
+
+/* 1. Chat Message Text Body (unicode-bidi: plaintext preserves mixed LTR/RTL) */
+html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContent--"],
+html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContent--"],
+html[data-acd-chat-rtl="true"] .chat-message-text,
+html[data-acd-chat-rtl="true"] [class*="chat-message-content"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* 2. Chat Message Sender Name */
+html[data-acd-chat-rtl="true"] [class^="chatMessageSender--"],
+html[data-acd-chat-rtl="true"] [class*=" chatMessageSender--"],
+html[data-acd-chat-rtl="true"] .chat-user-name,
+html[data-acd-chat-rtl="true"] .sender-name,
+html[data-acd-chat-rtl="true"] [class*="chat-sender"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* 3. Timestamps: Protected LTR Presentation */
+html[data-acd-chat-rtl="true"] [class^="chatMessageTime--"],
+html[data-acd-chat-rtl="true"] [class*=" chatMessageTime--"],
+html[data-acd-chat-rtl="true"] .chat-time,
+html[data-acd-chat-rtl="true"] .message-time,
+html[data-acd-chat-rtl="true"] [class*="chat-time"] {
+  direction: ltr !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* 4. Chat Compose / Typing Input Area */
+html[data-acd-chat-rtl="true"] [class^="typingArea--"],
+html[data-acd-chat-rtl="true"] [class*=" typingArea--"],
+html[data-acd-chat-rtl="true"] [class^="typingAreaHasText--"],
+html[data-acd-chat-rtl="true"] [class*=" typingAreaHasText--"],
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] textarea,
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] textarea,
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] input,
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] input,
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] [contenteditable="true"],
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] [contenteditable="true"],
+html[data-acd-chat-rtl="true"] .chat-input-container textarea,
+html[data-acd-chat-rtl="true"] .chat-input-container input,
+html[data-acd-chat-rtl="true"] .chat-input-container [contenteditable="true"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* 5. Compose Input Placeholder Alignment */
+html[data-acd-chat-rtl="true"] [class^="typingArea--"]::placeholder,
+html[data-acd-chat-rtl="true"] [class*=" typingArea--"]::placeholder,
+html[data-acd-chat-rtl="true"] [class^="typingArea--"]:-ms-input-placeholder,
+html[data-acd-chat-rtl="true"] [class*=" typingArea--"]:-ms-input-placeholder,
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] textarea::placeholder,
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] textarea::placeholder,
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] input::placeholder,
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] input::placeholder,
+html[data-acd-chat-rtl="true"] .chat-input-container textarea::placeholder,
+html[data-acd-chat-rtl="true"] .chat-input-container input::placeholder {
+  text-align: right !important;
+  direction: rtl !important;
+}

@@ -28,11 +28,11 @@ chrome.runtime.onStartup.addListener(async () => {
 });
 
 /**
- * Migrate legacy acd_enabled_domains to acd_enabled_sites
+ * Migrate legacy acd_enabled_domains to acd_enabled_sites and ensure default storage
  */
 async function migrateLegacyStorage() {
   try {
-    const result = await chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains']);
+    const result = await chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites']);
     if (!result.acd_enabled_sites && result.acd_enabled_domains) {
       const migrated = {};
       for (const [dom, val] of Object.entries(result.acd_enabled_domains)) {
@@ -45,6 +45,9 @@ async function migrateLegacyStorage() {
     } else if (!result.acd_enabled_sites) {
       await chrome.storage.local.set({ acd_enabled_sites: {} });
     }
+    if (!result.acd_rtl_chat_sites) {
+      await chrome.storage.local.set({ acd_rtl_chat_sites: {} });
+    }
   } catch (e) {
     console.warn('[ACD] Storage migration warning:', e);
   }
@@ -52,26 +55,32 @@ async function migrateLegacyStorage() {
 
 /**
  * Self-healing synchronization between:
- * 1. Storage state (acd_enabled_sites)
+ * 1. Storage state (acd_enabled_sites & acd_rtl_chat_sites)
  * 2. Permission state (chrome.permissions.contains)
  * 3. Registered content scripts (chrome.scripting.getRegisteredContentScripts)
+ * Runtime is active whenever either Dark Mode OR RTL Chat is enabled.
  */
 async function syncRegisteredScripts() {
   if (!chrome.scripting || !chrome.scripting.getRegisteredContentScripts) return;
 
   try {
-    const result = await chrome.storage.local.get(['acd_enabled_sites']);
-    const enabledSites = { ...(result.acd_enabled_sites || {}) };
+    const result = await chrome.storage.local.get(['acd_enabled_sites', 'acd_rtl_chat_sites']);
+    const enabledDarkSites = { ...(result.acd_enabled_sites || {}) };
+    const enabledRtlSites = { ...(result.acd_rtl_chat_sites || {}) };
     let storageChanged = false;
 
     const registered = await chrome.scripting.getRegisteredContentScripts();
     const registeredIds = new Set(registered.map((r) => r.id));
     const validScriptIds = new Set();
 
-    // 1. Verify all sites in storage against actual permission state
-    for (const siteKey of Object.keys(enabledSites)) {
-      if (!enabledSites[siteKey]) continue;
+    // Collect all unique siteKeys that have either Dark Mode or RTL enabled
+    const allSiteKeys = new Set([
+      ...Object.keys(enabledDarkSites).filter((k) => enabledDarkSites[k]),
+      ...Object.keys(enabledRtlSites).filter((k) => enabledRtlSites[k])
+    ]);
 
+    // 1. Verify all active sites against actual permission state
+    for (const siteKey of allSiteKeys) {
       const originPattern = `${siteKey}/*`;
       let hasPermission = false;
 
@@ -82,9 +91,15 @@ async function syncRegisteredScripts() {
       }
 
       if (!hasPermission) {
-        // Permission was revoked or does not exist: remove from enabled storage
-        delete enabledSites[siteKey];
-        storageChanged = true;
+        // Permission was revoked or does not exist: purge from enabled storage
+        if (enabledDarkSites[siteKey]) {
+          delete enabledDarkSites[siteKey];
+          storageChanged = true;
+        }
+        if (enabledRtlSites[siteKey]) {
+          delete enabledRtlSites[siteKey];
+          storageChanged = true;
+        }
         continue;
       }
 
@@ -128,7 +143,10 @@ async function syncRegisteredScripts() {
 
     // 3. Persist cleaned storage if any invalid entries were purged
     if (storageChanged) {
-      await chrome.storage.local.set({ acd_enabled_sites: enabledSites });
+      await chrome.storage.local.set({
+        acd_enabled_sites: enabledDarkSites,
+        acd_rtl_chat_sites: enabledRtlSites
+      });
     }
   } catch (e) {
     console.warn('[ACD] Error during self-healing sync:', e);
@@ -149,11 +167,11 @@ function updateBadgeForTab(tabId, urlString) {
     }
 
     const siteKey = `${url.protocol}//${url.hostname}`;
-    chrome.storage.local.get(['acd_enabled_sites'], (result) => {
-      const enabledSites = result.acd_enabled_sites || {};
-      const isEnabled = Boolean(enabledSites[siteKey]);
+    chrome.storage.local.get(['acd_enabled_sites', 'acd_rtl_chat_sites'], (result) => {
+      const darkEnabled = Boolean((result.acd_enabled_sites || {})[siteKey]);
+      const rtlEnabled = Boolean((result.acd_rtl_chat_sites || {})[siteKey]);
 
-      if (isEnabled) {
+      if (darkEnabled || rtlEnabled) {
         chrome.action.setBadgeText({ tabId, text: 'ON' });
         chrome.action.setBadgeBackgroundColor({ tabId, color: '#6E9BFF' });
         chrome.action.setBadgeTextColor({ tabId, color: '#FFFFFF' });
@@ -183,7 +201,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // Update badge when storage settings change
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName !== 'local' || !changes.acd_enabled_sites) return;
+  if (areaName !== 'local' || (!changes.acd_enabled_sites && !changes.acd_rtl_chat_sites)) return;
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs && tabs.length > 0) {

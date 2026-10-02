@@ -20,42 +20,39 @@
   }
 
   /**
-   * Check if the current siteKey is enabled in chrome.storage.local
+   * Check if current siteKey is enabled in chrome.storage.local
    */
   function checkSiteState() {
     try {
-      chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains'], (result) => {
+      chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites'], (result) => {
         if (chrome.runtime.lastError) return;
 
         const enabledSites = result.acd_enabled_sites || {};
-        const isEnabled = Boolean(
+        const isDarkEnabled = Boolean(
           enabledSites[currentSiteKey] ||
           (result.acd_enabled_domains && result.acd_enabled_domains[window.location.hostname])
         );
 
-        if (isEnabled) {
-          activate();
+        const rtlSites = result.acd_rtl_chat_sites || {};
+        const isRtlEnabled = Boolean(rtlSites[currentSiteKey]);
+
+        // Dark Mode state synchronization
+        if (isDarkEnabled) {
+          themeEngine.applyDarkTheme();
         } else {
-          deactivate();
+          themeEngine.removeDarkTheme();
+        }
+
+        // RTL Chat state synchronization
+        if (isRtlEnabled) {
+          themeEngine.applyChatRtl();
+        } else {
+          themeEngine.removeChatRtl();
         }
       });
     } catch (e) {
       // Extension context invalidated
     }
-  }
-
-  /**
-   * Activate dark mode through the consolidated, idempotent theme engine path
-   */
-  function activate() {
-    themeEngine.applyDarkTheme();
-  }
-
-  /**
-   * Deactivate dark mode through the consolidated theme engine path
-   */
-  function deactivate() {
-    themeEngine.removeDarkTheme();
   }
 
   // Initial check at document_start
@@ -67,12 +64,23 @@
 
     if (changes.acd_enabled_sites) {
       const newSites = changes.acd_enabled_sites.newValue || {};
-      const shouldBeEnabled = Boolean(newSites[currentSiteKey]);
+      const shouldBeDark = Boolean(newSites[currentSiteKey]);
 
-      if (shouldBeEnabled && !themeEngine.isEnabled()) {
-        activate();
-      } else if (!shouldBeEnabled && themeEngine.isEnabled()) {
-        deactivate();
+      if (shouldBeDark && !themeEngine.isEnabled()) {
+        themeEngine.applyDarkTheme();
+      } else if (!shouldBeDark && themeEngine.isEnabled()) {
+        themeEngine.removeDarkTheme();
+      }
+    }
+
+    if (changes.acd_rtl_chat_sites) {
+      const newRtlSites = changes.acd_rtl_chat_sites.newValue || {};
+      const shouldBeRtl = Boolean(newRtlSites[currentSiteKey]);
+
+      if (shouldBeRtl && !themeEngine.isChatRtlEnabled()) {
+        themeEngine.applyChatRtl();
+      } else if (!shouldBeRtl && themeEngine.isChatRtlEnabled()) {
+        themeEngine.removeChatRtl();
       }
     }
   });
@@ -82,24 +90,54 @@
     if (!request || !request.action) return false;
 
     switch (request.action) {
-      case 'toggle':
+      case 'toggle': // Backward-compatible alias for toggleDark
+      case 'toggleDark':
         if (request.enabled) {
-          activate();
+          themeEngine.applyDarkTheme();
         } else {
-          deactivate();
+          themeEngine.removeDarkTheme();
         }
-        sendResponse({ success: true, enabled: themeEngine.isEnabled(), siteKey: currentSiteKey });
+        sendResponse({
+          success: true,
+          enabled: themeEngine.isEnabled(),
+          darkEnabled: themeEngine.isEnabled(),
+          rtlEnabled: themeEngine.isChatRtlEnabled(),
+          siteKey: currentSiteKey
+        });
+        break;
+
+      case 'toggleRtl':
+        if (request.enabled) {
+          themeEngine.applyChatRtl();
+        } else {
+          themeEngine.removeChatRtl();
+        }
+        sendResponse({
+          success: true,
+          darkEnabled: themeEngine.isEnabled(),
+          rtlEnabled: themeEngine.isChatRtlEnabled(),
+          siteKey: currentSiteKey
+        });
         break;
 
       case 'reset':
-        deactivate();
-        sendResponse({ success: true, enabled: false, siteKey: currentSiteKey });
+        themeEngine.removeDarkTheme();
+        themeEngine.removeChatRtl();
+        sendResponse({
+          success: true,
+          enabled: false,
+          darkEnabled: false,
+          rtlEnabled: false,
+          siteKey: currentSiteKey
+        });
         break;
 
       case 'getStatus':
         sendResponse({
           success: true,
           enabled: themeEngine.isEnabled(),
+          darkEnabled: themeEngine.isEnabled(),
+          rtlEnabled: themeEngine.isChatRtlEnabled(),
           siteKey: currentSiteKey
         });
         break;

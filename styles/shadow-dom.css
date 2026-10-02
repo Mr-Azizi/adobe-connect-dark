@@ -289,3 +289,50 @@ picture,
   filter: none !important;
   mix-blend-mode: normal !important;
 }
+
+/* ==========================================================================
+   Optional RTL Chat Text inside Open Shadow DOM
+   ========================================================================== */
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+}
+
+:host-context([data-acd-chat-rtl="true"]) [class^="chatMessageSender--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageSender--"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+}
+
+:host-context([data-acd-chat-rtl="true"]) [class^="chatMessageTime--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageTime--"] {
+  direction: ltr !important;
+  unicode-bidi: plaintext !important;
+}
+
+:host-context([data-acd-chat-rtl="true"]) [class^="typingArea--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"],
+:host-context([data-acd-chat-rtl="true"]) [class^="typingAreaHasText--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" typingAreaHasText--"],
+:host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] textarea,
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] textarea,
+:host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] input,
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] input {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+}
+
+:host-context([data-acd-chat-rtl="true"]) [class^="typingArea--"]::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"]::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"]:-ms-input-placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] textarea::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] textarea::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] input::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] input::placeholder {
+  text-align: right !important;
+  direction: rtl !important;
+}

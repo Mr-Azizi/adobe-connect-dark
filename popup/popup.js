@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentDomainEl = document.getElementById('current-domain');
   const statusBadgeEl = document.getElementById('status-badge');
   const themeToggleEl = document.getElementById('theme-toggle');
+  const rtlToggleEl = document.getElementById('rtl-toggle');
   const resetBtnEl = document.getElementById('reset-btn');
   const toastEl = document.getElementById('toast');
 
@@ -27,9 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2500);
   }
 
-  function updateUIState(isActive) {
-    themeToggleEl.checked = isActive;
-    if (isActive) {
+  function updateStatusBadge(isDark, isRtl) {
+    if (isDark || isRtl) {
       statusBadgeEl.textContent = 'Active';
       statusBadgeEl.className = 'badge badge-active';
     } else {
@@ -44,11 +44,69 @@ document.addEventListener('DOMContentLoaded', () => {
     return `acd_cs_${protocolSlug}_${hostSlug}`;
   }
 
+  async function ensureRegistration(scriptId, originPattern) {
+    if (!chrome.scripting || !chrome.scripting.registerContentScripts) return true;
+
+    try {
+      const registered = await chrome.scripting.getRegisteredContentScripts();
+      const isAlreadyRegistered = registered.some((r) => r.id === scriptId);
+      if (!isAlreadyRegistered) {
+        await chrome.scripting.registerContentScripts([{
+          id: scriptId,
+          matches: [originPattern],
+          js: [
+            'content/theme-engine.js',
+            'content/observer.js',
+            'content/content.js'
+          ],
+          runAt: 'document_start',
+          allFrames: true
+        }]);
+      }
+      return true;
+    } catch (err) {
+      console.error('[ACD] Dynamic content script registration failed:', err);
+      return false;
+    }
+  }
+
+  async function cleanupRegistrationIfUnneeded(scriptId, keepDark, keepRtl) {
+    if (keepDark || keepRtl) return;
+    if (chrome.scripting && chrome.scripting.unregisterContentScripts) {
+      try {
+        await chrome.scripting.unregisterContentScripts({ ids: [scriptId] });
+      } catch (err) {
+        // Ignored if already unregistered
+      }
+    }
+  }
+
+  function sendTabMessageWithFallback(messagePayload) {
+    if (!currentTab || !currentTab.id) return;
+
+    chrome.tabs.sendMessage(currentTab.id, messagePayload, () => {
+      if (chrome.runtime.lastError) {
+        // Fallback injection if content script was not already running in tab
+        if (chrome.scripting && chrome.scripting.executeScript) {
+          chrome.scripting.executeScript({
+            target: { tabId: currentTab.id, allFrames: true },
+            files: [
+              'content/theme-engine.js',
+              'content/observer.js',
+              'content/content.js'
+            ]
+          }).catch((e) => console.warn('[ACD] Injection fallback:', e));
+        }
+      }
+    });
+  }
+
   // Query active tab in the current window
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs || tabs.length === 0) {
       currentDomainEl.textContent = 'No active tab found';
       themeToggleEl.disabled = true;
+      if (rtlToggleEl) rtlToggleEl.disabled = true;
       resetBtnEl.disabled = true;
       return;
     }
@@ -61,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       currentDomainEl.textContent = 'Invalid URL';
       themeToggleEl.disabled = true;
+      if (rtlToggleEl) rtlToggleEl.disabled = true;
       resetBtnEl.disabled = true;
       return;
     }
@@ -69,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentUrl.protocol !== 'http:' && currentUrl.protocol !== 'https:') {
       currentDomainEl.textContent = 'Browser Internal Page';
       themeToggleEl.disabled = true;
+      if (rtlToggleEl) rtlToggleEl.disabled = true;
       resetBtnEl.disabled = true;
       statusBadgeEl.textContent = 'Unsupported';
       statusBadgeEl.className = 'badge badge-inactive';
@@ -84,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentDomainEl.title = currentSiteKey;
 
     // Load persisted state for this siteKey (with backward-compatibility migration)
-    chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains'], (result) => {
+    chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites'], (result) => {
       if (chrome.runtime.lastError) {
         showToast('Error loading settings');
         return;
@@ -104,117 +164,123 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       enabledSites = enabledSites || {};
-      const isEnabled = Boolean(enabledSites[currentSiteKey]);
-      updateUIState(isEnabled);
+      const rtlSites = result.acd_rtl_chat_sites || {};
+
+      const isDark = Boolean(enabledSites[currentSiteKey]);
+      const isRtl = Boolean(rtlSites[currentSiteKey]);
+
+      themeToggleEl.checked = isDark;
+      if (rtlToggleEl) rtlToggleEl.checked = isRtl;
+
+      updateStatusBadge(isDark, isRtl);
     });
   });
 
-  // Toggle handler with ATOMIC execution
+  // Dark Mode Toggle handler
   themeToggleEl.addEventListener('change', () => {
     if (!currentSiteKey || !currentTab || !currentOriginPattern || !currentUrl) return;
 
     const wantsToEnable = themeToggleEl.checked;
+    const isRtlActive = rtlToggleEl ? rtlToggleEl.checked : false;
     const scriptId = getScriptId(currentUrl);
 
     if (wantsToEnable) {
-      // Step 1: Request permission specifically for this siteKey origin
       chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
         if (!granted) {
-          // Permission denied by user: rollback toggle immediately
-          updateUIState(false);
+          themeToggleEl.checked = false;
+          updateStatusBadge(false, isRtlActive);
           showToast('Permission not granted / مجوز داده نشد');
           return;
         }
 
-        // Step 2: Register dynamic content script
-        let regSuccess = false;
-        try {
-          if (chrome.scripting && chrome.scripting.registerContentScripts) {
-            await chrome.scripting.unregisterContentScripts({ ids: [scriptId] }).catch(() => {});
-            await chrome.scripting.registerContentScripts([{
-              id: scriptId,
-              matches: [currentOriginPattern],
-              js: [
-                'content/theme-engine.js',
-                'content/observer.js',
-                'content/content.js'
-              ],
-              runAt: 'document_start',
-              allFrames: true
-            }]);
-            regSuccess = true;
-          }
-        } catch (err) {
-          console.error('[ACD] Dynamic content script registration failed:', err);
-        }
-
-        // Step 3: Handle registration failure atomically
-        if (!regSuccess) {
-          updateUIState(false);
+        const regOk = await ensureRegistration(scriptId, currentOriginPattern);
+        if (!regOk) {
+          themeToggleEl.checked = false;
+          updateStatusBadge(false, isRtlActive);
           showToast('Registration failed / خطا در ثبت اسکریپت');
           return;
         }
 
-        // Step 4: Persist enabled state to storage ONLY after successful registration
         chrome.storage.local.get(['acd_enabled_sites'], (result) => {
           const enabledSites = result.acd_enabled_sites || {};
           enabledSites[currentSiteKey] = true;
 
           chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
-            updateUIState(true);
+            updateStatusBadge(true, isRtlActive);
             showToast('✓ Dark Mode enabled for ' + currentUrl.hostname);
-
-            // Step 5: Activate immediately in current tab without requiring reload
-            chrome.tabs.sendMessage(
-              currentTab.id,
-              { action: 'toggle', enabled: true, siteKey: currentSiteKey },
-              () => {
-                if (chrome.runtime.lastError) {
-                  // Fallback injection if content script was not already running in tab
-                  if (chrome.scripting && chrome.scripting.executeScript) {
-                    chrome.scripting.executeScript({
-                      target: { tabId: currentTab.id, allFrames: true },
-                      files: [
-                        'content/theme-engine.js',
-                        'content/observer.js',
-                        'content/content.js'
-                      ]
-                    }).catch((e) => console.warn('[ACD] Injection fallback:', e));
-                  }
-                }
-              }
-            );
+            sendTabMessageWithFallback({ action: 'toggleDark', enabled: true, siteKey: currentSiteKey });
           });
         });
       });
     } else {
-      // Disabling flow:
-      // 1. Unregister dynamic content script
-      if (chrome.scripting && chrome.scripting.unregisterContentScripts) {
-        chrome.scripting.unregisterContentScripts({ ids: [scriptId] }).catch(() => {});
-      }
-
-      // 2. Remove from storage
-      chrome.storage.local.get(['acd_enabled_sites'], (result) => {
+      chrome.storage.local.get(['acd_enabled_sites'], async (result) => {
         const enabledSites = result.acd_enabled_sites || {};
         delete enabledSites[currentSiteKey];
 
-        chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
-          updateUIState(false);
-          showToast('✓ Dark Mode disabled');
+        await cleanupRegistrationIfUnneeded(scriptId, false, isRtlActive);
 
-          // 3. Message active tab to disable theme and restore native look immediately
-          chrome.tabs.sendMessage(
-            currentTab.id,
-            { action: 'toggle', enabled: false, siteKey: currentSiteKey },
-            () => {
-              if (chrome.runtime.lastError) {}
-            }
-          );
+        chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
+          updateStatusBadge(false, isRtlActive);
+          showToast('✓ Dark Mode disabled');
+          sendTabMessageWithFallback({ action: 'toggleDark', enabled: false, siteKey: currentSiteKey });
         });
       });
     }
   });
+
+  // RTL Chat Text Toggle handler
+  if (rtlToggleEl) {
+    rtlToggleEl.addEventListener('change', () => {
+      if (!currentSiteKey || !currentTab || !currentOriginPattern || !currentUrl) return;
+
+      const wantsToEnable = rtlToggleEl.checked;
+      const isDarkActive = themeToggleEl.checked;
+      const scriptId = getScriptId(currentUrl);
+
+      if (wantsToEnable) {
+        chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
+          if (!granted) {
+            rtlToggleEl.checked = false;
+            updateStatusBadge(isDarkActive, false);
+            showToast('Permission not granted / مجوز داده نشد');
+            return;
+          }
+
+          const regOk = await ensureRegistration(scriptId, currentOriginPattern);
+          if (!regOk) {
+            rtlToggleEl.checked = false;
+            updateStatusBadge(isDarkActive, false);
+            showToast('Registration failed / خطا در ثبت اسکریپت');
+            return;
+          }
+
+          chrome.storage.local.get(['acd_rtl_chat_sites'], (result) => {
+            const rtlSites = result.acd_rtl_chat_sites || {};
+            rtlSites[currentSiteKey] = true;
+
+            chrome.storage.local.set({ acd_rtl_chat_sites: rtlSites }, () => {
+              updateStatusBadge(isDarkActive, true);
+              showToast('✓ RTL Chat enabled for ' + currentUrl.hostname);
+              sendTabMessageWithFallback({ action: 'toggleRtl', enabled: true, siteKey: currentSiteKey });
+            });
+          });
+        });
+      } else {
+        chrome.storage.local.get(['acd_rtl_chat_sites'], async (result) => {
+          const rtlSites = result.acd_rtl_chat_sites || {};
+          delete rtlSites[currentSiteKey];
+
+          await cleanupRegistrationIfUnneeded(scriptId, isDarkActive, false);
+
+          chrome.storage.local.set({ acd_rtl_chat_sites: rtlSites }, () => {
+            updateStatusBadge(isDarkActive, false);
+            showToast('✓ RTL Chat disabled');
+            sendTabMessageWithFallback({ action: 'toggleRtl', enabled: false, siteKey: currentSiteKey });
+          });
+        });
+      }
+    });
+  }
 
   // Reset button handler
   resetBtnEl.addEventListener('click', () => {
@@ -228,12 +294,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Remove siteKey from storage
-    chrome.storage.local.get(['acd_enabled_sites'], (result) => {
+    chrome.storage.local.get(['acd_enabled_sites', 'acd_rtl_chat_sites'], (result) => {
       const enabledSites = result.acd_enabled_sites || {};
+      const rtlSites = result.acd_rtl_chat_sites || {};
       delete enabledSites[currentSiteKey];
+      delete rtlSites[currentSiteKey];
 
-      chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
-        updateUIState(false);
+      chrome.storage.local.set({
+        acd_enabled_sites: enabledSites,
+        acd_rtl_chat_sites: rtlSites
+      }, () => {
+        themeToggleEl.checked = false;
+        if (rtlToggleEl) rtlToggleEl.checked = false;
+        updateStatusBadge(false, false);
         showToast('✓ Site settings reset');
 
         // 3. Message tab to reset
