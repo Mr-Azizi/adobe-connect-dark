@@ -293,15 +293,21 @@ picture,
 /* ==========================================================================
    Optional RTL Chat Text inside Open Shadow DOM
    ========================================================================== */
-:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"],
-:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"] {
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContentWrapperDiv--"] {
   direction: rtl !important;
   text-align: right !important;
-  unicode-bidi: plaintext !important;
 }
 
 :host-context([data-acd-chat-rtl="true"]) [class^="chatMessageSender--"],
 :host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageSender--"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"] {
   direction: rtl !important;
   text-align: right !important;
   unicode-bidi: plaintext !important;
@@ -310,7 +316,7 @@ picture,
 :host-context([data-acd-chat-rtl="true"]) [class^="chatMessageTime--"],
 :host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageTime--"] {
   direction: ltr !important;
-  unicode-bidi: plaintext !important;
+  unicode-bidi: isolate !important;
 }
 
 :host-context([data-acd-chat-rtl="true"]) [class^="typingArea--"],
