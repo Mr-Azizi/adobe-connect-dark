@@ -23,8 +23,12 @@ html[data-acd-theme="dark"] [class^="recordingPlayer--"],
 html[data-acd-theme="dark"] [class*=" recordingPlayer--"],
 html[data-acd-theme="dark"] [class^="recordingPlayer--"] > [class^="body--"],
 html[data-acd-theme="dark"] [class*=" recordingPlayer--"] > [class*=" body--"],
-html[data-acd-theme="dark"] [class^="root--"],
-html[data-acd-theme="dark"] [class*=" root--"],
+html[data-acd-theme="dark"] [class^="recordingPlayer--"] [class^="root--"],
+html[data-acd-theme="dark"] [class*=" recordingPlayer--"] [class^="root--"],
+html[data-acd-theme="dark"] [class^="recordingPlayer--"] [class*=" root--"],
+html[data-acd-theme="dark"] [class*=" recordingPlayer--"] [class*=" root--"],
+html[data-acd-theme="dark"] [role="navigation"][class^="root--"],
+html[data-acd-theme="dark"] [role="navigation"][class*=" root--"],
 html[data-acd-theme="dark"] #mainRoomRecording,
 html[data-acd-theme="dark"] [class^="mainRoomRecording--"],
 html[data-acd-theme="dark"] [class*=" mainRoomRecording--"],
@@ -196,8 +200,10 @@ html[data-acd-theme="dark"] [class*=" eventTree--"] {
 
 html[data-acd-theme="dark"] [class^="eventsIndexTitle--"],
 html[data-acd-theme="dark"] [class*=" eventsIndexTitle--"],
-html[data-acd-theme="dark"] [class^="heading--"],
-html[data-acd-theme="dark"] [class*=" heading--"] {
+html[data-acd-theme="dark"] [class^="eventIndex--"] [class^="heading--"],
+html[data-acd-theme="dark"] [class*=" eventIndex--"] [class^="heading--"],
+html[data-acd-theme="dark"] [class^="eventIndex--"] [class*=" heading--"],
+html[data-acd-theme="dark"] [class*=" eventIndex--"] [class*=" heading--"] {
   color: var(--acd-text-primary) !important;
   font-weight: 600 !important;
 }
@@ -285,6 +291,19 @@ html[data-acd-theme="dark"] [class^="searchButton--"]:hover,
 html[data-acd-theme="dark"] [class*=" searchButton--"]:hover {
   color: var(--acd-text-primary) !important;
   background-color: var(--acd-bg-hover) !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] [class^="recordingButtonStyle--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" recordingButtonStyle--"]:focus-visible,
+html[data-acd-theme="dark"] [class^="menuBarIcon--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" menuBarIcon--"]:focus-visible,
+html[data-acd-theme="dark"] [class^="searchButton--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" searchButton--"]:focus-visible {
+  color: var(--acd-text-primary) !important;
+  background-color: var(--acd-bg-hover) !important;
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: 1px !important;
   border-radius: 4px;
 }
 

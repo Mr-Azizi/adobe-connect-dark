@@ -1,7 +1,7 @@
 /**
  * Adobe Connect Dark Mode - Adobe Connect Central Stylesheet
  * Source-Driven Component Styling for Adobe Connect Central administration,
- * legacy navigation, AppLayout, Calendar week grid, Reports, and HelpMenu.
+ * legacy navigation, AppLayout, Calendar (week, month, and activity views), Reports, and HelpMenu.
  * Authoritative references: adobe-connect-dom-admin-home-homepage.html,
  * adobe-connect-dom-admin-reportManager.html, adobe-connect-styles-admin-*.json
  */
@@ -278,6 +278,268 @@ html[data-acd-theme="dark"] [class*=" Calendar__weekDayCurrent--"] {
 html[data-acd-theme="dark"] [class^="Calendar__weekDayBorderCurrent--"],
 html[data-acd-theme="dark"] [class*=" Calendar__weekDayBorderCurrent--"] {
   border-color: var(--acd-accent) !important;
+}
+
+/* ==========================================================================
+   4b. Central Calendar - Month View Grid
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="Calendar__monthTabTable--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthTabTable--"] {
+  background-color: var(--acd-bg-panel) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthTabTable--"] thead th,
+html[data-acd-theme="dark"] [class*=" Calendar__monthTabTable--"] thead th,
+html[data-acd-theme="dark"] [class^="Calendar__monthHeader--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthHeader--"] {
+  color: var(--acd-text-secondary) !important;
+  background-color: var(--acd-bg-panel) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDay--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthDay--"] {
+  border-top: 1px solid var(--acd-border-subtle) !important;
+  border-color: var(--acd-border-subtle) !important;
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDay--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__monthDay--"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDay--"] > span,
+html[data-acd-theme="dark"] [class*=" Calendar__monthDay--"] > span {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDayCurrent--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthDayCurrent--"] {
+  border-top: 2px solid var(--acd-accent) !important;
+  background-color: rgba(110, 155, 255, 0.06) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDayCurrent--"] > span,
+html[data-acd-theme="dark"] [class*=" Calendar__monthDayCurrent--"] > span {
+  color: var(--acd-accent) !important;
+  font-weight: 700 !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDayDisabled--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthDayDisabled--"],
+html[data-acd-theme="dark"] [class^="Calendar__monthDayDisabled--"] > span,
+html[data-acd-theme="dark"] [class*=" Calendar__monthDayDisabled--"] > span {
+  color: var(--acd-text-disabled) !important;
+  opacity: 0.45;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDaySidebarOpen--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthDaySidebarOpen--"] {
+  background-color: var(--acd-bg-selected) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDayCurrentSidebarOpen--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthDayCurrentSidebarOpen--"] {
+  border-top: 2px solid var(--acd-accent) !important;
+  background-color: var(--acd-bg-selected) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthDayCurrentSidebarOpen--"] > span,
+html[data-acd-theme="dark"] [class*=" Calendar__monthDayCurrentSidebarOpen--"] > span {
+  color: var(--acd-accent) !important;
+  font-weight: 700 !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthViewOpenMore--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthViewOpenMore--"] {
+  color: var(--acd-accent) !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthViewOpenMore--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__monthViewOpenMore--"]:hover {
+  color: var(--acd-accent-hover) !important;
+  text-decoration: underline;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthViewSidebar--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthViewSidebar--"] {
+  background-color: var(--acd-bg-secondary) !important;
+  border-left: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthViewSidebarHeader--"],
+html[data-acd-theme="dark"] [class*=" Calendar__monthViewSidebarHeader--"] {
+  color: var(--acd-text-primary) !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__monthViewSidebarHeader--"] span,
+html[data-acd-theme="dark"] [class*=" Calendar__monthViewSidebarHeader--"] span {
+  color: var(--acd-text-secondary) !important;
+}
+
+/* ==========================================================================
+   4c. Central Calendar - Activity View
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="Calendar__activityTabTable--"],
+html[data-acd-theme="dark"] [class*=" Calendar__activityTabTable--"] {
+  background-color: var(--acd-bg-panel) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__activityTabTable--"] thead th,
+html[data-acd-theme="dark"] [class*=" Calendar__activityTabTable--"] thead th {
+  background-color: var(--acd-bg-secondary) !important;
+  border-bottom: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__activityViewContainer--"],
+html[data-acd-theme="dark"] [class*=" Calendar__activityViewContainer--"] {
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__activityViewContainer--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__activityViewContainer--"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] tr[class^="Calendar__activityViewContainerExpired--"],
+html[data-acd-theme="dark"] tr[class*=" Calendar__activityViewContainerExpired--"],
+html[data-acd-theme="dark"] [class^="Calendar__activityViewContainerExpired--"],
+html[data-acd-theme="dark"] [class*=" Calendar__activityViewContainerExpired--"] {
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  color: var(--acd-text-muted) !important;
+  opacity: 0.7;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__activityViewContainerExpired--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__activityViewContainerExpired--"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__dateTimeCell--"],
+html[data-acd-theme="dark"] [class*=" Calendar__dateTimeCell--"] {
+  color: var(--acd-text-secondary) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__roomEventCell--"],
+html[data-acd-theme="dark"] [class*=" Calendar__roomEventCell--"] {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__activityViewContainerExpired--"] [class*="Calendar__dateTimeCell--"],
+html[data-acd-theme="dark"] [class*=" Calendar__activityViewContainerExpired--"] [class*="Calendar__dateTimeCell--"],
+html[data-acd-theme="dark"] [class^="Calendar__activityViewContainerExpired--"] [class*="Calendar__roomEventCell--"],
+html[data-acd-theme="dark"] [class*=" Calendar__activityViewContainerExpired--"] [class*="Calendar__roomEventCell--"] {
+  color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__iconHolder--"],
+html[data-acd-theme="dark"] [class*=" Calendar__iconHolder--"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__firstIcon--"],
+html[data-acd-theme="dark"] [class*=" Calendar__firstIcon--"],
+html[data-acd-theme="dark"] [class^="Calendar__secondIcon--"],
+html[data-acd-theme="dark"] [class*=" Calendar__secondIcon--"] {
+  color: var(--acd-text-secondary) !important;
+  transition: color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__firstIcon--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__firstIcon--"]:hover,
+html[data-acd-theme="dark"] [class^="Calendar__secondIcon--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__secondIcon--"]:hover {
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__firstIconDisabled--"],
+html[data-acd-theme="dark"] [class*=" Calendar__firstIconDisabled--"],
+html[data-acd-theme="dark"] [class^="Calendar__secondIconDisabled--"],
+html[data-acd-theme="dark"] [class*=" Calendar__secondIconDisabled--"] {
+  color: var(--acd-text-disabled) !important;
+  cursor: not-allowed !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__noDataContainer--"],
+html[data-acd-theme="dark"] [class*=" Calendar__noDataContainer--"] {
+  background-color: transparent !important;
+  color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__noDataContainer--"] p,
+html[data-acd-theme="dark"] [class*=" Calendar__noDataContainer--"] p,
+html[data-acd-theme="dark"] [class^="Calendar__noDataContainer--"] span,
+html[data-acd-theme="dark"] [class*=" Calendar__noDataContainer--"] span {
+  color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__activityViewContainer--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" Calendar__activityViewContainer--"]:focus-visible,
+html[data-acd-theme="dark"] [class^="Calendar__firstIcon--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" Calendar__firstIcon--"]:focus-visible,
+html[data-acd-theme="dark"] [class^="Calendar__secondIcon--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" Calendar__secondIcon--"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: -1px !important;
+}
+
+/* ==========================================================================
+   4d. Central Calendar - Entries & Popover
+   ========================================================================== */
+html[data-acd-theme="dark"] [class^="Calendar__calendarEntryButton--"],
+html[data-acd-theme="dark"] [class*=" Calendar__calendarEntryButton--"] {
+  background-color: var(--acd-bg-elevated) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__calendarEntryButton--"]:hover,
+html[data-acd-theme="dark"] [class*=" Calendar__calendarEntryButton--"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  border-color: var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__calendarEntryButton--"]:focus-visible,
+html[data-acd-theme="dark"] [class*=" Calendar__calendarEntryButton--"]:focus-visible {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: 1px !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__calendarEntryButtonExpired--"],
+html[data-acd-theme="dark"] [class*=" Calendar__calendarEntryButtonExpired--"] {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__calendarPopover--"],
+html[data-acd-theme="dark"] [class*=" Calendar__calendarPopover--"] {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class^="Calendar__calendarPopoverContent--"],
+html[data-acd-theme="dark"] [class*=" Calendar__calendarPopoverContent--"] {
+  color: var(--acd-text-primary) !important;
 }
 
 /* ==========================================================================

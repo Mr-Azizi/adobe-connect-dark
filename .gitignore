@@ -1,15 +1,15 @@
-# Reference / Diagnostic Files (Read-Only)
-*.html
-!popup/popup.html
-*.json
-!manifest.json
-*.har
-*.log
-*.tmp
-node_modules/
-.DS_Store
-Thumbs.db
+# Reference / Diagnostic directories and scratch files
 reference/
 diagnostic/
 source-snapshots/
 scratch/
+
+# Temporary / diagnostic file extensions
+*.har
+*.log
+*.tmp
+
+# Dependencies and system files
+node_modules/
+.DS_Store
+Thumbs.db
