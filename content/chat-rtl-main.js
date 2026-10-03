@@ -16,18 +16,17 @@
 
   // Adobe Connect Outgoing RTL Unicode Configuration
   const RLE = '\u202B'; // RIGHT-TO-LEFT EMBEDDING
+  const LRE = '\u202A'; // LEFT-TO-RIGHT EMBEDDING (internal compatibility option)
   const PDF = '\u202C'; // POP DIRECTIONAL FORMATTING
 
   // Adobe Connect compatibility:
-  // RLE/PDF is intentionally used for transmitted RTL Chat text.
-  // RLI/PDI was standards-preferred but caused sender/message ordering
-  // issues in Adobe Connect recipient rendering during real client testing.
-  // Never replace this with RLO.
-
-  // Conservative detector for Persian / Arabic RTL content:
-  // Covers Arabic (U+0600-U+06FF), Arabic Supplement (U+0750-U+077F),
-  // Arabic Extended-A (U+08A0-U+08FF), and Arabic Presentation Forms (U+FB50-U+FDFF, U+FE70-U+FEFF).
-  const RTL_CHAR_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  // RLE/PDF is intentionally used for transmitted RTL-first Chat text.
+  // Real client testing showed RLE/PDF gives desired rendering without
+  // displacing sender names.
+  // LRE is retained as an internal compatibility helper for LTR-first mixed
+  // text if needed, but default LTR policy transmits original text unchanged.
+  // Never use RLO (\u202E) or LRO (\u202D).
+  // Never rewrite or normalize punctuation (? <-> ؟).
 
   // Replay guard to prevent recursive interception during programmatic send replay
   let replayingSend = false;
@@ -40,10 +39,70 @@
   }
 
   /**
-   * Check if text contains any RTL character
+   * Canonical direction helper:
+   * Determines base direction ONLY by the first strong textual letter (\p{L}).
+   * Ignores leading spaces, tabs, newlines, punctuation, symbols, digits, emoji,
+   * and bidi formatting controls.
+   * Returns: 'rtl' | 'ltr' | 'neutral'
    */
-  function containsRtlText(text) {
-    return typeof text === 'string' && RTL_CHAR_REGEX.test(text);
+  function getFirstStrongDirection(text) {
+    if (typeof text !== 'string') {
+      return 'neutral';
+    }
+
+    for (const ch of text) {
+      if (!/\p{L}/u.test(ch)) {
+        continue;
+      }
+
+      if (
+        /\p{Script=Arabic}/u.test(ch) ||
+        /\p{Script=Hebrew}/u.test(ch)
+      ) {
+        return 'rtl';
+      }
+
+      return 'ltr';
+    }
+
+    return 'neutral';
+  }
+
+  /**
+   * Independent script composition detector:
+   * Determines whether text contains RTL, LTR, or mixed script letters.
+   * Word counts or majority heuristics MUST NOT override the base direction.
+   */
+  function getScriptComposition(text) {
+    if (typeof text !== 'string') {
+      return { hasRtl: false, hasLtr: false, mixed: false };
+    }
+
+    let hasRtl = false;
+    let hasLtr = false;
+
+    for (const ch of text) {
+      if (!/\p{L}/u.test(ch)) {
+        continue;
+      }
+
+      if (
+        /\p{Script=Arabic}/u.test(ch) ||
+        /\p{Script=Hebrew}/u.test(ch)
+      ) {
+        hasRtl = true;
+      } else {
+        hasLtr = true;
+      }
+
+      if (hasRtl && hasLtr) break;
+    }
+
+    return {
+      hasRtl,
+      hasLtr,
+      mixed: hasRtl && hasLtr
+    };
   }
 
   /**
@@ -62,9 +121,20 @@
   }
 
   /**
-   * Transform outgoing message text, preserving exact newlines and multiline paragraphs
+   * Internal compatibility helper for LTR embedding.
+   * Inactive by default; native Adobe Connect renders LTR-first mixed messages cleanly.
    */
-  function transformOutgoingRtlMessage(text) {
+  function wrapLtrParagraph(paragraph) {
+    return `${LRE}${paragraph}${PDF}`;
+  }
+
+  /**
+   * Transform outgoing message text on a per-paragraph basis:
+   * - RTL-first paragraphs -> wrapped with RLE + paragraph + PDF
+   * - LTR-first and neutral paragraphs -> sent unchanged as typed
+   * - Exact line breaks (\r\n, \n, \r) and blank lines preserved
+   */
+  function transformOutgoingMessage(text) {
     if (!text || typeof text !== 'string') return text;
 
     const parts = text.split(/(\r\n|\r|\n)/);
@@ -73,16 +143,30 @@
       if (!paragraph || paragraph.trim().length === 0) {
         continue;
       }
-      if (!containsRtlText(paragraph)) {
-        continue;
+      const dir = getFirstStrongDirection(paragraph);
+      if (dir === 'rtl') {
+        if (!isExtensionWrappedParagraph(paragraph)) {
+          parts[i] = wrapRtlParagraph(paragraph);
+        }
       }
-      if (isExtensionWrappedParagraph(paragraph)) {
-        continue;
-      }
-      parts[i] = wrapRtlParagraph(paragraph);
+      // LTR-first and neutral paragraphs remain unchanged by default
     }
 
     return parts.join('');
+  }
+
+  // Alias for backward compatibility
+  const transformOutgoingRtlMessage = transformOutgoingMessage;
+
+  /**
+   * Ensure composer editor has dir="auto" when RTL Chat is enabled
+   */
+  function ensureComposerAutoDir(el) {
+    if (!el || typeof el.hasAttribute !== 'function' || !isRtlChatEnabled()) return;
+    if (!el.hasAttribute('dir')) {
+      el.setAttribute('dir', 'auto');
+      el.setAttribute('data-acd-dir-auto', 'true');
+    }
   }
 
   /**
@@ -103,11 +187,13 @@
 
     // Must be in chat compose area, chat pod, or child container
     if (el.closest && el.closest('[class*="chatComposeArea"], [class*="chatPod"], .chat-input-container')) {
+      ensureComposerAutoDir(el);
       return true;
     }
 
     const className = typeof el.className === 'string' ? el.className : (el.getAttribute('class') || '');
     if (/typingArea/i.test(className) && el.closest && el.closest('[class*="childContainerDiv"]')) {
+      ensureComposerAutoDir(el);
       return true;
     }
 
@@ -369,7 +455,19 @@
     });
   }
 
+  /**
+   * Handle FocusIn event to ensure composer editor has dir="auto"
+   */
+  function handleFocusIn(event) {
+    if (!isRtlChatEnabled()) return;
+    const target = (event.composedPath && event.composedPath()[0]) || event.target;
+    if (isChatEditor(target)) {
+      ensureComposerAutoDir(target);
+    }
+  }
+
   // Install document-level capturing listeners to catch composed events from light DOM and open Shadow DOM
   document.addEventListener('keydown', handleKeyDown, true);
   document.addEventListener('click', handleClick, true);
+  document.addEventListener('focusin', handleFocusIn, true);
 })();

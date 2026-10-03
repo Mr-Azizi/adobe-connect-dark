@@ -65,6 +65,72 @@
     '[class*="spectrum-"]'
   ].join(', ');
 
+  /**
+   * Canonical direction helper:
+   * Determines base direction ONLY by the first strong textual letter (\p{L}).
+   * Ignores leading spaces, tabs, newlines, punctuation, symbols, digits, emoji,
+   * and bidi formatting controls.
+   * Returns: 'rtl' | 'ltr' | 'neutral'
+   */
+  function getFirstStrongDirection(text) {
+    if (typeof text !== 'string') {
+      return 'neutral';
+    }
+
+    for (const ch of text) {
+      if (!/\p{L}/u.test(ch)) {
+        continue;
+      }
+
+      if (
+        /\p{Script=Arabic}/u.test(ch) ||
+        /\p{Script=Hebrew}/u.test(ch)
+      ) {
+        return 'rtl';
+      }
+
+      return 'ltr';
+    }
+
+    return 'neutral';
+  }
+
+  /**
+   * Independent script composition detector:
+   * Determines whether text contains RTL, LTR, or mixed script letters.
+   */
+  function getScriptComposition(text) {
+    if (typeof text !== 'string') {
+      return { hasRtl: false, hasLtr: false, mixed: false };
+    }
+
+    let hasRtl = false;
+    let hasLtr = false;
+
+    for (const ch of text) {
+      if (!/\p{L}/u.test(ch)) {
+        continue;
+      }
+
+      if (
+        /\p{Script=Arabic}/u.test(ch) ||
+        /\p{Script=Hebrew}/u.test(ch)
+      ) {
+        hasRtl = true;
+      } else {
+        hasLtr = true;
+      }
+
+      if (hasRtl && hasLtr) break;
+    }
+
+    return {
+      hasRtl,
+      hasLtr,
+      mixed: hasRtl && hasLtr
+    };
+  }
+
   class ACDThemeEngine {
     constructor() {
       this.enabled = false;
@@ -145,8 +211,8 @@
       this.enabled = false;
       this.hasScannedInitialDOM = false;
 
-      // 1. Stop main MutationObserver
-      if (this.observer) {
+      // 1. Stop main MutationObserver ONLY if chat RTL is not active
+      if (!this.chatRtlEnabled && this.observer) {
         this.observer.stop();
       }
 
@@ -203,6 +269,20 @@
       this.chatRtlEnabled = true;
       this.applyChatRtlAttribute();
       this.injectStylesheets(document);
+
+      // Start observer so dynamic chat messages and composer pods are tracked
+      if (this.observer && !this.observer.isObserving) {
+        this.observer.start();
+      }
+
+      // Classify all existing messages and configure composer dir="auto"
+      this.classifyAllChatMessages(document);
+      this.setupChatComposerDir(document);
+
+      this.attachedShadowRoots.forEach((root) => {
+        this.classifyAllChatMessages(root);
+        this.setupChatComposerDir(root);
+      });
     }
 
     /**
@@ -215,9 +295,125 @@
         root.removeAttribute('data-acd-chat-rtl');
       }
 
-      // If neither dark mode nor RTL is active, clean up injected stylesheets
-      if (!this.enabled && !this.chatRtlEnabled) {
+      // Remove data-acd-message-dir and extension-owned dir="auto"
+      this.cleanupChatRtl(document);
+      this.attachedShadowRoots.forEach((root) => {
+        this.cleanupChatRtl(root);
+      });
+
+      // If neither dark mode nor RTL is active, clean up injected stylesheets and stop observer
+      if (!this.enabled) {
+        if (this.observer) {
+          this.observer.stop();
+        }
         this.cleanupStylesheets();
+      }
+    }
+
+    /**
+     * Direction classifier for a single message wrapper
+     */
+    classifyChatMessage(wrapper) {
+      if (!wrapper || wrapper.nodeType !== Node.ELEMENT_NODE) return;
+
+      // Locate message body element (excluding sender name and timestamp)
+      const bodyEl = wrapper.querySelector
+        ? wrapper.querySelector('[class*="chatIndividualMessageContent--"], .chat-message-text, [class*="chat-message-content"]')
+        : null;
+
+      const targetEl = bodyEl || (
+        /chatIndividualMessageContent/i.test(wrapper.className || '') ? wrapper : null
+      );
+      if (!targetEl) return;
+
+      const rawText = targetEl.innerText !== undefined ? targetEl.innerText : (targetEl.textContent || '');
+      if (!rawText || !rawText.trim()) return;
+
+      const dir = getFirstStrongDirection(rawText);
+      // Mark wrapper with data-acd-message-dir: "rtl" or "ltr"
+      wrapper.setAttribute('data-acd-message-dir', dir === 'rtl' ? 'rtl' : 'ltr');
+    }
+
+    /**
+     * Classify all chat message wrappers within a container
+     */
+    classifyAllChatMessages(container) {
+      if (!container || !this.chatRtlEnabled) return;
+      try {
+        if (container.nodeType === Node.ELEMENT_NODE) {
+          const className = typeof container.className === 'string' ? container.className : (container.getAttribute('class') || '');
+          if (/chatIndividualMessageContentWrapperDiv/i.test(className) || container.classList.contains('chat-message') || container.classList.contains('message-item')) {
+            this.classifyChatMessage(container);
+          } else if (container.closest) {
+            const parentWrapper = container.closest('[class*="chatIndividualMessageContentWrapperDiv--"], .chat-message, .message-item');
+            if (parentWrapper) {
+              this.classifyChatMessage(parentWrapper);
+            }
+          }
+        }
+
+        if (container.querySelectorAll) {
+          const wrappers = container.querySelectorAll(
+            '[class*="chatIndividualMessageContentWrapperDiv--"], .chat-message, .message-item'
+          );
+          for (let i = 0; i < wrappers.length; i++) {
+            this.classifyChatMessage(wrappers[i]);
+          }
+        }
+      } catch (e) {}
+    }
+
+    /**
+     * Apply dir="auto" to chat composers owned by the extension
+     */
+    setupChatComposerDir(container) {
+      if (!container || !this.chatRtlEnabled) return;
+      try {
+        if (container.querySelectorAll) {
+          const editors = container.querySelectorAll(
+            '[class*="typingArea"], [class*="chatComposeArea"] textarea, [class*="chatComposeArea"] input, [class*="chatComposeArea"] [contenteditable="true"], .chat-input-container textarea, .chat-input-container input, .chat-input-container [contenteditable="true"]'
+          );
+          for (let i = 0; i < editors.length; i++) {
+            const el = editors[i];
+            if (!el.hasAttribute('dir')) {
+              el.setAttribute('dir', 'auto');
+              el.setAttribute('data-acd-dir-auto', 'true');
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    /**
+     * Clean up extension-owned chat RTL attributes
+     */
+    cleanupChatRtl(container) {
+      if (!container) return;
+      try {
+        if (container.querySelectorAll) {
+          const wrappers = container.querySelectorAll('[data-acd-message-dir]');
+          for (let i = 0; i < wrappers.length; i++) {
+            wrappers[i].removeAttribute('data-acd-message-dir');
+          }
+
+          const autoDirs = container.querySelectorAll('[data-acd-dir-auto="true"]');
+          for (let i = 0; i < autoDirs.length; i++) {
+            autoDirs[i].removeAttribute('data-acd-dir-auto');
+            autoDirs[i].removeAttribute('dir');
+          }
+        }
+      } catch (e) {}
+    }
+
+    /**
+     * Process newly mounted elements for chat message classification and composer dir
+     */
+    processChatRtlElements(nodes) {
+      if (!this.chatRtlEnabled || !nodes || nodes.length === 0) return;
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+        this.classifyAllChatMessages(node);
+        this.setupChatComposerDir(node);
       }
     }
 
@@ -315,7 +511,7 @@
       } else {
         // Wait for body to be created
         const onReady = () => {
-          if (this.enabled && document.body) {
+          if ((this.enabled || this.chatRtlEnabled) && document.body) {
             this.performInitialScan();
           }
         };
@@ -334,7 +530,7 @@
       // Safety sweep when window completes loading
       if (document.readyState !== 'complete') {
         window.addEventListener('load', () => {
-          if (this.enabled && document.body) {
+          if ((this.enabled || this.chatRtlEnabled) && document.body) {
             this.performInitialScan(true);
           }
         }, { once: true });
@@ -345,13 +541,21 @@
      * Perform the scan over document.body and all current candidate descendants
      */
     performInitialScan(force = false) {
-      if (!this.enabled || !document.body) return;
+      if ((!this.enabled && !this.chatRtlEnabled) || !document.body) return;
       if (this.hasScannedInitialDOM && !force) return;
       this.hasScannedInitialDOM = true;
 
-      // Scan body and its key container children across entire subtree
-      const candidates = this.getCandidateElements(document.body);
-      this.queueNodesForEvaluation(candidates);
+      // Classify Chat messages and setup composer dir when RTL Chat is active
+      if (this.chatRtlEnabled) {
+        this.classifyAllChatMessages(document.body);
+        this.setupChatComposerDir(document.body);
+      }
+
+      // Scan body and its key container children across entire subtree for Dark Mode
+      if (this.enabled) {
+        const candidates = this.getCandidateElements(document.body);
+        this.queueNodesForEvaluation(candidates);
+      }
 
       // Check for any open shadow roots present in initial DOM
       this.scanForShadowRoots(document.body);
@@ -361,7 +565,7 @@
      * Handle Open Shadow Root styling and observe dynamic shadow mutations
      */
     attachToShadowRoot(shadowRoot) {
-      if (!this.enabled || !shadowRoot) return;
+      if ((!this.enabled && !this.chatRtlEnabled) || !shadowRoot) return;
 
       this.attachedShadowRoots.add(shadowRoot);
 
@@ -381,7 +585,7 @@
       // 2. Attach dedicated lightweight MutationObserver to this ShadowRoot
       if (!this.shadowObservers.has(shadowRoot)) {
         const shadowObserver = new MutationObserver((mutations) => {
-          if (!this.enabled) return;
+          if (!this.enabled && !this.chatRtlEnabled) return;
 
           const addedElements = [];
           for (let i = 0; i < mutations.length; i++) {
@@ -420,14 +624,21 @@
       }
 
       // 3. Evaluate existing elements inside shadow root
-      const shadowCandidates = [];
-      for (let i = 0; i < shadowRoot.children.length; i++) {
-        const sub = this.getCandidateElements(shadowRoot.children[i]);
-        for (let j = 0; j < sub.length; j++) {
-          shadowCandidates.push(sub[j]);
-        }
+      if (this.chatRtlEnabled) {
+        this.classifyAllChatMessages(shadowRoot);
+        this.setupChatComposerDir(shadowRoot);
       }
-      this.queueNodesForEvaluation(shadowCandidates);
+
+      if (this.enabled) {
+        const shadowCandidates = [];
+        for (let i = 0; i < shadowRoot.children.length; i++) {
+          const sub = this.getCandidateElements(shadowRoot.children[i]);
+          for (let j = 0; j < sub.length; j++) {
+            shadowCandidates.push(sub[j]);
+          }
+        }
+        this.queueNodesForEvaluation(shadowCandidates);
+      }
 
       // 4. Recursively check for nested shadow roots
       this.scanForShadowRoots(shadowRoot);
@@ -472,7 +683,7 @@
      * Scan container for custom elements with open shadow roots
      */
     scanForShadowRoots(container) {
-      if (!this.enabled || !container) return;
+      if ((!this.enabled && !this.chatRtlEnabled) || !container) return;
 
       try {
         const allElements = container.querySelectorAll('*');
@@ -610,16 +821,21 @@
      * Add nodes to queue for batched evaluation
      */
     queueNodesForEvaluation(nodes) {
-      if (!this.enabled || !nodes) return;
+      if ((!this.enabled && !this.chatRtlEnabled) || !nodes) return;
 
-      for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i];
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          this.processQueue.push(node);
-        }
+      if (this.chatRtlEnabled) {
+        this.processChatRtlElements(nodes);
       }
 
-      this.scheduleQueueProcessing();
+      if (this.enabled) {
+        for (let i = 0; i < nodes.length; i++) {
+          const node = nodes[i];
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            this.processQueue.push(node);
+          }
+        }
+        this.scheduleQueueProcessing();
+      }
     }
 
     /**
