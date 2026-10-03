@@ -33,6 +33,7 @@ A source-driven Chrome / Edge extension that modernizes Adobe Connect without re
 [Troubleshooting](#troubleshooting)
 
 </div>
+
 ---
 
 ## Why this project exists
