@@ -574,6 +574,34 @@ html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]
   border-left: 2px solid var(--acd-accent) !important;
 }
 
+/* ==========================================================================
+   Chat Textual Typography (Vazirmatn Persian / Arabic Font Stack)
+   Applied cleanly to Chat textual content across Dark Mode and RTL states.
+   ========================================================================== */
+[class^="chatMessageSender--"],
+[class*=" chatMessageSender--"],
+.chat-user-name,
+.sender-name,
+[class*="chat-sender"],
+[class^="chatIndividualMessageContent--"],
+[class*=" chatIndividualMessageContent--"],
+.chat-message-text,
+[class*="chat-message-content"],
+[class^="typingArea--"],
+[class*=" typingArea--"],
+[class^="typingAreaHasText--"],
+[class*=" typingAreaHasText--"],
+[class*="childContainerDiv"] [class*="typingArea"],
+[class*="chatComposeArea"] [class*="typingArea"],
+[class*="chatComposeArea"] textarea,
+[class*="chatComposeArea"] input,
+[class*="chatComposeArea"] [contenteditable="true"],
+.chat-input-container textarea,
+.chat-input-container input,
+.chat-input-container [contenteditable="true"] {
+  font-family: "Vazirmatn", Tahoma, Arial, sans-serif !important;
+}
+
 /* Message Sender */
 html[data-acd-theme="dark"] [class^="chatMessageSender--"],
 html[data-acd-theme="dark"] [class*=" chatMessageSender--"],
@@ -609,12 +637,8 @@ html[data-acd-theme="dark"] .chat-input-container {
 
 html[data-acd-theme="dark"] [class^="childContainerDiv--"],
 html[data-acd-theme="dark"] [class*=" childContainerDiv--"],
-html[data-acd-theme="dark"] [class^="typingArea--"],
-html[data-acd-theme="dark"] [class*=" typingArea--"],
-html[data-acd-theme="dark"] .chat-input-container textarea,
-html[data-acd-theme="dark"] .chat-input-container input {
+html[data-acd-theme="dark"] .chat-input-container {
   background-color: var(--acd-bg-input) !important;
-  color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border-subtle) !important;
   border-radius: 4px;
   transition: border-color var(--acd-transition-fast), box-shadow var(--acd-transition-fast);
@@ -622,13 +646,72 @@ html[data-acd-theme="dark"] .chat-input-container input {
 
 html[data-acd-theme="dark"] [class^="childContainerDivSelected--"],
 html[data-acd-theme="dark"] [class*=" childContainerDivSelected--"],
-html[data-acd-theme="dark"] [class^="typingAreaHasText--"],
-html[data-acd-theme="dark"] [class*=" typingAreaHasText--"],
-html[data-acd-theme="dark"] .chat-input-container textarea:focus,
-html[data-acd-theme="dark"] .chat-input-container input:focus {
+html[data-acd-theme="dark"] [class^="childContainerDiv--"]:focus-within,
+html[data-acd-theme="dark"] [class*=" childContainerDiv--"]:focus-within,
+html[data-acd-theme="dark"] .chat-input-container:focus-within {
+  background-color: var(--acd-bg-input) !important;
   border-color: var(--acd-border-focus) !important;
   outline: none !important;
   box-shadow: 0 0 0 1px var(--acd-focus-ring) !important;
+}
+
+/* Chat Compose / Editable Input Contrast & Caret */
+html[data-acd-theme="dark"] [class^="typingArea--"],
+html[data-acd-theme="dark"] [class*=" typingArea--"],
+html[data-acd-theme="dark"] [class^="typingAreaHasText--"],
+html[data-acd-theme="dark"] [class*=" typingAreaHasText--"],
+html[data-acd-theme="dark"] [class*="childContainerDiv"] [class*="typingArea"],
+html[data-acd-theme="dark"] [class*="chatComposeArea"] [class*="typingArea"],
+html[data-acd-theme="dark"] [class*="chatComposeArea"] textarea,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] input,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] [contenteditable="true"],
+html[data-acd-theme="dark"] .chat-input-container textarea,
+html[data-acd-theme="dark"] .chat-input-container input,
+html[data-acd-theme="dark"] .chat-input-container [contenteditable="true"] {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  caret-color: var(--acd-accent);
+}
+
+html[data-acd-theme="dark"] [class^="typingArea--"]:focus,
+html[data-acd-theme="dark"] [class*=" typingArea--"]:focus,
+html[data-acd-theme="dark"] [class^="typingAreaHasText--"]:focus,
+html[data-acd-theme="dark"] [class*=" typingAreaHasText--"]:focus,
+html[data-acd-theme="dark"] [class*="childContainerDiv"] [class*="typingArea"]:focus,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] [class*="typingArea"]:focus,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] textarea:focus,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] input:focus,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] [contenteditable="true"]:focus,
+html[data-acd-theme="dark"] .chat-input-container textarea:focus,
+html[data-acd-theme="dark"] .chat-input-container input:focus,
+html[data-acd-theme="dark"] .chat-input-container [contenteditable="true"]:focus {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  caret-color: var(--acd-accent);
+  outline: none !important;
+}
+
+/* Chat Compose Placeholder Contrast */
+html[data-acd-theme="dark"] [class^="typingArea--"]::placeholder,
+html[data-acd-theme="dark"] [class*=" typingArea--"]::placeholder,
+html[data-acd-theme="dark"] [class^="typingArea--"]:-ms-input-placeholder,
+html[data-acd-theme="dark"] [class*=" typingArea--"]:-ms-input-placeholder,
+html[data-acd-theme="dark"] [class*="childContainerDiv"] [class*="typingArea"]::placeholder,
+html[data-acd-theme="dark"] [class*="childContainerDiv"] [class*="typingArea"]:-ms-input-placeholder,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] textarea::placeholder,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] textarea:-ms-input-placeholder,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] input::placeholder,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] input:-ms-input-placeholder,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] [contenteditable="true"]::placeholder,
+html[data-acd-theme="dark"] [class*="chatComposeArea"] [contenteditable="true"]:-ms-input-placeholder,
+html[data-acd-theme="dark"] .chat-input-container textarea::placeholder,
+html[data-acd-theme="dark"] .chat-input-container textarea:-ms-input-placeholder,
+html[data-acd-theme="dark"] .chat-input-container input::placeholder,
+html[data-acd-theme="dark"] .chat-input-container input:-ms-input-placeholder,
+html[data-acd-theme="dark"] .chat-input-container [contenteditable="true"]::placeholder,
+html[data-acd-theme="dark"] .chat-input-container [contenteditable="true"]:-ms-input-placeholder {
+  color: var(--acd-text-muted) !important;
+  opacity: 1;
 }
 
 /* Send Buttons */

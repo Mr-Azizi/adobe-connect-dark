@@ -35,7 +35,8 @@
     {
       "resources": [
         "styles/*.css",
-        "icons/*.png"
+        "icons/*.png",
+        "assets/fonts/*"
       ],
       "matches": [
         "http://*/*",

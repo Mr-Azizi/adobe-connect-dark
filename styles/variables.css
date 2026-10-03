@@ -34,6 +34,7 @@
   --acd-text-muted: #7F8A96;     /* Low contrast metadata, timestamps */
   --acd-text-disabled: #545E6B;  /* Disabled text */
   --acd-text-placeholder: #636F7D; /* Input placeholder text */
+  --acd-font-chat: "Vazirmatn", Tahoma, Arial, sans-serif; /* Persian / Arabic friendly chat font stack */
 
   /* ==========================================================================
      Borders & Dividers

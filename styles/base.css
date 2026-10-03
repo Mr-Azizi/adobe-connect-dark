@@ -4,6 +4,17 @@
  */
 
 /* ==========================================================================
+   Bundled Local Fonts (Vazirmatn Persian / Arabic Font)
+   ========================================================================== */
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("../assets/fonts/Vazirmatn-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ==========================================================================
    Root & Viewport Defaults
    ========================================================================== */
 html[data-acd-theme="dark"],

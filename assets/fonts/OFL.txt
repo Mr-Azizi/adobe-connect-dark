@@ -1,0 +1,5 @@
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+
+Copyright (c) 2015-2022, Saber Rastikerdar (https://github.com/rastikerdar/vazirmatn)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.

@@ -4,6 +4,17 @@
  * Reuses CSS custom properties inherited from document :root
  */
 
+/* ==========================================================================
+   Bundled Local Fonts (Vazirmatn Persian / Arabic Font)
+   ========================================================================== */
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("../assets/fonts/Vazirmatn-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 :host {
   color: var(--acd-text-primary);
   border-color: var(--acd-border);
@@ -104,6 +115,118 @@
 [class^="chatMessageTime--"],
 [class*=" chatMessageTime--"] {
   color: var(--acd-text-muted) !important;
+}
+
+/* Chat Textual Typography (Vazirmatn) inside Shadow DOM */
+[class^="chatMessageSender--"],
+[class*=" chatMessageSender--"],
+.chat-user-name,
+.sender-name,
+[class*="chat-sender"],
+[class^="chatIndividualMessageContent--"],
+[class*=" chatIndividualMessageContent--"],
+.chat-message-text,
+[class*="chat-message-content"],
+[class^="typingArea--"],
+[class*=" typingArea--"],
+[class^="typingAreaHasText--"],
+[class*=" typingAreaHasText--"],
+[class*="childContainerDiv"] [class*="typingArea"],
+[class*="chatComposeArea"] [class*="typingArea"],
+[class*="chatComposeArea"] textarea,
+[class*="chatComposeArea"] input,
+[class*="chatComposeArea"] [contenteditable="true"],
+.chat-input-container textarea,
+.chat-input-container input,
+.chat-input-container [contenteditable="true"] {
+  font-family: "Vazirmatn", Tahoma, Arial, sans-serif !important;
+}
+
+/* Real Chat Compose / Input Area inside Shadow DOM */
+[class^="chatComposeArea--"],
+[class*=" chatComposeArea--"],
+.chat-input-container {
+  background-color: var(--acd-bg-panel) !important;
+  border-top: 1px solid var(--acd-border-subtle) !important;
+}
+
+[class^="childContainerDiv--"],
+[class*=" childContainerDiv--"],
+.chat-input-container {
+  background-color: var(--acd-bg-input) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 4px;
+  transition: border-color var(--acd-transition-fast), box-shadow var(--acd-transition-fast);
+}
+
+[class^="childContainerDivSelected--"],
+[class*=" childContainerDivSelected--"],
+[class^="childContainerDiv--"]:focus-within,
+[class*=" childContainerDiv--"]:focus-within,
+.chat-input-container:focus-within {
+  background-color: var(--acd-bg-input) !important;
+  border-color: var(--acd-border-focus) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--acd-focus-ring) !important;
+}
+
+/* Chat Compose / Editable Input Contrast & Caret inside Shadow DOM */
+[class^="typingArea--"],
+[class*=" typingArea--"],
+[class^="typingAreaHasText--"],
+[class*=" typingAreaHasText--"],
+[class*="childContainerDiv"] [class*="typingArea"],
+[class*="chatComposeArea"] [class*="typingArea"],
+[class*="chatComposeArea"] textarea,
+[class*="chatComposeArea"] input,
+[class*="chatComposeArea"] [contenteditable="true"],
+.chat-input-container textarea,
+.chat-input-container input,
+.chat-input-container [contenteditable="true"] {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  caret-color: var(--acd-accent);
+}
+
+[class^="typingArea--"]:focus,
+[class*=" typingArea--"]:focus,
+[class^="typingAreaHasText--"]:focus,
+[class*=" typingAreaHasText--"]:focus,
+[class*="childContainerDiv"] [class*="typingArea"]:focus,
+[class*="chatComposeArea"] [class*="typingArea"]:focus,
+[class*="chatComposeArea"] textarea:focus,
+[class*="chatComposeArea"] input:focus,
+[class*="chatComposeArea"] [contenteditable="true"]:focus,
+.chat-input-container textarea:focus,
+.chat-input-container input:focus,
+.chat-input-container [contenteditable="true"]:focus {
+  background-color: transparent !important;
+  color: var(--acd-text-primary) !important;
+  caret-color: var(--acd-accent);
+  outline: none !important;
+}
+
+/* Chat Compose Placeholder Contrast inside Shadow DOM */
+[class^="typingArea--"]::placeholder,
+[class*=" typingArea--"]::placeholder,
+[class^="typingArea--"]:-ms-input-placeholder,
+[class*=" typingArea--"]:-ms-input-placeholder,
+[class*="childContainerDiv"] [class*="typingArea"]::placeholder,
+[class*="childContainerDiv"] [class*="typingArea"]:-ms-input-placeholder,
+[class*="chatComposeArea"] textarea::placeholder,
+[class*="chatComposeArea"] textarea:-ms-input-placeholder,
+[class*="chatComposeArea"] input::placeholder,
+[class*="chatComposeArea"] input:-ms-input-placeholder,
+[class*="chatComposeArea"] [contenteditable="true"]::placeholder,
+[class*="chatComposeArea"] [contenteditable="true"]:-ms-input-placeholder,
+.chat-input-container textarea::placeholder,
+.chat-input-container textarea:-ms-input-placeholder,
+.chat-input-container input::placeholder,
+.chat-input-container input:-ms-input-placeholder,
+.chat-input-container [contenteditable="true"]::placeholder,
+.chat-input-container [contenteditable="true"]:-ms-input-placeholder {
+  color: var(--acd-text-muted) !important;
+  opacity: 1;
 }
 
 /* Form controls inside shadow trees */
