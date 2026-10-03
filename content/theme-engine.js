@@ -21,21 +21,6 @@
 
   const SHADOW_STYLESHEET_PATH = 'styles/shadow-dom.css';
 
-  // Adobe Connect Outgoing RTL-Safe Chat Message Configuration
-  const RLE = '\u202B'; // RIGHT-TO-LEFT EMBEDDING
-  const PDF = '\u202C'; // POP DIRECTIONAL FORMATTING
-
-  // Adobe Connect compatibility:
-  // RLE/PDF is intentionally used for transmitted RTL Chat text.
-  // RLI/PDI was standards-preferred but caused sender/message ordering
-  // issues in Adobe Connect recipient rendering during real client testing.
-  // Never replace this with RLO.
-
-  // Conservative detector for Persian / Arabic RTL content:
-  // Covers Arabic (U+0600-U+06FF), Arabic Supplement (U+0750-U+077F),
-  // Arabic Extended-A (U+08A0-U+08FF), and Arabic Presentation Forms (U+FB50-U+FDFF, U+FE70-U+FEFF).
-  const RTL_CHAR_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
-
   // Tags that MUST NEVER be altered or darkened (Media & embeds)
   const SENSITIVE_TAGS = new Set([
     'VIDEO',
@@ -88,13 +73,9 @@
       this.injectedElements = new Set();
       this.attachedShadowRoots = new Set();
       this.shadowObservers = new Map(); // Map<ShadowRoot, MutationObserver>
-      this.shadowChatListeners = new Map(); // Map<ShadowRoot, { handleKey, handleSend }>
       this.hasScannedInitialDOM = false;
       this.processQueue = [];
       this.isProcessingQueue = false;
-
-      // Initialize document-level outgoing RTL chat interceptors
-      this.initChatRtlHandlers();
     }
 
     /**
@@ -380,15 +361,9 @@
      * Handle Open Shadow Root styling and observe dynamic shadow mutations
      */
     attachToShadowRoot(shadowRoot) {
-      if ((!this.enabled && !this.chatRtlEnabled) || !shadowRoot) return;
+      if (!this.enabled || !shadowRoot) return;
 
       this.attachedShadowRoots.add(shadowRoot);
-
-      // Attach outgoing chat listeners to this ShadowRoot
-      this.attachChatListenersToShadow(shadowRoot);
-
-      // If dark mode is not active, skip dark stylesheet injection and evaluation
-      if (!this.enabled) return;
 
       // 1. Inject dedicated Shadow DOM stylesheet (encapsulation-friendly)
       const shadowStyleId = 'acd-shadow-theme-style';
@@ -470,17 +445,7 @@
       });
       this.shadowObservers.clear();
 
-      // 2. Remove shadow chat listeners
-      this.shadowChatListeners.forEach(({ handleKey, handleSend }, shadowRoot) => {
-        try {
-          shadowRoot.removeEventListener('keydown', handleKey, true);
-          shadowRoot.removeEventListener('pointerdown', handleSend, true);
-          shadowRoot.removeEventListener('click', handleSend, true);
-        } catch (e) {}
-      });
-      this.shadowChatListeners.clear();
-
-      // 3. Remove injected styles and clean up Layer 1 attributes
+      // 2. Remove injected styles and clean up Layer 1 attributes
       this.attachedShadowRoots.forEach((shadowRoot) => {
         try {
           if (shadowRoot.querySelectorAll) {
@@ -686,305 +651,6 @@
           this.scheduleQueueProcessing();
         }
       });
-    }
-
-    // ==========================================================================
-    // Outgoing RTL Chat Message Management
-    // ==========================================================================
-
-    /**
-     * Initialize document-level capture listeners for outgoing Chat interactions
-     */
-    initChatRtlHandlers() {
-      const handleKey = (e) => this.handleChatKeyDown(e);
-      const handleSend = (e) => this.handleChatSendInteraction(e);
-
-      document.addEventListener('keydown', handleKey, true);
-      document.addEventListener('pointerdown', handleSend, true);
-      document.addEventListener('click', handleSend, true);
-    }
-
-    /**
-     * Attach capture listeners to newly discovered Open Shadow Root
-     */
-    attachChatListenersToShadow(shadowRoot) {
-      if (!shadowRoot || this.shadowChatListeners.has(shadowRoot)) return;
-
-      const handleKey = (e) => this.handleChatKeyDown(e);
-      const handleSend = (e) => this.handleChatSendInteraction(e);
-
-      shadowRoot.addEventListener('keydown', handleKey, true);
-      shadowRoot.addEventListener('pointerdown', handleSend, true);
-      shadowRoot.addEventListener('click', handleSend, true);
-
-      this.shadowChatListeners.set(shadowRoot, { handleKey, handleSend });
-    }
-
-    /**
-     * Intercept Enter keypress on Chat composer when RTL Chat is active
-     */
-    handleChatKeyDown(event) {
-      if (!this.chatRtlEnabled) return;
-      if (event.__acd_chat_handled__) return;
-      if (event.key !== 'Enter') return;
-      // Preserve Shift+Enter for multiline, ignore other modifiers and IME composition
-      if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey || event.isComposing) {
-        return;
-      }
-
-      const target = (event.composedPath && event.composedPath()[0]) || event.target;
-      if (!this.isChatEditor(target)) return;
-
-      event.__acd_chat_handled__ = true;
-      this.prepareOutgoingChatMessage(target);
-    }
-
-    /**
-     * Intercept Send button clicks and pointerdown events
-     */
-    handleChatSendInteraction(event) {
-      if (!this.chatRtlEnabled) return;
-      if (event.__acd_chat_handled__) return;
-
-      const target = (event.composedPath && event.composedPath()[0]) || event.target;
-      const sendBtn = this.findSendButton(target);
-      if (!sendBtn) return;
-
-      const editor = this.findAssociatedEditor(sendBtn);
-      if (!editor) return;
-
-      event.__acd_chat_handled__ = true;
-      this.prepareOutgoingChatMessage(editor);
-    }
-
-    /**
-     * Temporary editor mutation at the SEND boundary:
-     * 1. Read original visible text
-     * 2. Transform it (RLE + paragraph + PDF)
-     * 3. Inject transformed text via native setters & dispatch InputEvent
-     * 4. Allow Adobe's send handler to transmit and clear the input
-     * 5. If send failed and input was not cleared, restore original visible text
-     */
-    prepareOutgoingChatMessage(editor) {
-      if (!editor || !this.chatRtlEnabled) return false;
-
-      const originalText = this.getEditorText(editor);
-      if (!originalText || !originalText.trim()) return false;
-
-      const transformedText = this.transformOutgoingRtlMessage(originalText);
-      if (transformedText === originalText) return false;
-
-      this.setEditorText(editor, transformedText);
-
-      // Restore original text if Adobe did not clear the composer after send
-      setTimeout(() => {
-        try {
-          if (this.getEditorText(editor) === transformedText) {
-            this.setEditorText(editor, originalText);
-          }
-        } catch (e) {}
-      }, 200);
-
-      return true;
-    }
-
-    /**
-     * Check if element is a Live Chat editor input/textarea/contenteditable
-     */
-    isChatEditor(el) {
-      if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
-      const isInputOrTextarea = el.tagName === 'TEXTAREA' || el.tagName === 'INPUT' || el.isContentEditable;
-      if (!isInputOrTextarea) return false;
-      if (el.readOnly || el.disabled) return false;
-
-      // Exclude non-chat pods (Notes, Polls, Q&A)
-      if (el.closest && el.closest(
-        '[class*="notesPod"], [class*="pollPod"], [class*="qnaPod"], [class*="qnaInput"], [class*="shortAnswerCreate"], [class*="choiceQues"]'
-      )) {
-        return false;
-      }
-
-      // Check if inside chat compose area, chat pod, or chat input container
-      if (el.closest && el.closest('[class*="chatComposeArea"], [class*="chatPod"], .chat-input-container')) {
-        return true;
-      }
-
-      const className = typeof el.className === 'string' ? el.className : (el.getAttribute('class') || '');
-      if (/typingArea/i.test(className) && el.closest && el.closest('[class*="childContainerDiv"]')) {
-        return true;
-      }
-
-      return false;
-    }
-
-    /**
-     * Locate the Send button from event target
-     */
-    findSendButton(target) {
-      if (!target || target.nodeType !== Node.ELEMENT_NODE) return null;
-
-      // Exclude non-chat pods
-      if (target.closest && target.closest(
-        '[class*="notesPod"], [class*="pollPod"], [class*="qnaPod"], [class*="shortAnswerCreate"], [class*="choiceQues"]'
-      )) {
-        return null;
-      }
-
-      const btn = target.closest(
-        'button[class*="sendButton"], button[class*="secondSendButton"], button[class*="chatSendButton"], [class*="sendButton"], [class*="secondSendButton"], button[aria-label*="Send" i]'
-      );
-      if (btn) {
-        if (btn.closest && btn.closest('[class*="chatComposeArea"], [class*="chatPod"], [class*="childContainerDiv"], .chat-input-container')) {
-          return btn.tagName === 'BUTTON' ? btn : (btn.closest('button') || btn);
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * Locate associated Chat editor for a given Send button
-     */
-    findAssociatedEditor(sendButton) {
-      if (!sendButton) return null;
-
-      const container = sendButton.closest && sendButton.closest(
-        '[class*="childContainerDiv"], [class*="chatComposeArea"], [class*="chatPod"], .chat-input-container'
-      );
-      if (container) {
-        const editor = container.querySelector(
-          '[class*="typingArea"], textarea, input, [contenteditable="true"]'
-        );
-        if (editor && this.isChatEditor(editor)) return editor;
-      }
-
-      const parent = sendButton.parentElement;
-      if (parent) {
-        const editor = parent.querySelector('[class*="typingArea"], textarea, input, [contenteditable="true"]');
-        if (editor && this.isChatEditor(editor)) return editor;
-      }
-
-      return null;
-    }
-
-    /**
-     * Read visible text from composer
-     */
-    getEditorText(element) {
-      if (!element) return '';
-      if (element instanceof HTMLTextAreaElement || element instanceof HTMLInputElement ||
-          element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') {
-        return element.value || '';
-      }
-      if (element.isContentEditable) {
-        return element.innerText !== undefined ? element.innerText : (element.textContent || '');
-      }
-      return element.value || element.textContent || '';
-    }
-
-    /**
-     * Inject transformed text and synchronize React/DOM state
-     */
-    setEditorText(element, value) {
-      if (!element) return;
-
-      if (element instanceof HTMLTextAreaElement || element.tagName === 'TEXTAREA') {
-        const proto = window.HTMLTextAreaElement.prototype;
-        const desc = Object.getOwnPropertyDescriptor(proto, 'value');
-        if (desc && desc.set) {
-          desc.set.call(element, value);
-        } else {
-          element.value = value;
-        }
-      } else if (element instanceof HTMLInputElement || element.tagName === 'INPUT') {
-        const proto = window.HTMLInputElement.prototype;
-        const desc = Object.getOwnPropertyDescriptor(proto, 'value');
-        if (desc && desc.set) {
-          desc.set.call(element, value);
-        } else {
-          element.value = value;
-        }
-      } else if (element.isContentEditable) {
-        element.textContent = value;
-      } else {
-        element.value = value;
-      }
-
-      // Reset React value tracker if present so React notices the value change
-      try {
-        if (element._valueTracker && typeof element._valueTracker.setValue === 'function') {
-          element._valueTracker.setValue('');
-        }
-      } catch (e) {}
-
-      // Dispatch InputEvent for React synthetic input handling
-      try {
-        const inputEvt = new InputEvent('input', {
-          bubbles: true,
-          cancelable: true,
-          data: value,
-          inputType: 'insertReplacementText'
-        });
-        element.dispatchEvent(inputEvt);
-      } catch (e) {
-        const fallbackEvt = new Event('input', { bubbles: true, cancelable: true });
-        element.dispatchEvent(fallbackEvt);
-      }
-
-      // Dispatch change event
-      try {
-        const changeEvt = new Event('change', { bubbles: true, cancelable: true });
-        element.dispatchEvent(changeEvt);
-      } catch (e) {}
-    }
-
-    /**
-     * Conservative detector for Persian / Arabic RTL content
-     */
-    containsRtlText(text) {
-      return typeof text === 'string' && RTL_CHAR_REGEX.test(text);
-    }
-
-    /**
-     * Recognize paragraphs already wrapped by this feature to prevent double-wrapping
-     */
-    isExtensionWrappedParagraph(paragraph) {
-      if (typeof paragraph !== 'string') return false;
-      return paragraph.startsWith(RLE) && paragraph.endsWith(PDF);
-    }
-
-    /**
-     * Wrap an individual RTL paragraph with RLE and PDF
-     */
-    wrapRtlParagraph(paragraph) {
-      return `${RLE}${paragraph}${PDF}`;
-    }
-
-    /**
-     * Main transformation helper for outgoing RTL Chat messages.
-     * Shared by both Enter key and Send button paths.
-     */
-    transformOutgoingRtlMessage(text, isRtlEnabled = this.chatRtlEnabled) {
-      if (!isRtlEnabled || !text || typeof text !== 'string') {
-        return text;
-      }
-
-      const parts = text.split(/(\r\n|\r|\n)/);
-      for (let i = 0; i < parts.length; i += 2) {
-        const paragraph = parts[i];
-        if (!paragraph || paragraph.trim().length === 0) {
-          continue;
-        }
-        if (!this.containsRtlText(paragraph)) {
-          continue;
-        }
-        if (this.isExtensionWrappedParagraph(paragraph)) {
-          continue;
-        }
-        parts[i] = this.wrapRtlParagraph(paragraph);
-      }
-
-      return parts.join('');
     }
   }
 

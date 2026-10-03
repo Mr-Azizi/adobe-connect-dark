@@ -51,21 +51,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function getScriptId(urlObj) {
+  function getIsolatedScriptId(urlObj) {
     const protocolSlug = urlObj.protocol.replace(':', '');
     const hostSlug = urlObj.hostname.replace(/[^a-zA-Z0-9_-]/g, '_');
     return `acd_cs_${protocolSlug}_${hostSlug}`;
   }
 
-  async function ensureRegistration(scriptId, originPattern) {
+  function getMainScriptId(urlObj) {
+    const protocolSlug = urlObj.protocol.replace(':', '');
+    const hostSlug = urlObj.hostname.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return `acd_main_${protocolSlug}_${hostSlug}`;
+  }
+
+  async function ensureRegistration(urlObj, originPattern) {
     if (!chrome.scripting || !chrome.scripting.registerContentScripts) return true;
+
+    const isolatedScriptId = getIsolatedScriptId(urlObj);
+    const mainScriptId = getMainScriptId(urlObj);
 
     try {
       const registered = await chrome.scripting.getRegisteredContentScripts();
-      const isAlreadyRegistered = registered.some((r) => r.id === scriptId);
-      if (!isAlreadyRegistered) {
-        await chrome.scripting.registerContentScripts([{
-          id: scriptId,
+      const registeredIds = new Set(registered.map((r) => r.id));
+      const scriptsToRegister = [];
+
+      // 1. ISOLATED-world registration for Theme Engine, observer, and messaging
+      if (!registeredIds.has(isolatedScriptId)) {
+        scriptsToRegister.push({
+          id: isolatedScriptId,
           matches: [originPattern],
           js: [
             'content/theme-engine.js',
@@ -73,8 +85,27 @@ document.addEventListener('DOMContentLoaded', () => {
             'content/content.js'
           ],
           runAt: 'document_start',
-          allFrames: true
-        }]);
+          allFrames: true,
+          world: 'ISOLATED'
+        });
+      }
+
+      // 2. MAIN-world registration for outgoing Chat RTL bridge
+      if (!registeredIds.has(mainScriptId)) {
+        scriptsToRegister.push({
+          id: mainScriptId,
+          matches: [originPattern],
+          js: [
+            'content/chat-rtl-main.js'
+          ],
+          runAt: 'document_start',
+          allFrames: true,
+          world: 'MAIN'
+        });
+      }
+
+      if (scriptsToRegister.length > 0) {
+        await chrome.scripting.registerContentScripts(scriptsToRegister);
       }
       return true;
     } catch (err) {
@@ -83,11 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  async function cleanupRegistrationIfUnneeded(scriptId, keepDark, keepRtl) {
+  async function cleanupRegistrationIfUnneeded(urlObj, keepDark, keepRtl) {
     if (keepDark || keepRtl) return;
     if (chrome.scripting && chrome.scripting.unregisterContentScripts) {
+      const isolatedScriptId = getIsolatedScriptId(urlObj);
+      const mainScriptId = getMainScriptId(urlObj);
       try {
-        await chrome.scripting.unregisterContentScripts({ ids: [scriptId] });
+        await chrome.scripting.unregisterContentScripts({ ids: [isolatedScriptId, mainScriptId] });
       } catch (err) {
         // Ignored if already unregistered
       }
@@ -101,14 +134,29 @@ document.addEventListener('DOMContentLoaded', () => {
       if (chrome.runtime.lastError) {
         // Fallback injection if content script was not already running in tab
         if (chrome.scripting && chrome.scripting.executeScript) {
+          // Inject isolated content scripts
           chrome.scripting.executeScript({
             target: { tabId: currentTab.id, allFrames: true },
             files: [
               'content/theme-engine.js',
               'content/observer.js',
               'content/content.js'
-            ]
+            ],
+            world: 'ISOLATED'
+          }).then(() => {
+            chrome.tabs.sendMessage(currentTab.id, messagePayload, () => {
+              if (chrome.runtime.lastError) {}
+            });
           }).catch((e) => console.warn('[ACD] Injection fallback:', e));
+
+          // Inject MAIN-world bridge explicitly
+          chrome.scripting.executeScript({
+            target: { tabId: currentTab.id, allFrames: true },
+            files: [
+              'content/chat-rtl-main.js'
+            ],
+            world: 'MAIN'
+          }).catch((e) => console.warn('[ACD] Main bridge fallback:', e));
         }
       }
     });
@@ -195,8 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const wantsToEnable = themeToggleEl.checked;
     const isRtlActive = rtlToggleEl ? rtlToggleEl.checked : false;
-    const scriptId = getScriptId(currentUrl);
-
     if (wantsToEnable) {
       chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
         if (!granted) {
@@ -206,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        const regOk = await ensureRegistration(scriptId, currentOriginPattern);
+        const regOk = await ensureRegistration(currentUrl, currentOriginPattern);
         if (!regOk) {
           themeToggleEl.checked = false;
           updateStatusBadge(false, isRtlActive);
@@ -230,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const enabledSites = result.acd_enabled_sites || {};
         delete enabledSites[currentSiteKey];
 
-        await cleanupRegistrationIfUnneeded(scriptId, false, isRtlActive);
+        await cleanupRegistrationIfUnneeded(currentUrl, false, isRtlActive);
 
         chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
           updateStatusBadge(false, isRtlActive);
@@ -248,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const wantsToEnable = rtlToggleEl.checked;
       const isDarkActive = themeToggleEl.checked;
-      const scriptId = getScriptId(currentUrl);
 
       if (wantsToEnable) {
         chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
@@ -259,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
           }
 
-          const regOk = await ensureRegistration(scriptId, currentOriginPattern);
+          const regOk = await ensureRegistration(currentUrl, currentOriginPattern);
           if (!regOk) {
             rtlToggleEl.checked = false;
             updateStatusBadge(isDarkActive, false);
@@ -283,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const rtlSites = result.acd_rtl_chat_sites || {};
           delete rtlSites[currentSiteKey];
 
-          await cleanupRegistrationIfUnneeded(scriptId, isDarkActive, false);
+          await cleanupRegistrationIfUnneeded(currentUrl, isDarkActive, false);
 
           chrome.storage.local.set({ acd_rtl_chat_sites: rtlSites }, () => {
             updateStatusBadge(isDarkActive, false);
@@ -299,11 +344,12 @@ document.addEventListener('DOMContentLoaded', () => {
   resetBtnEl.addEventListener('click', () => {
     if (!currentSiteKey || !currentTab || !currentOriginPattern || !currentUrl) return;
 
-    const scriptId = getScriptId(currentUrl);
+    const isolatedScriptId = getIsolatedScriptId(currentUrl);
+    const mainScriptId = getMainScriptId(currentUrl);
 
-    // 1. Unregister dynamic content script
+    // 1. Unregister dynamic content scripts (both ISOLATED and MAIN)
     if (chrome.scripting && chrome.scripting.unregisterContentScripts) {
-      chrome.scripting.unregisterContentScripts({ ids: [scriptId] }).catch(() => {});
+      chrome.scripting.unregisterContentScripts({ ids: [isolatedScriptId, mainScriptId] }).catch(() => {});
     }
 
     // 2. Remove siteKey from storage

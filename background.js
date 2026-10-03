@@ -4,7 +4,7 @@
  * and toolbar action badge indicators based on siteKey.
  */
 
-function getScriptIdForSite(siteKey) {
+function getIsolatedScriptIdForSite(siteKey) {
   try {
     const u = new URL(siteKey);
     const protocolSlug = u.protocol.replace(':', '');
@@ -13,6 +13,21 @@ function getScriptIdForSite(siteKey) {
   } catch (e) {
     return null;
   }
+}
+
+function getMainScriptIdForSite(siteKey) {
+  try {
+    const u = new URL(siteKey);
+    const protocolSlug = u.protocol.replace(':', '');
+    const hostSlug = u.hostname.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return `acd_main_${protocolSlug}_${hostSlug}`;
+  } catch (e) {
+    return null;
+  }
+}
+
+function getScriptIdForSite(siteKey) {
+  return getIsolatedScriptIdForSite(siteKey);
 }
 
 // Initialize default storage, migrate legacy domain data, and sync scripts
@@ -103,36 +118,59 @@ async function syncRegisteredScripts() {
         continue;
       }
 
-      const scriptId = getScriptIdForSite(siteKey);
-      if (!scriptId) continue;
+      const isolatedScriptId = getIsolatedScriptIdForSite(siteKey);
+      const mainScriptId = getMainScriptIdForSite(siteKey);
+      if (!isolatedScriptId || !mainScriptId) continue;
 
-      validScriptIds.add(scriptId);
+      validScriptIds.add(isolatedScriptId);
+      validScriptIds.add(mainScriptId);
 
-      // Self-healing: If permission is valid but registered script is missing, repair it!
-      if (!registeredIds.has(scriptId)) {
+      const scriptsToRegister = [];
+
+      // Self-healing: If permission is valid but isolated script is missing, repair it!
+      if (!registeredIds.has(isolatedScriptId)) {
+        scriptsToRegister.push({
+          id: isolatedScriptId,
+          matches: [originPattern],
+          js: [
+            'content/theme-engine.js',
+            'content/observer.js',
+            'content/content.js'
+          ],
+          runAt: 'document_start',
+          allFrames: true,
+          world: 'ISOLATED'
+        });
+      }
+
+      // Self-healing: If permission is valid but MAIN-world script is missing, repair it!
+      if (!registeredIds.has(mainScriptId)) {
+        scriptsToRegister.push({
+          id: mainScriptId,
+          matches: [originPattern],
+          js: [
+            'content/chat-rtl-main.js'
+          ],
+          runAt: 'document_start',
+          allFrames: true,
+          world: 'MAIN'
+        });
+      }
+
+      if (scriptsToRegister.length > 0) {
         try {
-          await chrome.scripting.registerContentScripts([{
-            id: scriptId,
-            matches: [originPattern],
-            js: [
-              'content/theme-engine.js',
-              'content/observer.js',
-              'content/content.js'
-            ],
-            runAt: 'document_start',
-            allFrames: true
-          }]);
-          registeredIds.add(scriptId);
+          await chrome.scripting.registerContentScripts(scriptsToRegister);
+          scriptsToRegister.forEach((s) => registeredIds.add(s.id));
         } catch (regErr) {
           console.warn('[ACD] Self-healing registration error for ' + siteKey, regErr);
         }
       }
     }
 
-    // 2. Clean up any stale registrations not in validScriptIds
+    // 2. Clean up any stale registrations not in validScriptIds (recognizing both acd_cs_ and acd_main_)
     const toUnregister = [];
     for (const r of registered) {
-      if (r.id.startsWith('acd_cs_') && !validScriptIds.has(r.id)) {
+      if ((r.id.startsWith('acd_cs_') || r.id.startsWith('acd_main_')) && !validScriptIds.has(r.id)) {
         toUnregister.push(r.id);
       }
     }
