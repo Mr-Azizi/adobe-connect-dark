@@ -24,6 +24,15 @@ A source-driven Chrome / Edge extension that modernizes Adobe Connect without re
 
 </div>
 
+<div align="center">
+
+[Installation](#installation) •
+[Usage](#how-to-use) •
+[Features](#highlights) •
+[RTL Chat](#rtl-chat-behavior) •
+[Troubleshooting](#troubleshooting)
+
+</div>
 ---
 
 ## Why this project exists
