@@ -9,7 +9,7 @@
 
 A source-driven Chrome / Edge extension that modernizes Adobe Connect without recoloring the content you actually came to see.
 
-[![Version](https://img.shields.io/badge/version-1.1.0-6EA8FE?style=flat-square)](#release-checklist)
+[![Version](https://img.shields.io/badge/version-1.2.0-6EA8FE?style=flat-square)](#release-checklist)
 [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#how-it-works)
 [![Chrome](https://img.shields.io/badge/Chrome-supported-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#browser-compatibility)
 [![Edge](https://img.shields.io/badge/Edge-supported-0C59A4?style=flat-square&logo=microsoftedge&logoColor=white)](#browser-compatibility)

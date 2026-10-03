@@ -359,6 +359,28 @@ button:active,
   transition: background-color var(--acd-transition-fast);
 }
 
+/* Attendee Row Container Borders (Strip duplicate native borders) */
+[class^="attendeeItemContainer1--"],
+[class*=" attendeeItemContainer1--"],
+[class^="attendeeItemContainer2--"],
+[class*=" attendeeItemContainer2--"],
+[class^="attendeeItemContainer2Selected--"],
+[class*=" attendeeItemContainer2Selected--"],
+[class^="attendeeItemContainer2TopBottomBorder--"],
+[class*=" attendeeItemContainer2TopBottomBorder--"],
+[class^="attendeeItemContainer2TopBottomBorderSelected--"],
+[class*=" attendeeItemContainer2TopBottomBorderSelected--"] {
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+/* Attendee Item Divider (Single subtle row separator) */
+[class^="attendeeItemBorder--"],
+[class*=" attendeeItemBorder--"] {
+  background-color: var(--acd-border-subtle) !important;
+  height: 1px !important;
+}
+
 [class^="attendeeItem--"]:hover,
 [class*=" attendeeItem--"]:hover,
 [class*="attendee-item"]:hover {
@@ -374,7 +396,11 @@ button:active,
 [class^="attendeeItem--"][aria-selected="true"],
 [class*=" attendeeItem--"][aria-selected="true"],
 [class^="attendeeItem--"].is-selected,
-[class*=" attendeeItem--"].is-selected {
+[class*=" attendeeItem--"].is-selected,
+[class^="attendeeItemContainer2Selected--"],
+[class*=" attendeeItemContainer2Selected--"],
+[class^="attendeeItemContainer2TopBottomBorderSelected--"],
+[class*=" attendeeItemContainer2TopBottomBorderSelected--"] {
   background-color: var(--acd-bg-selected) !important;
   border-left: 2px solid var(--acd-accent) !important;
 }

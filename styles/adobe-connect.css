@@ -881,7 +881,11 @@ html[data-acd-theme="dark"] [class*=" attendeeItem--"]:focus-visible {
 html[data-acd-theme="dark"] [class^="attendeeItem--"][aria-selected="true"],
 html[data-acd-theme="dark"] [class*=" attendeeItem--"][aria-selected="true"],
 html[data-acd-theme="dark"] [class^="attendeeItem--"].is-selected,
-html[data-acd-theme="dark"] [class*=" attendeeItem--"].is-selected {
+html[data-acd-theme="dark"] [class*=" attendeeItem--"].is-selected,
+html[data-acd-theme="dark"] [class^="attendeeItemContainer2Selected--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2Selected--"],
+html[data-acd-theme="dark"] [class^="attendeeItemContainer2TopBottomBorderSelected--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2TopBottomBorderSelected--"] {
   background-color: var(--acd-bg-selected) !important;
   border-left: 2px solid var(--acd-accent) !important;
 }
@@ -911,13 +915,26 @@ html[data-acd-theme="dark"] [class*=" userStatusMenuItemIcon--"] {
   fill: currentColor !important;
 }
 
-/* Dividers */
-html[data-acd-theme="dark"] [class^="attendeeItemList--"],
-html[data-acd-theme="dark"] [class*=" attendeeItemList--"],
+/* Attendee Row Container Borders (Strip duplicate native borders) */
+html[data-acd-theme="dark"] [class^="attendeeItemContainer1--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer1--"],
+html[data-acd-theme="dark"] [class^="attendeeItemContainer2--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2--"],
+html[data-acd-theme="dark"] [class^="attendeeItemContainer2Selected--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2Selected--"],
 html[data-acd-theme="dark"] [class^="attendeeItemContainer2TopBottomBorder--"],
-html[data-acd-theme="dark"] [class*=" attendeeItemContainer2TopBottomBorder--"] {
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2TopBottomBorder--"],
+html[data-acd-theme="dark"] [class^="attendeeItemContainer2TopBottomBorderSelected--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemContainer2TopBottomBorderSelected--"] {
   border-top: none !important;
-  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  border-bottom: none !important;
+}
+
+/* Attendee Item Divider (Single subtle row separator, avoiding double-borders) */
+html[data-acd-theme="dark"] [class^="attendeeItemBorder--"],
+html[data-acd-theme="dark"] [class*=" attendeeItemBorder--"] {
+  background-color: var(--acd-border-subtle) !important;
+  height: 1px !important;
 }
 
 /* ==========================================================================
