@@ -229,6 +229,30 @@
   opacity: 1;
 }
 
+/* Unread Message Notification Badges & Indicators inside Shadow DOM */
+/* Container must remain transparent so no phantom dot appears when empty */
+[class^="newMessageNotificationContiner--"],
+[class*=" newMessageNotificationContiner--"] {
+  background-color: transparent !important;
+}
+
+/* Unread dot indicator (rendered only when unread messages exist) */
+[class^="chatNewMessageNotification--"],
+[class*=" chatNewMessageNotification--"],
+[class^="dropDownButtonNotification--"],
+[class*=" dropDownButtonNotification--"] {
+  background-color: var(--acd-accent) !important;
+  border-radius: 50% !important;
+}
+
+/* Dropdown menu unread tab notification badge */
+[class^="dropDownTabNewMessageNotification--"],
+[class*=" dropDownTabNewMessageNotification--"] {
+  background-color: var(--acd-accent) !important;
+  color: #ffffff !important;
+  border-radius: 0.25rem !important;
+}
+
 /* Form controls inside shadow trees */
 input[type="text"],
 input[type="search"],

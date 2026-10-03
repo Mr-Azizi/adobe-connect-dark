@@ -735,16 +735,28 @@ html[data-acd-theme="dark"] [class*=" secondSendButton--"]:hover {
   background-color: var(--acd-bg-hover) !important;
 }
 
-/* Unread Message Notification Badges */
+/* Unread Message Notification Badges & Indicators */
+/* Container must remain transparent so no phantom dot appears when empty */
 html[data-acd-theme="dark"] [class^="newMessageNotificationContiner--"],
-html[data-acd-theme="dark"] [class*=" newMessageNotificationContiner--"],
+html[data-acd-theme="dark"] [class*=" newMessageNotificationContiner--"] {
+  background-color: transparent !important;
+}
+
+/* Unread dot indicator (rendered only when unread messages exist) */
 html[data-acd-theme="dark"] [class^="chatNewMessageNotification--"],
 html[data-acd-theme="dark"] [class*=" chatNewMessageNotification--"],
+html[data-acd-theme="dark"] [class^="dropDownButtonNotification--"],
+html[data-acd-theme="dark"] [class*=" dropDownButtonNotification--"] {
+  background-color: var(--acd-accent) !important;
+  border-radius: 50% !important;
+}
+
+/* Dropdown menu unread tab notification badge */
 html[data-acd-theme="dark"] [class^="dropDownTabNewMessageNotification--"],
 html[data-acd-theme="dark"] [class*=" dropDownTabNewMessageNotification--"] {
   background-color: var(--acd-accent) !important;
   color: #ffffff !important;
-  border-radius: 10px !important;
+  border-radius: 0.25rem !important;
 }
 
 /* Who is typing indicator */
