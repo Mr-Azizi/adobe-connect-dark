@@ -1440,11 +1440,33 @@ html[data-acd-chat-rtl="true"] [class*="chat-sender"] {
   unicode-bidi: isolate !important;
 }
 
-/* 3. Chat Message Text Body (unicode-bidi: plaintext preserves mixed LTR/RTL) */
-html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContent--"],
-html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContent--"],
-html[data-acd-chat-rtl="true"] .chat-message-text,
-html[data-acd-chat-rtl="true"] [class*="chat-message-content"] {
+/* 3. Chat Message Text Body */
+/* 3a. Dynamic BiDi Direction - Driven by Project RTL Classifier */
+html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContent--"][data-acd-bidi-dir="rtl"],
+html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContent--"][data-acd-bidi-dir="rtl"],
+html[data-acd-chat-rtl="true"] .chat-message-text[data-acd-bidi-dir="rtl"],
+html[data-acd-chat-rtl="true"] [class*="chat-message-content"][data-acd-bidi-dir="rtl"],
+html[data-acd-chat-rtl="true"] [data-acd-bidi-dir="rtl"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+
+html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContent--"][data-acd-bidi-dir="ltr"],
+html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContent--"][data-acd-bidi-dir="ltr"],
+html[data-acd-chat-rtl="true"] .chat-message-text[data-acd-bidi-dir="ltr"],
+html[data-acd-chat-rtl="true"] [class*="chat-message-content"][data-acd-bidi-dir="ltr"],
+html[data-acd-chat-rtl="true"] [data-acd-bidi-dir="ltr"] {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+}
+
+/* 3b. Unclassified Fallback (before classifier attaches or if neutral) */
+html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContent--"]:not([data-acd-bidi-dir]),
+html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContent--"]:not([data-acd-bidi-dir]),
+html[data-acd-chat-rtl="true"] .chat-message-text:not([data-acd-bidi-dir]),
+html[data-acd-chat-rtl="true"] [class*="chat-message-content"]:not([data-acd-bidi-dir]) {
   direction: rtl !important;
   text-align: right !important;
   unicode-bidi: plaintext !important;

@@ -209,6 +209,62 @@ body {
   color: var(--text-muted);
 }
 
+/* RTL Group & Nested Sub-Toggle */
+.rtl-card-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sub-toggle-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  padding-left: 14px;
+  border-top: 1px solid var(--border-subtle);
+  position: relative;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sub-toggle-card::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 14px;
+  bottom: 8px;
+  width: 2px;
+  background-color: var(--border);
+  border-radius: 1px;
+}
+
+.sub-toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 8px;
+}
+
+.sub-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sub-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.sub-toggle-card.disabled {
+  opacity: 0.42;
+}
+
+.sub-toggle-card.disabled .sub-title {
+  color: var(--text-muted);
+}
+
 /* Modern iOS / Material Switch */
 .switch {
   position: relative;

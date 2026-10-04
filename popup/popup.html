@@ -51,16 +51,30 @@
       </label>
     </section>
 
-    <!-- RTL Chat Text Control -->
-    <section class="card toggle-card">
-      <div class="toggle-info">
-        <span class="toggle-title">RTL Chat Text</span>
-        <span class="toggle-desc">Persian / Arabic chat</span>
+    <!-- RTL Chat Control Section -->
+    <section class="card rtl-card-group">
+      <div class="toggle-card">
+        <div class="toggle-info">
+          <span class="toggle-title">RTL Chat Text</span>
+          <span class="toggle-desc">Persian / Arabic chat</span>
+        </div>
+        <label class="switch" for="rtl-toggle">
+          <input type="checkbox" id="rtl-toggle" aria-label="Toggle RTL Chat Text">
+          <span class="slider"></span>
+        </label>
       </div>
-      <label class="switch" for="rtl-toggle">
-        <input type="checkbox" id="rtl-toggle" aria-label="Toggle RTL Chat Text">
-        <span class="slider"></span>
-      </label>
+
+      <!-- Sub-Toggle: Outgoing Send RTL Formatting -->
+      <div id="send-rtl-container" class="sub-toggle-card disabled">
+        <div class="sub-toggle-info">
+          <span class="toggle-title sub-title">Send RTL Formatting</span>
+          <span class="toggle-desc sub-desc">Make RTL messages display correctly for other participants</span>
+        </div>
+        <label class="switch" for="send-rtl-toggle">
+          <input type="checkbox" id="send-rtl-toggle" aria-label="Toggle Send RTL Formatting" disabled>
+          <span class="slider"></span>
+        </label>
+      </div>
     </section>
 
     <!-- Site Reset Action -->

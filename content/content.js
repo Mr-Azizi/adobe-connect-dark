@@ -24,7 +24,12 @@
    */
   function checkSiteState() {
     try {
-      chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites'], (result) => {
+      chrome.storage.local.get([
+        'acd_enabled_sites',
+        'acd_enabled_domains',
+        'acd_rtl_chat_sites',
+        'acd_send_rtl_formatting_sites'
+      ], (result) => {
         if (chrome.runtime.lastError) return;
 
         const enabledSites = result.acd_enabled_sites || {};
@@ -36,6 +41,9 @@
         const rtlSites = result.acd_rtl_chat_sites || {};
         const isRtlEnabled = Boolean(rtlSites[currentSiteKey]);
 
+        const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
+        const isSendRtlEnabled = sendRtlSites[currentSiteKey] ?? true;
+
         // Dark Mode state synchronization
         if (isDarkEnabled) {
           themeEngine.applyDarkTheme();
@@ -45,7 +53,7 @@
 
         // RTL Chat state synchronization
         if (isRtlEnabled) {
-          themeEngine.applyChatRtl();
+          themeEngine.applyChatRtl(isSendRtlEnabled);
         } else {
           themeEngine.removeChatRtl();
         }
@@ -73,15 +81,20 @@
       }
     }
 
-    if (changes.acd_rtl_chat_sites) {
-      const newRtlSites = changes.acd_rtl_chat_sites.newValue || {};
-      const shouldBeRtl = Boolean(newRtlSites[currentSiteKey]);
+    if (changes.acd_rtl_chat_sites || changes.acd_send_rtl_formatting_sites) {
+      chrome.storage.local.get(['acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites'], (res) => {
+        if (chrome.runtime.lastError) return;
+        const rtlSites = res.acd_rtl_chat_sites || {};
+        const isRtlEnabled = Boolean(rtlSites[currentSiteKey]);
+        const sendRtlSites = res.acd_send_rtl_formatting_sites || {};
+        const isSendRtlEnabled = sendRtlSites[currentSiteKey] ?? true;
 
-      if (shouldBeRtl && !themeEngine.isChatRtlEnabled()) {
-        themeEngine.applyChatRtl();
-      } else if (!shouldBeRtl && themeEngine.isChatRtlEnabled()) {
-        themeEngine.removeChatRtl();
-      }
+        if (isRtlEnabled) {
+          themeEngine.applyChatRtl(isSendRtlEnabled);
+        } else {
+          themeEngine.removeChatRtl();
+        }
+      });
     }
   });
 
@@ -102,13 +115,18 @@
           enabled: themeEngine.isEnabled(),
           darkEnabled: themeEngine.isEnabled(),
           rtlEnabled: themeEngine.isChatRtlEnabled(),
+          sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
           siteKey: currentSiteKey
         });
         break;
 
       case 'toggleRtl':
+        const sendRtlVal = typeof request.sendRtlEnabled === 'boolean'
+          ? request.sendRtlEnabled
+          : themeEngine.isSendRtlFormattingEnabled();
+
         if (request.enabled) {
-          themeEngine.applyChatRtl();
+          themeEngine.applyChatRtl(sendRtlVal);
         } else {
           themeEngine.removeChatRtl();
         }
@@ -116,6 +134,18 @@
           success: true,
           darkEnabled: themeEngine.isEnabled(),
           rtlEnabled: themeEngine.isChatRtlEnabled(),
+          sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
+          siteKey: currentSiteKey
+        });
+        break;
+
+      case 'toggleSendRtlFormatting':
+        themeEngine.setSendRtlFormatting(Boolean(request.enabled));
+        sendResponse({
+          success: true,
+          darkEnabled: themeEngine.isEnabled(),
+          rtlEnabled: themeEngine.isChatRtlEnabled(),
+          sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
           siteKey: currentSiteKey
         });
         break;
@@ -128,6 +158,7 @@
           enabled: false,
           darkEnabled: false,
           rtlEnabled: false,
+          sendRtlFormattingEnabled: true,
           siteKey: currentSiteKey
         });
         break;
@@ -138,6 +169,7 @@
           enabled: themeEngine.isEnabled(),
           darkEnabled: themeEngine.isEnabled(),
           rtlEnabled: themeEngine.isChatRtlEnabled(),
+          sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
           siteKey: currentSiteKey
         });
         break;

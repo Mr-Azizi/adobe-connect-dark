@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusBadgeEl = document.getElementById('status-badge');
   const themeToggleEl = document.getElementById('theme-toggle');
   const rtlToggleEl = document.getElementById('rtl-toggle');
+  const sendRtlToggleEl = document.getElementById('send-rtl-toggle');
+  const sendRtlContainerEl = document.getElementById('send-rtl-container');
   const resetBtnEl = document.getElementById('reset-btn');
   const toastEl = document.getElementById('toast');
   const versionEl = document.getElementById('extension-version');
@@ -48,6 +50,18 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       statusBadgeEl.textContent = 'Inactive';
       statusBadgeEl.className = 'badge badge-inactive';
+    }
+  }
+
+  function updateSendRtlUi(isRtlActive, sendRtlStored) {
+    if (!sendRtlToggleEl || !sendRtlContainerEl) return;
+    sendRtlToggleEl.checked = Boolean(sendRtlStored);
+    if (isRtlActive) {
+      sendRtlToggleEl.disabled = false;
+      sendRtlContainerEl.classList.remove('disabled');
+    } else {
+      sendRtlToggleEl.disabled = true;
+      sendRtlContainerEl.classList.add('disabled');
     }
   }
 
@@ -168,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentDomainEl.textContent = 'No active tab found';
       themeToggleEl.disabled = true;
       if (rtlToggleEl) rtlToggleEl.disabled = true;
+      updateSendRtlUi(false, true);
       resetBtnEl.disabled = true;
       return;
     }
@@ -181,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentDomainEl.textContent = 'Invalid URL';
       themeToggleEl.disabled = true;
       if (rtlToggleEl) rtlToggleEl.disabled = true;
+      updateSendRtlUi(false, true);
       resetBtnEl.disabled = true;
       return;
     }
@@ -190,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentDomainEl.textContent = 'Browser Internal Page';
       themeToggleEl.disabled = true;
       if (rtlToggleEl) rtlToggleEl.disabled = true;
+      updateSendRtlUi(false, true);
       resetBtnEl.disabled = true;
       statusBadgeEl.textContent = 'Unsupported';
       statusBadgeEl.className = 'badge badge-inactive';
@@ -205,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentDomainEl.title = currentSiteKey;
 
     // Load persisted state for this siteKey (with backward-compatibility migration)
-    chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites'], (result) => {
+    chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites'], (result) => {
       if (chrome.runtime.lastError) {
         showToast('Error loading settings');
         return;
@@ -226,12 +243,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       enabledSites = enabledSites || {};
       const rtlSites = result.acd_rtl_chat_sites || {};
+      const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
 
       const isDark = Boolean(enabledSites[currentSiteKey]);
       const isRtl = Boolean(rtlSites[currentSiteKey]);
+      const sendRtlStored = sendRtlSites[currentSiteKey] ?? true;
 
       themeToggleEl.checked = isDark;
       if (rtlToggleEl) rtlToggleEl.checked = isRtl;
+      updateSendRtlUi(isRtl, sendRtlStored);
 
       updateStatusBadge(isDark, isRtl);
     });
@@ -300,6 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!granted) {
             rtlToggleEl.checked = false;
             updateStatusBadge(isDarkActive, false);
+            updateSendRtlUi(false, sendRtlToggleEl ? sendRtlToggleEl.checked : true);
             showToast('Permission not granted / مجوز داده نشد');
             return;
           }
@@ -308,35 +329,76 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!regOk) {
             rtlToggleEl.checked = false;
             updateStatusBadge(isDarkActive, false);
+            updateSendRtlUi(false, sendRtlToggleEl ? sendRtlToggleEl.checked : true);
             showToast('Registration failed / خطا در ثبت اسکریپت');
             return;
           }
 
-          chrome.storage.local.get(['acd_rtl_chat_sites'], (result) => {
+          chrome.storage.local.get(['acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites'], (result) => {
             const rtlSites = result.acd_rtl_chat_sites || {};
+            const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
+            const sendRtlStored = sendRtlSites[currentSiteKey] ?? true;
+
             rtlSites[currentSiteKey] = true;
 
             chrome.storage.local.set({ acd_rtl_chat_sites: rtlSites }, () => {
               updateStatusBadge(isDarkActive, true);
+              updateSendRtlUi(true, sendRtlStored);
               showToast('✓ RTL Chat enabled for ' + currentUrl.hostname);
-              sendTabMessageWithFallback({ action: 'toggleRtl', enabled: true, siteKey: currentSiteKey });
+              sendTabMessageWithFallback({
+                action: 'toggleRtl',
+                enabled: true,
+                sendRtlEnabled: sendRtlStored,
+                siteKey: currentSiteKey
+              });
             });
           });
         });
       } else {
-        chrome.storage.local.get(['acd_rtl_chat_sites'], async (result) => {
+        chrome.storage.local.get(['acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites'], async (result) => {
           const rtlSites = result.acd_rtl_chat_sites || {};
+          const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
+          const sendRtlStored = sendRtlSites[currentSiteKey] ?? true;
+
           delete rtlSites[currentSiteKey];
 
           await cleanupRegistrationIfUnneeded(currentUrl, isDarkActive, false);
 
           chrome.storage.local.set({ acd_rtl_chat_sites: rtlSites }, () => {
             updateStatusBadge(isDarkActive, false);
+            updateSendRtlUi(false, sendRtlStored);
             showToast('✓ RTL Chat disabled');
-            sendTabMessageWithFallback({ action: 'toggleRtl', enabled: false, siteKey: currentSiteKey });
+            sendTabMessageWithFallback({
+              action: 'toggleRtl',
+              enabled: false,
+              sendRtlEnabled: false,
+              siteKey: currentSiteKey
+            });
           });
         });
       }
+    });
+  }
+
+  // Outgoing Send RTL Formatting Toggle handler
+  if (sendRtlToggleEl) {
+    sendRtlToggleEl.addEventListener('change', () => {
+      if (!currentSiteKey || !currentTab || (rtlToggleEl && !rtlToggleEl.checked)) return;
+
+      const wantsToSendRtl = sendRtlToggleEl.checked;
+      chrome.storage.local.get(['acd_send_rtl_formatting_sites'], (result) => {
+        const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
+        sendRtlSites[currentSiteKey] = wantsToSendRtl;
+
+        chrome.storage.local.set({ acd_send_rtl_formatting_sites: sendRtlSites }, () => {
+          showToast(wantsToSendRtl ? '✓ Send RTL formatting enabled' : '✓ Send RTL formatting disabled');
+          sendTabMessageWithFallback({
+            action: 'toggleSendRtlFormatting',
+            enabled: wantsToSendRtl,
+            siteKey: currentSiteKey
+          });
+        });
+      });
     });
   }
 
@@ -353,18 +415,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Remove siteKey from storage
-    chrome.storage.local.get(['acd_enabled_sites', 'acd_rtl_chat_sites'], (result) => {
+    chrome.storage.local.get(['acd_enabled_sites', 'acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites'], (result) => {
       const enabledSites = result.acd_enabled_sites || {};
       const rtlSites = result.acd_rtl_chat_sites || {};
+      const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
       delete enabledSites[currentSiteKey];
       delete rtlSites[currentSiteKey];
+      delete sendRtlSites[currentSiteKey];
 
       chrome.storage.local.set({
         acd_enabled_sites: enabledSites,
-        acd_rtl_chat_sites: rtlSites
+        acd_rtl_chat_sites: rtlSites,
+        acd_send_rtl_formatting_sites: sendRtlSites
       }, () => {
         themeToggleEl.checked = false;
         if (rtlToggleEl) rtlToggleEl.checked = false;
+        updateSendRtlUi(false, true);
         updateStatusBadge(false, false);
         showToast('✓ Site settings reset');
 
