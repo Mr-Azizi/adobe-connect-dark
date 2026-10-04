@@ -89,6 +89,7 @@
     constructor() {
       this.enabled = false;
       this.chatRtlEnabled = false;
+      this.sendRtlFormattingEnabled = true;
       this.observer = null; // Associated ACDObserver
       this.injectedElements = new Set();
       this.attachedShadowRoots = new Set();
@@ -120,6 +121,13 @@
      */
     isChatRtlEnabled() {
       return this.chatRtlEnabled;
+    }
+
+    /**
+     * Check if Send RTL formatting is currently enabled
+     */
+    isSendRtlFormattingEnabled() {
+      return this.sendRtlFormattingEnabled;
     }
 
     /**
@@ -219,9 +227,13 @@
     /**
      * CONSOLIDATED ACTIVATION PATH FOR RTL CHAT
      */
-    applyChatRtl() {
+    applyChatRtl(sendRtlFormattingEnabled = this.sendRtlFormattingEnabled) {
       this.chatRtlEnabled = true;
+      if (typeof sendRtlFormattingEnabled === 'boolean') {
+        this.sendRtlFormattingEnabled = sendRtlFormattingEnabled;
+      }
       this.applyChatRtlAttribute();
+      this.applySendRtlFormattingAttribute();
       this.injectStylesheets(document);
     }
 
@@ -233,6 +245,7 @@
       const root = document.documentElement;
       if (root) {
         root.removeAttribute('data-acd-chat-rtl');
+        root.removeAttribute('data-acd-send-rtl-formatting');
       }
 
       // If neither dark mode nor RTL is active, clean up injected stylesheets
@@ -242,12 +255,34 @@
     }
 
     /**
+     * Update Send RTL Formatting state independently
+     */
+    setSendRtlFormatting(enabled) {
+      this.sendRtlFormattingEnabled = Boolean(enabled);
+      this.applySendRtlFormattingAttribute();
+    }
+
+    /**
      * Set RTL attribute on html element
      */
     applyChatRtlAttribute() {
       const root = document.documentElement;
       if (root && !root.hasAttribute('data-acd-chat-rtl')) {
         root.setAttribute('data-acd-chat-rtl', 'true');
+      }
+    }
+
+    /**
+     * Set or update Send RTL Formatting attribute on html element.
+     * Only applied when chatRtlEnabled is true.
+     */
+    applySendRtlFormattingAttribute() {
+      const root = document.documentElement;
+      if (!root) return;
+      if (this.chatRtlEnabled) {
+        root.setAttribute('data-acd-send-rtl-formatting', this.sendRtlFormattingEnabled ? 'true' : 'false');
+      } else {
+        root.removeAttribute('data-acd-send-rtl-formatting');
       }
     }
 

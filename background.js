@@ -47,7 +47,7 @@ chrome.runtime.onStartup.addListener(async () => {
  */
 async function migrateLegacyStorage() {
   try {
-    const result = await chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites']);
+    const result = await chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites']);
     if (!result.acd_enabled_sites && result.acd_enabled_domains) {
       const migrated = {};
       for (const [dom, val] of Object.entries(result.acd_enabled_domains)) {
@@ -62,6 +62,9 @@ async function migrateLegacyStorage() {
     }
     if (!result.acd_rtl_chat_sites) {
       await chrome.storage.local.set({ acd_rtl_chat_sites: {} });
+    }
+    if (!result.acd_send_rtl_formatting_sites) {
+      await chrome.storage.local.set({ acd_send_rtl_formatting_sites: {} });
     }
   } catch (e) {
     console.warn('[ACD] Storage migration warning:', e);
@@ -79,9 +82,10 @@ async function syncRegisteredScripts() {
   if (!chrome.scripting || !chrome.scripting.getRegisteredContentScripts) return;
 
   try {
-    const result = await chrome.storage.local.get(['acd_enabled_sites', 'acd_rtl_chat_sites']);
+    const result = await chrome.storage.local.get(['acd_enabled_sites', 'acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites']);
     const enabledDarkSites = { ...(result.acd_enabled_sites || {}) };
     const enabledRtlSites = { ...(result.acd_rtl_chat_sites || {}) };
+    const sendRtlSites = { ...(result.acd_send_rtl_formatting_sites || {}) };
     let storageChanged = false;
 
     const registered = await chrome.scripting.getRegisteredContentScripts();
@@ -113,6 +117,10 @@ async function syncRegisteredScripts() {
         }
         if (enabledRtlSites[siteKey]) {
           delete enabledRtlSites[siteKey];
+          storageChanged = true;
+        }
+        if (sendRtlSites[siteKey] !== undefined) {
+          delete sendRtlSites[siteKey];
           storageChanged = true;
         }
         continue;
@@ -183,7 +191,8 @@ async function syncRegisteredScripts() {
     if (storageChanged) {
       await chrome.storage.local.set({
         acd_enabled_sites: enabledDarkSites,
-        acd_rtl_chat_sites: enabledRtlSites
+        acd_rtl_chat_sites: enabledRtlSites,
+        acd_send_rtl_formatting_sites: sendRtlSites
       });
     }
   } catch (e) {

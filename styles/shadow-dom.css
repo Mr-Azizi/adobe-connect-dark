@@ -498,8 +498,28 @@ picture,
   unicode-bidi: isolate !important;
 }
 
-:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"],
-:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"] {
+/* 3a. Dynamic BiDi Direction inside Shadow DOM - Driven by Project RTL Classifier */
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"][data-acd-bidi-dir="rtl"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"][data-acd-bidi-dir="rtl"],
+:host-context([data-acd-chat-rtl="true"]) [data-acd-bidi-dir="rtl"],
+[data-acd-bidi-dir="rtl"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"][data-acd-bidi-dir="ltr"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"][data-acd-bidi-dir="ltr"],
+:host-context([data-acd-chat-rtl="true"]) [data-acd-bidi-dir="ltr"],
+[data-acd-bidi-dir="ltr"] {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+}
+
+/* 3b. Unclassified Fallback inside Shadow DOM */
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"]:not([data-acd-bidi-dir]),
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"]:not([data-acd-bidi-dir]) {
   direction: rtl !important;
   text-align: right !important;
   unicode-bidi: plaintext !important;
