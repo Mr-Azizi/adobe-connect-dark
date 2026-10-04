@@ -70,6 +70,16 @@
     return document.documentElement?.getAttribute('data-acd-chat-rtl') === 'true';
   }
 
+  /**
+   * Check if Outgoing Send RTL Formatting is actively enabled.
+   * Effective ONLY when RTL Chat is ON and Send RTL Formatting is not explicitly disabled ('false').
+   * Defaults to true for backward compatibility when attribute is not set.
+   */
+  function isSendRtlFormattingActive() {
+    if (!isRtlChatEnabled()) return false;
+    return document.documentElement?.getAttribute('data-acd-send-rtl-formatting') !== 'false';
+  }
+
   function containsRtlLetter(text) {
     return typeof text === 'string' && RTL_LETTER_REGEX.test(text);
   }
@@ -818,10 +828,13 @@
     // be newer than Adobe's controlled React state, so an already-wrapped
     // editor must still be synchronized before replaying the native send.
     const rawText = stripExtensionBidiControls(originalText);
-    const transformedText = transformOutgoingRtlMessage(rawText);
     const editorWasDecorated = rawText !== originalText;
 
-    if (transformedText === originalText && !editorWasDecorated) {
+    const textToSend = isSendRtlFormattingActive()
+      ? transformOutgoingRtlMessage(rawText)
+      : rawText;
+
+    if (textToSend === originalText && !editorWasDecorated) {
       // Pure English / unchanged text: native Adobe state is already correct.
       return;
     }
@@ -831,8 +844,8 @@
     event.stopPropagation();
     event.stopImmediatePropagation();
 
-    // 2. Inject transformed text and synchronize React state
-    setEditorText(target, transformedText);
+    // 2. Inject target text (transformed or clean) and synchronize React state
+    setEditorText(target, textToSend);
 
     // 3. Locate associated Send button and replay native send on next animation frame
     const sendBtn = findAssociatedSendButton(target);
@@ -881,10 +894,13 @@
     if (!originalText || !originalText.trim()) return;
 
     const rawText = stripExtensionBidiControls(originalText);
-    const transformedText = transformOutgoingRtlMessage(rawText);
     const editorWasDecorated = rawText !== originalText;
 
-    if (transformedText === originalText && !editorWasDecorated) {
+    const textToSend = isSendRtlFormattingActive()
+      ? transformOutgoingRtlMessage(rawText)
+      : rawText;
+
+    if (textToSend === originalText && !editorWasDecorated) {
       // Pure English / unchanged text: native Adobe state is already correct.
       return;
     }
@@ -894,8 +910,8 @@
     event.stopPropagation();
     event.stopImmediatePropagation();
 
-    // 2. Inject transformed text and synchronize React state
-    setEditorText(editor, transformedText);
+    // 2. Inject target text (transformed or clean) and synchronize React state
+    setEditorText(editor, textToSend);
 
     // 3. Replay native send on next animation frame with replay guard active
     requestAnimationFrame(() => {
@@ -919,16 +935,329 @@
   document.addEventListener('keydown', handleKeyDown, true);
   document.addEventListener('click', handleClick, true);
 
-  // If the user toggles RTL Chat while text is already present, immediately
-  // decorate (enable) or strip our invisible controls (disable) from editors
-  // we have observed, preventing stale BiDi markers from being sent later.
+  /* ==========================================================================
+     Incoming Chat Messages BiDi Classification & Dynamic Styling
+     Reuses the exact same classifier (classifyLineDirection) without modifying
+     received message textContent or adding Unicode control characters.
+     ========================================================================== */
+
+  const INCOMING_MESSAGE_SELECTOR = [
+    '[class^="chatIndividualMessageContent--"]',
+    '[class*=" chatIndividualMessageContent--"]',
+    '.chat-message-text',
+    '[class*="chat-message-content"]'
+  ].join(', ');
+
+  const incomingMessageTextCache = new WeakMap();
+  const trackedShadowRoots = new Set();
+  const shadowObservers = new WeakMap();
+
+  const SHADOW_INCOMING_RTL_STYLE_ID = 'acd-incoming-rtl-style';
+  const SHADOW_INCOMING_RTL_CSS = `
+[data-acd-bidi-dir="rtl"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+[data-acd-bidi-dir="ltr"] {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+}
+`;
+
+  /**
+   * Verify if element is an actual Chat Message text body (and not sender/time/wrapper/pod/composer)
+   */
+  function isChatMessageBody(el) {
+    if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+    if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT' || el.tagName === 'BUTTON' || el.isContentEditable) {
+      return false;
+    }
+    const className = typeof el.className === 'string' ? el.className : (el.getAttribute('class') || '');
+    if (/Sender|Time|Wrapper|typing|compose|send|button|reaction|avatar/i.test(className)) {
+      return false;
+    }
+    if (el.matches && el.matches(INCOMING_MESSAGE_SELECTOR)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Determine the base BiDi direction for an incoming message.
+   * Reuses the exact same classification logic (classifyLineDirection)
+   * while handling multiline messages at message-level granularity.
+   */
+  function classifyIncomingMessageText(text) {
+    if (typeof text !== 'string') return null;
+    const clean = stripExtensionBidiControls(text).trim();
+    if (!clean) return null;
+
+    if (!clean.includes('\n')) {
+      return classifyLineDirection(clean);
+    }
+
+    const lines = clean.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    if (lines.length === 0) return null;
+    if (lines.length === 1) return classifyLineDirection(lines[0]);
+
+    let rtlCount = 0;
+    let ltrCount = 0;
+    for (const line of lines) {
+      const dir = classifyLineDirection(line);
+      if (dir === 'rtl') rtlCount += 1;
+      else if (dir === 'ltr') ltrCount += 1;
+    }
+
+    if (rtlCount > 0 && rtlCount >= ltrCount) return 'rtl';
+    if (ltrCount > 0 && ltrCount > rtlCount) return 'ltr';
+    return classifyLineDirection(lines[0]) || (rtlCount > 0 ? 'rtl' : 'ltr');
+  }
+
+  function classifyIncomingMessageElement(el) {
+    if (!isChatMessageBody(el)) return;
+
+    if (!isRtlChatEnabled()) {
+      if (el.hasAttribute('data-acd-bidi-dir')) {
+        el.removeAttribute('data-acd-bidi-dir');
+      }
+      return;
+    }
+
+    const rawText = el.textContent || '';
+    if (!rawText.trim()) return;
+
+    const cached = incomingMessageTextCache.get(el);
+    if (cached === rawText && el.hasAttribute('data-acd-bidi-dir')) {
+      return;
+    }
+
+    const direction = classifyIncomingMessageText(rawText);
+    incomingMessageTextCache.set(el, rawText);
+
+    if (direction === 'rtl' || direction === 'ltr') {
+      if (el.getAttribute('data-acd-bidi-dir') !== direction) {
+        el.setAttribute('data-acd-bidi-dir', direction);
+      }
+    } else {
+      el.removeAttribute('data-acd-bidi-dir');
+    }
+  }
+
+  function ensureShadowRootRtlStyle(shadowRoot) {
+    if (!shadowRoot || !shadowRoot.querySelector) return;
+    if (!shadowRoot.querySelector(`#${SHADOW_INCOMING_RTL_STYLE_ID}`)) {
+      const style = document.createElement('style');
+      style.id = SHADOW_INCOMING_RTL_STYLE_ID;
+      style.textContent = SHADOW_INCOMING_RTL_CSS;
+      shadowRoot.appendChild(style);
+    }
+  }
+
+  function removeShadowRootRtlStyle(shadowRoot) {
+    if (!shadowRoot || !shadowRoot.querySelector) return;
+    const style = shadowRoot.querySelector(`#${SHADOW_INCOMING_RTL_STYLE_ID}`);
+    if (style) {
+      if (typeof style.remove === 'function') {
+        style.remove();
+      } else if (style.parentNode) {
+        style.parentNode.removeChild(style);
+      }
+    }
+  }
+
+  function observeShadowRoot(shadowRoot) {
+    if (!shadowRoot || shadowObservers.has(shadowRoot)) return;
+    try {
+      const obs = new MutationObserver(handleIncomingMutations);
+      obs.observe(shadowRoot, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+      shadowObservers.set(shadowRoot, obs);
+    } catch (e) {}
+  }
+
+  function registerShadowRoot(shadowRoot) {
+    if (!shadowRoot || trackedShadowRoots.has(shadowRoot)) return;
+    trackedShadowRoots.add(shadowRoot);
+
+    if (isRtlChatEnabled()) {
+      ensureShadowRootRtlStyle(shadowRoot);
+      observeShadowRoot(shadowRoot);
+      scanContainerForIncomingMessages(shadowRoot);
+      scanContainerForShadowRoots(shadowRoot);
+    }
+  }
+
+  // Intercept open shadow root attachments in page context
+  try {
+    const origAttachShadow = Element.prototype.attachShadow;
+    Element.prototype.attachShadow = function (init) {
+      const shadowRoot = origAttachShadow.apply(this, arguments);
+      if (shadowRoot && init && init.mode === 'open') {
+        registerShadowRoot(shadowRoot);
+      }
+      return shadowRoot;
+    };
+  } catch (e) {}
+
+  function scanContainerForShadowRoots(container) {
+    if (!container || !container.querySelectorAll) return;
+    try {
+      const all = container.querySelectorAll('*');
+      for (let i = 0; i < all.length; i++) {
+        const el = all[i];
+        if (el.shadowRoot) {
+          registerShadowRoot(el.shadowRoot);
+        }
+      }
+    } catch (e) {}
+  }
+
+  let incomingMessageObserver = null;
+
+  function scanContainerForIncomingMessages(container) {
+    if (!container || !isRtlChatEnabled()) return;
+
+    if (isChatMessageBody(container)) {
+      classifyIncomingMessageElement(container);
+    }
+
+    try {
+      if (container.querySelectorAll) {
+        const messages = container.querySelectorAll(INCOMING_MESSAGE_SELECTOR);
+        for (let i = 0; i < messages.length; i++) {
+          classifyIncomingMessageElement(messages[i]);
+        }
+      }
+    } catch (e) {}
+  }
+
+  function handleIncomingMutations(mutations) {
+    if (!isRtlChatEnabled()) return;
+
+    for (let i = 0; i < mutations.length; i++) {
+      const mutation = mutations[i];
+      if (mutation.type === 'childList') {
+        const added = mutation.addedNodes;
+        for (let j = 0; j < added.length; j++) {
+          const node = added[j];
+          if (node.nodeType !== Node.ELEMENT_NODE) continue;
+
+          if (isChatMessageBody(node)) {
+            classifyIncomingMessageElement(node);
+          }
+          if (node.querySelectorAll) {
+            const children = node.querySelectorAll(INCOMING_MESSAGE_SELECTOR);
+            for (let k = 0; k < children.length; k++) {
+              classifyIncomingMessageElement(children[k]);
+            }
+
+            if (node.shadowRoot) {
+              registerShadowRoot(node.shadowRoot);
+            }
+          }
+        }
+      } else if (mutation.type === 'characterData') {
+        const parent = mutation.target.parentElement;
+        if (parent) {
+          const target = parent.closest ? parent.closest(INCOMING_MESSAGE_SELECTOR) : null;
+          if (target && isChatMessageBody(target)) {
+            classifyIncomingMessageElement(target);
+          }
+        }
+      }
+    }
+  }
+
+  function startIncomingMessageObserver() {
+    if (incomingMessageObserver || !isRtlChatEnabled()) return;
+
+    incomingMessageObserver = new MutationObserver(handleIncomingMutations);
+
+    const root = document.body || document.documentElement;
+    if (root) {
+      incomingMessageObserver.observe(root, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+      scanContainerForIncomingMessages(root);
+      scanContainerForShadowRoots(root);
+    }
+
+    for (const shadowRoot of trackedShadowRoots) {
+      observeShadowRoot(shadowRoot);
+      ensureShadowRootRtlStyle(shadowRoot);
+      scanContainerForIncomingMessages(shadowRoot);
+    }
+  }
+
+  function stopIncomingMessageObserver() {
+    if (incomingMessageObserver) {
+      try { incomingMessageObserver.disconnect(); } catch (e) {}
+      incomingMessageObserver = null;
+    }
+
+    for (const shadowRoot of trackedShadowRoots) {
+      const obs = shadowObservers.get(shadowRoot);
+      if (obs) {
+        try { obs.disconnect(); } catch (e) {}
+        shadowObservers.delete(shadowRoot);
+      }
+      removeShadowRootRtlStyle(shadowRoot);
+    }
+
+    // Clean up all data-acd-bidi-dir attributes across document and shadow roots
+    try {
+      const allClassified = document.querySelectorAll('[data-acd-bidi-dir]');
+      for (let i = 0; i < allClassified.length; i++) {
+        allClassified[i].removeAttribute('data-acd-bidi-dir');
+      }
+    } catch (e) {}
+
+    for (const shadowRoot of trackedShadowRoots) {
+      try {
+        const allClassified = shadowRoot.querySelectorAll('[data-acd-bidi-dir]');
+        for (let i = 0; i < allClassified.length; i++) {
+          allClassified[i].removeAttribute('data-acd-bidi-dir');
+        }
+      } catch (e) {}
+    }
+  }
+
+  function syncIncomingRtlState() {
+    if (isRtlChatEnabled()) {
+      startIncomingMessageObserver();
+    } else {
+      stopIncomingMessageObserver();
+    }
+  }
+
+  // If the user toggles RTL Chat or Send formatting while text is already present,
+  // immediately reconcile editors and incoming messages.
   const rtlStateObserver = new MutationObserver((records) => {
-    if (records.some((record) => record.attributeName === 'data-acd-chat-rtl')) {
+    if (records.some((record) =>
+      record.attributeName === 'data-acd-chat-rtl' ||
+      record.attributeName === 'data-acd-send-rtl-formatting'
+    )) {
       cleanupTrackedEditorsWhenDisabled();
+      syncIncomingRtlState();
     }
   });
   rtlStateObserver.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['data-acd-chat-rtl']
+    attributeFilter: ['data-acd-chat-rtl', 'data-acd-send-rtl-formatting']
   });
+
+  // Initial startup for incoming messages if RTL Chat is active
+  syncIncomingRtlState();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      syncIncomingRtlState();
+    }, { once: true });
+  }
 })();
