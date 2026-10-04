@@ -29,6 +29,12 @@ A source-driven Chromium extension (Manifest V3) that modernizes the Adobe Conne
 
 <div align="center">
 
+**English** | [فارسی](README.fa.md)
+
+</div>
+
+<div align="center">
+
 <a href="#overview"><strong>Overview</strong></a> ·
 <a href="#problems-this-extension-solves"><strong>Problems Solved</strong></a> ·
 <a href="#features"><strong>Features</strong></a> ·
