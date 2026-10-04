@@ -59,7 +59,8 @@
   let formattingLiveEditor = false;
   const composingEditors = new WeakSet();
   const trackedEditors = new Set();
-  const scheduledEditors = new WeakSet();
+  const scheduledEditorFrames = new WeakMap();
+  const reconcileEditors = new WeakSet();
   const EXTENSION_BIDI_CONTROL_REGEX = /[\u202A\u202B\u202C]/g;
 
   /**
@@ -569,6 +570,72 @@
   }
 
   /**
+   * Set only the DOM-visible editor value, without dispatching a synthetic
+   * input/change event. This is used for one post-React reconciliation pass:
+   * some Adobe Connect/Spectrum builds commit their controlled state after our
+   * input handler and can overwrite the decorated value with the raw value.
+   */
+  function setEditorDomValueOnly(element, value) {
+    if (!element) return;
+
+    if (element instanceof HTMLTextAreaElement || element.tagName === 'TEXTAREA') {
+      const desc = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value');
+      if (desc?.set) desc.set.call(element, value);
+      else element.value = value;
+      return;
+    }
+
+    if (element instanceof HTMLInputElement || element.tagName === 'INPUT') {
+      const desc = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+      if (desc?.set) desc.set.call(element, value);
+      else element.value = value;
+      return;
+    }
+
+    if (element.isContentEditable) {
+      element.textContent = value;
+      return;
+    }
+
+    element.value = value;
+  }
+
+  /**
+   * One frame after React/Spectrum has had a chance to commit, verify that the
+   * visible composer still matches our canonical per-line BiDi transform.
+   * Re-asserting the DOM value here fixes Latin-first ambiguous lines such as
+   * "linux چیست؟" being reverted to the browser's natural LTR paragraph.
+   */
+  function reconcileLiveEditorAfterReact(element) {
+    if (!element || reconcileEditors.has(element)) return;
+    reconcileEditors.add(element);
+
+    requestAnimationFrame(() => {
+      reconcileEditors.delete(element);
+      if (!element.isConnected || composingEditors.has(element)) return;
+
+      const currentValue = getEditorText(element);
+      const rawSelection = getRawEditorSelection(element, currentValue);
+      const rawValue = stripExtensionBidiControls(currentValue);
+      const wantedValue = isRtlChatEnabled()
+        ? transformOutgoingRtlMessage(rawValue)
+        : rawValue;
+
+      if (currentValue !== wantedValue) {
+        formattingLiveEditor = true;
+        try {
+          setEditorDomValueOnly(element, wantedValue);
+          restoreEditorSelection(element, wantedValue, rawSelection);
+        } finally {
+          formattingLiveEditor = false;
+        }
+      } else if (document.activeElement === element || element.matches?.(':focus')) {
+        restoreEditorSelection(element, currentValue, rawSelection);
+      }
+    });
+  }
+
+  /**
    * Replace editor text for live formatting and synchronize Adobe Connect's
    * React-controlled state without firing a synthetic `change` on every
    * keystroke. The regular send-time setter remains unchanged.
@@ -611,13 +678,11 @@
 
       restoreEditorSelection(element, value, rawSelection);
 
-      // React may commit a controlled-value update after the input event.
-      // Re-assert only the selection on the next frame; never rewrite text here.
-      requestAnimationFrame(() => {
-        if (document.activeElement === element || element.matches?.(':focus')) {
-          restoreEditorSelection(element, getEditorText(element), rawSelection);
-        }
-      });
+      // Adobe's Spectrum textarea is controlled by React. Depending on the
+      // build/batching mode, its state commit can happen after this synthetic
+      // input and restore the raw text. Verify once on the next frame and
+      // re-assert the canonical visible value if that happened.
+      reconcileLiveEditorAfterReact(element);
     } finally {
       formattingLiveEditor = false;
     }
@@ -649,16 +714,42 @@
   }
 
   function scheduleLiveEditorFormat(element) {
-    if (!element || scheduledEditors.has(element)) return;
-    scheduledEditors.add(element);
+    if (!element) return;
+
+    // Debounce to the *latest* input in the frame. We intentionally reschedule
+    // instead of ignoring subsequent keystrokes: Adobe/React may queue a
+    // controlled-value commit for every input event, and an older formatting
+    // pass can otherwise be overwritten by a later raw commit.
     queueMicrotask(() => {
-      scheduledEditors.delete(element);
-      if (!element.isConnected || composingEditors.has(element)) return;
-      formatLiveEditor(element);
+      const previousFrame = scheduledEditorFrames.get(element);
+      if (previousFrame) {
+        cancelAnimationFrame(previousFrame);
+      }
+
+      const frameId = requestAnimationFrame(() => {
+        scheduledEditorFrames.delete(element);
+        if (!element.isConnected || composingEditors.has(element)) return;
+        formatLiveEditor(element);
+      });
+
+      scheduledEditorFrames.set(element, frameId);
     });
   }
 
   function handleLiveInput(event) {
+    if (formattingLiveEditor || replayingSend || event.isComposing) return;
+    const target = (event.composedPath && event.composedPath()[0]) || event.target;
+    if (!isChatEditor(target)) return;
+    trackedEditors.add(target);
+    scheduleLiveEditorFormat(target);
+  }
+
+  /**
+   * Final post-key reconciliation. `input` is still the primary signal, but a
+   * keyup pass guarantees that a late controlled React commit cannot leave the
+   * visible textarea in its raw/natural direction after the key is released.
+   */
+  function handleLiveKeyUp(event) {
     if (formattingLiveEditor || replayingSend || event.isComposing) return;
     const target = (event.composedPath && event.composedPath()[0]) || event.target;
     if (!isChatEditor(target)) return;
@@ -723,9 +814,15 @@
     const originalText = getEditorText(target);
     if (!originalText || !originalText.trim()) return;
 
-    const transformedText = transformOutgoingRtlMessage(originalText);
-    if (transformedText === originalText) {
-      // Pure English or already wrapped — let native Adobe send proceed immediately
+    // Always canonicalize from plain user text. A live-decorated DOM value can
+    // be newer than Adobe's controlled React state, so an already-wrapped
+    // editor must still be synchronized before replaying the native send.
+    const rawText = stripExtensionBidiControls(originalText);
+    const transformedText = transformOutgoingRtlMessage(rawText);
+    const editorWasDecorated = rawText !== originalText;
+
+    if (transformedText === originalText && !editorWasDecorated) {
+      // Pure English / unchanged text: native Adobe state is already correct.
       return;
     }
 
@@ -783,9 +880,12 @@
     const originalText = getEditorText(editor);
     if (!originalText || !originalText.trim()) return;
 
-    const transformedText = transformOutgoingRtlMessage(originalText);
-    if (transformedText === originalText) {
-      // Pure English or already wrapped — let native Adobe send proceed immediately
+    const rawText = stripExtensionBidiControls(originalText);
+    const transformedText = transformOutgoingRtlMessage(rawText);
+    const editorWasDecorated = rawText !== originalText;
+
+    if (transformedText === originalText && !editorWasDecorated) {
+      // Pure English / unchanged text: native Adobe state is already correct.
       return;
     }
 
@@ -812,6 +912,7 @@
   // `input` keeps the visible composer synchronized with the outgoing BiDi
   // algorithm; composition events protect IME input from mid-composition edits.
   document.addEventListener('input', handleLiveInput, true);
+  document.addEventListener('keyup', handleLiveKeyUp, true);
   document.addEventListener('focusin', handleComposerFocus, true);
   document.addEventListener('compositionstart', handleCompositionStart, true);
   document.addEventListener('compositionend', handleCompositionEnd, true);

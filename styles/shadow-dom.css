@@ -23,13 +23,13 @@
 /* ==========================================================================
    Layer 1 Inside Shadow DOM: Conservative Generic Detection
    ========================================================================== */
-[data-acd-surface="bright"]:not(video):not(canvas):not(img):not(picture):not([data-acd-preserve="true"]):not(.acd-preserve) {
+[data-acd-surface="bright"]:not(video):not(canvas):not(img):not(picture):not([data-acd-preserve="true"]):not(.acd-preserve):not([class*="shareContent--"]) {
   background-color: var(--acd-bg-panel) !important;
   border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
 }
 
-[data-acd-text="dark"]:not(video):not(canvas):not(img):not([data-acd-preserve="true"]):not(.acd-preserve) {
+[data-acd-text="dark"]:not(video):not(canvas):not(img):not([data-acd-preserve="true"]):not(.acd-preserve):not([class*="shareContent--"]) {
   color: var(--acd-text-primary) !important;
 }
 
@@ -59,9 +59,9 @@
 
 [class^="podTitle--"],
 [class*=" podTitle--"] {
+  /* Preserve native font-size/line-height/letter-spacing to avoid clipping
+     fixed-height Adobe pod headers. */
   color: var(--acd-text-primary) !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.01em;
 }
 
 [class^="podControls--"],

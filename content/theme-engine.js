@@ -48,6 +48,26 @@
     '[data-ac-role="presentation"]',
     '[data-ac-role="whiteboard"]',
     '[data-ac-role="screenshare"]',
+
+    // Adobe Connect Share Pod content stages. These containers host PDF,
+    // PowerPoint/image/captivate content and screen-share video/canvases.
+    // Dark mode must theme the surrounding pod chrome, never the shared
+    // content subtree itself.
+    '[class^="shareContent--"]',
+    '[class*=" shareContent--"]',
+    '[class^="pdfLoaderScreen--"]',
+    '[class*=" pdfLoaderScreen--"]',
+    '[class^="pptLoaderScreen--"]',
+    '[class*=" pptLoaderScreen--"]',
+    '[class^="imageLoaderScreen--"]',
+    '[class*=" imageLoaderScreen--"]',
+    '[class^="cptLoaderScreen--"]',
+    '[class*=" cptLoaderScreen--"]',
+    '[class^="screenShareLoader--"]',
+    '[class*=" screenShareLoader--"]',
+    '[class^="streamPlayerLoaderScreen--"]',
+    '[class*=" streamPlayerLoaderScreen--"]',
+    '#pdf-viewer',
     '.canvasHTMLPDF',
     '.canvasSingleHTMLPDF',
     '[class*="shareContent--"] canvas',

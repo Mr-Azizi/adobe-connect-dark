@@ -396,7 +396,10 @@ html[data-acd-theme="dark"] .title-bar {
   min-height: 34px;
 }
 
-/* Pod Title Text */
+/* Pod Title Text
+   Preserve Adobe's native font metrics. Several Connect builds use a very
+   small fixed line-height for pod titles; increasing font-size in dark mode
+   clips Persian/Arabic glyphs below the header box. */
 html[data-acd-theme="dark"] [class^="podTitle--"],
 html[data-acd-theme="dark"] [class*=" podTitle--"],
 html[data-acd-theme="dark"] .pod-title,
@@ -404,9 +407,6 @@ html[data-acd-theme="dark"] [class*="pod-title"],
 html[data-acd-theme="dark"] .pod-header h2,
 html[data-acd-theme="dark"] .pod-header h3 {
   color: var(--acd-text-primary) !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.01em;
-  font-size: 13px !important;
 }
 
 /* Pod Controls & Action Buttons */
@@ -1010,21 +1010,19 @@ html[data-acd-theme="dark"] [class*="video-user-label"] {
 }
 
 /* ==========================================================================
-   8. Share Pod, Presentation Viewport & Whiteboard (FRAME ONLY)
-   ========================================================================== */
-html[data-acd-theme="dark"] [class^="shareContent--"],
-html[data-acd-theme="dark"] [class*=" shareContent--"],
-html[data-acd-theme="dark"] [class^="whiteboardWrapper--"],
-html[data-acd-theme="dark"] [class*=" whiteboardWrapper--"],
+   8. Share Pod, Presentation Viewport & Whiteboard
+   ==========================================================================
+   IMPORTANT: Do not recolor the shared-content stage itself. Adobe renders
+   PDF, PowerPoint/images, Captivate content and screen sharing through a mix
+   of canvas/video/image/SVG layers inside shareContent/loader containers.
+   Painting those containers caused the document layer to disappear while the
+   independent whiteboard annotation layer remained visible.
+
+   Only the surrounding pod chrome and explicit control bars are themed below.
+   The actual share viewport keeps Adobe's native rendering/background. */
 html[data-acd-theme="dark"] .share-pod,
 html[data-acd-theme="dark"] [data-pod-type="share"] {
-  background-color: #12161D !important;
-}
-
-/* PDF Screen Loader Background */
-html[data-acd-theme="dark"] [class^="pdfLoaderScreen--"],
-html[data-acd-theme="dark"] [class*=" pdfLoaderScreen--"] {
-  background-color: #12161D !important;
+  color: var(--acd-text-primary) !important;
 }
 
 /* PDF / Presentation Bottom Bar */

@@ -45,6 +45,21 @@ html[data-acd-theme="dark"] .video-stream-element,
 html[data-acd-theme="dark"] [data-ac-role="presentation"],
 html[data-acd-theme="dark"] [data-ac-role="whiteboard"],
 html[data-acd-theme="dark"] [data-ac-role="screenshare"],
+html[data-acd-theme="dark"] [class^="shareContent--"],
+html[data-acd-theme="dark"] [class*=" shareContent--"],
+html[data-acd-theme="dark"] [class^="pdfLoaderScreen--"],
+html[data-acd-theme="dark"] [class*=" pdfLoaderScreen--"],
+html[data-acd-theme="dark"] [class^="pptLoaderScreen--"],
+html[data-acd-theme="dark"] [class*=" pptLoaderScreen--"],
+html[data-acd-theme="dark"] [class^="imageLoaderScreen--"],
+html[data-acd-theme="dark"] [class*=" imageLoaderScreen--"],
+html[data-acd-theme="dark"] [class^="cptLoaderScreen--"],
+html[data-acd-theme="dark"] [class*=" cptLoaderScreen--"],
+html[data-acd-theme="dark"] [class^="screenShareLoader--"],
+html[data-acd-theme="dark"] [class*=" screenShareLoader--"],
+html[data-acd-theme="dark"] [class^="streamPlayerLoaderScreen--"],
+html[data-acd-theme="dark"] [class*=" streamPlayerLoaderScreen--"],
+html[data-acd-theme="dark"] #pdf-viewer,
 html[data-acd-theme="dark"] .canvasHTMLPDF,
 html[data-acd-theme="dark"] .canvasSingleHTMLPDF,
 html[data-acd-theme="dark"] [class*="shareContent--"] canvas,
@@ -190,11 +205,11 @@ html[data-acd-theme="dark"] button {
    Applied to elements dynamically flagged by the Layer 1 detector.
    Strictly excludes media elements, presentation areas, and whiteboard.
    ========================================================================== */
-html[data-acd-theme="dark"] [data-acd-surface="bright"]:not(video):not(canvas):not(img):not(picture):not([data-acd-preserve="true"]):not(.acd-preserve):not([data-ac-role="presentation"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *) {
+html[data-acd-theme="dark"] [data-acd-surface="bright"]:not(video):not(canvas):not(img):not(picture):not([data-acd-preserve="true"]):not(.acd-preserve):not([data-ac-role="presentation"]):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *):not([class*="shareContent--"]):not([class*="screenShareLoader--"]):not([class*="screenShareLoader--"] *) {
   background-color: var(--acd-bg-panel) !important;
   border-color: var(--acd-border) !important;
 }
 
-html[data-acd-theme="dark"] [data-acd-text="dark"]:not(video):not(canvas):not(img):not([data-acd-preserve="true"]):not(.acd-preserve):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *) {
+html[data-acd-theme="dark"] [data-acd-text="dark"]:not(video):not(canvas):not(img):not([data-acd-preserve="true"]):not(.acd-preserve):not([data-ac-role="presentation"] *):not(.presentation-content *):not(.whiteboard-canvas *):not([class*="shareContent--"]):not([class*="screenShareLoader--"]):not([class*="screenShareLoader--"] *) {
   color: var(--acd-text-primary) !important;
 }
