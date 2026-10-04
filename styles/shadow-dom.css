@@ -483,71 +483,34 @@ picture,
 }
 
 /* ==========================================================================
-   Optional Adaptive RTL Chat Text inside Open Shadow DOM
-   Adaptive direction per message body: data-acd-message-dir="rtl" | "ltr"
+   Optional RTL Chat Text inside Open Shadow DOM
    ========================================================================== */
-
-/* 1. RTL Message Content Wrapper inside Shadow DOM */
-:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="rtl"],
-:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="rtl"] {
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContentWrapperDiv--"] {
   direction: rtl !important;
   text-align: right !important;
 }
 
-/* 2. RTL Chat Message Sender Name inside Shadow DOM */
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="rtl"] [class^="chatMessageSender--"],
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="rtl"] [class*=" chatMessageSender--"] {
+:host-context([data-acd-chat-rtl="true"]) [class^="chatMessageSender--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageSender--"] {
   direction: rtl !important;
   text-align: right !important;
   unicode-bidi: isolate !important;
 }
 
-/* 3. RTL Chat Message Text Body inside Shadow DOM */
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="rtl"] [class^="chatIndividualMessageContent--"],
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="rtl"] [class*=" chatIndividualMessageContent--"] {
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"] {
   direction: rtl !important;
   text-align: right !important;
   unicode-bidi: plaintext !important;
 }
 
-/* 4. RTL Message Timestamps inside Shadow DOM */
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="rtl"] [class^="chatMessageTime--"],
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="rtl"] [class*=" chatMessageTime--"] {
+:host-context([data-acd-chat-rtl="true"]) [class^="chatMessageTime--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageTime--"] {
   direction: ltr !important;
   unicode-bidi: isolate !important;
 }
 
-/* 5. LTR Message Content Wrapper inside Shadow DOM */
-:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="ltr"],
-:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="ltr"] {
-  direction: ltr !important;
-  text-align: left !important;
-}
-
-/* 6. LTR Chat Message Sender Name inside Shadow DOM */
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="ltr"] [class^="chatMessageSender--"],
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="ltr"] [class*=" chatMessageSender--"] {
-  direction: ltr !important;
-  text-align: left !important;
-  unicode-bidi: isolate !important;
-}
-
-/* 7. LTR Chat Message Text Body inside Shadow DOM */
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="ltr"] [class^="chatIndividualMessageContent--"],
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="ltr"] [class*=" chatIndividualMessageContent--"] {
-  direction: ltr !important;
-  text-align: left !important;
-  unicode-bidi: plaintext !important;
-}
-
-/* 8. LTR Message Timestamps inside Shadow DOM */
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="ltr"] [class^="chatMessageTime--"],
-:host-context([data-acd-chat-rtl="true"]) [class*="chatIndividualMessageContentWrapperDiv--"][data-acd-message-dir="ltr"] [class*=" chatMessageTime--"] {
-  direction: ltr !important;
-  unicode-bidi: isolate !important;
-}
-
-/* 9. Chat Compose / Typing Input Area inside Shadow DOM */
 :host-context([data-acd-chat-rtl="true"]) [class^="typingArea--"],
 :host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"],
 :host-context([data-acd-chat-rtl="true"]) [class^="typingAreaHasText--"],
@@ -556,11 +519,11 @@ picture,
 :host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] textarea,
 :host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] input,
 :host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] input {
-  text-align: start !important;
+  direction: rtl !important;
+  text-align: right !important;
   unicode-bidi: plaintext !important;
 }
 
-/* 10. Compose Input Placeholder inside Shadow DOM */
 :host-context([data-acd-chat-rtl="true"]) [class^="typingArea--"]::placeholder,
 :host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"]::placeholder,
 :host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"]:-ms-input-placeholder,
@@ -568,5 +531,6 @@ picture,
 :host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] textarea::placeholder,
 :host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] input::placeholder,
 :host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] input::placeholder {
-  text-align: start !important;
+  text-align: right !important;
+  direction: rtl !important;
 }

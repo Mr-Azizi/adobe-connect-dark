@@ -14,19 +14,41 @@
   if (window.__ACD_CHAT_RTL_MAIN_INITIALIZED__) return;
   window.__ACD_CHAT_RTL_MAIN_INITIALIZED__ = true;
 
-  // Adobe Connect Outgoing RTL Unicode Configuration
+  // Adobe Connect outgoing BiDi Unicode configuration.
+  // Embeddings are used instead of isolates because RLI/PDI caused
+  // sender/message ordering issues in real Adobe Connect client tests.
+  // Never replace these with LRO/RLO: overrides destroy the natural
+  // direction of embedded Persian/English runs.
+  const LRE = '\u202A'; // LEFT-TO-RIGHT EMBEDDING
   const RLE = '\u202B'; // RIGHT-TO-LEFT EMBEDDING
-  const LRE = '\u202A'; // LEFT-TO-RIGHT EMBEDDING (internal compatibility option)
   const PDF = '\u202C'; // POP DIRECTIONAL FORMATTING
 
-  // Adobe Connect compatibility:
-  // RLE/PDF is intentionally used for transmitted RTL-first Chat text.
-  // Real client testing showed RLE/PDF gives desired rendering without
-  // displacing sender names.
-  // LRE is retained as an internal compatibility helper for LTR-first mixed
-  // text if needed, but default LTR policy transmits original text unchanged.
-  // Never use RLO (\u202E) or LRO (\u202D).
-  // Never rewrite or normalize punctuation (? <-> ؟).
+  // IMPORTANT: direction detection must be based on strong letters, not the
+  // whole Arabic Unicode block. Persian/Arabic digits and punctuation such as
+  // ۲۲ - ۲ = ۲۰ and ؟ must not make a line RTL by themselves.
+  const RTL_LETTER_REGEX = /[\u0620-\u063F\u0641-\u064A\u066E-\u066F\u0671-\u06D3\u06D5\u06E5-\u06E6\u06EE-\u06EF\u06FA-\u06FC\u06FF\u0750-\u077F\u08A0-\u08C9\uFB50-\uFDFF\uFE70-\uFEFC]/;
+  const LATIN_LETTER_REGEX = /[A-Za-z\u00C0-\u024F\u1E00-\u1EFF]/;
+  const DIGIT_REGEX = /[0-9\u0660-\u0669\u06F0-\u06F9]/;
+
+  // Math expressions are explicitly embedded LTR inside an RTL sentence.
+  // This prevents expressions such as "22 - 2" / "۲۲ - ۲" from being
+  // visually reordered by the surrounding RTL paragraph.
+  const INLINE_MATH_REGEX = /[0-9\u0660-\u0669\u06F0-\u06F9]+(?:[.,٫٬][0-9\u0660-\u0669\u06F0-\u06F9]+)?(?:\s*[-+−×÷*/=<>≤≥%٪^]\s*[0-9\u0660-\u0669\u06F0-\u06F9]+(?:[.,٫٬][0-9\u0660-\u0669\u06F0-\u06F9]+)?)+/g;
+
+  // Strong English grammar markers used only when a mixed line starts with
+  // Latin text. They let us distinguish cases such as:
+  //   "who is لینوس توروالدز؟"  -> LTR
+  //   "linux چیست؟"            -> RTL (conservative fallback)
+  const ENGLISH_LEAD_MARKERS = new Set([
+    'what', 'who', 'whom', 'whose', 'where', 'when', 'why', 'how', 'which',
+    'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+    'do', 'does', 'did', 'have', 'has', 'had',
+    'can', 'could', 'may', 'might', 'must', 'shall', 'should', 'will', 'would',
+    'i', 'you', 'he', 'she', 'it', 'we', 'they',
+    'this', 'that', 'these', 'those',
+    'define', 'explain', 'describe', 'tell', 'show', 'give', 'list',
+    'translate', 'compare'
+  ]);
 
   // Replay guard to prevent recursive interception during programmatic send replay
   let replayingSend = false;
@@ -38,135 +60,169 @@
     return document.documentElement?.getAttribute('data-acd-chat-rtl') === 'true';
   }
 
+  function containsRtlLetter(text) {
+    return typeof text === 'string' && RTL_LETTER_REGEX.test(text);
+  }
+
+  function containsLatinLetter(text) {
+    return typeof text === 'string' && LATIN_LETTER_REGEX.test(text);
+  }
+
   /**
-   * Canonical direction helper:
-   * Determines base direction ONLY by the first strong textual letter (\p{L}).
-   * Ignores leading spaces, tabs, newlines, punctuation, symbols, digits, emoji,
-   * and bidi formatting controls.
-   * Returns: 'rtl' | 'ltr' | 'neutral'
+   * Return the first strong *letter* direction. Digits and punctuation are
+   * deliberately ignored because they should not decide paragraph direction.
    */
   function getFirstStrongDirection(text) {
-    if (typeof text !== 'string') {
-      return 'neutral';
-    }
-
+    if (typeof text !== 'string') return null;
     for (const ch of text) {
-      if (!/\p{L}/u.test(ch)) {
-        continue;
-      }
-
-      if (
-        /\p{Script=Arabic}/u.test(ch) ||
-        /\p{Script=Hebrew}/u.test(ch)
-      ) {
-        return 'rtl';
-      }
-
-      return 'ltr';
+      if (RTL_LETTER_REGEX.test(ch)) return 'rtl';
+      if (LATIN_LETTER_REGEX.test(ch)) return 'ltr';
     }
-
-    return 'neutral';
+    return null;
   }
 
   /**
-   * Independent script composition detector:
-   * Determines whether text contains RTL, LTR, or mixed script letters.
-   * Word counts or majority heuristics MUST NOT override the base direction.
+   * Count rough Latin / RTL words. This is intentionally lexical rather than
+   * character-count based, so a long Persian word does not outweigh a complete
+   * English phrase merely because it contains more characters.
    */
-  function getScriptComposition(text) {
-    if (typeof text !== 'string') {
-      return { hasRtl: false, hasLtr: false, mixed: false };
+  function countScriptWords(text) {
+    let rtl = 0;
+    let ltr = 0;
+    const tokens = text
+      .split(/[\s"'“”‘’()[\]{}<>.,!?؟:;،؛\\/|+=*~`]+/)
+      .filter(Boolean);
+
+    for (const token of tokens) {
+      if (containsRtlLetter(token)) rtl += 1;
+      if (containsLatinLetter(token)) ltr += 1;
     }
+    return { rtl, ltr };
+  }
 
-    let hasRtl = false;
-    let hasLtr = false;
-
+  /**
+   * Inspect only the Latin prefix before the first RTL letter. If that prefix
+   * contains a strong English grammar marker, treat it as an English sentence
+   * frame rather than a technical/name token preceding a Persian sentence.
+   */
+  function hasEnglishLeadGrammar(text) {
+    let prefix = '';
     for (const ch of text) {
-      if (!/\p{L}/u.test(ch)) {
-        continue;
-      }
-
-      if (
-        /\p{Script=Arabic}/u.test(ch) ||
-        /\p{Script=Hebrew}/u.test(ch)
-      ) {
-        hasRtl = true;
-      } else {
-        hasLtr = true;
-      }
-
-      if (hasRtl && hasLtr) break;
+      if (RTL_LETTER_REGEX.test(ch)) break;
+      prefix += ch;
     }
 
-    return {
-      hasRtl,
-      hasLtr,
-      mixed: hasRtl && hasLtr
-    };
+    const words = prefix.toLowerCase().match(/[a-z\u00C0-\u024F\u1E00-\u1EFF]+/g) || [];
+    return words.some((word) => ENGLISH_LEAD_MARKERS.has(word));
   }
 
   /**
-   * Check if a paragraph was already wrapped by this feature
+   * Decide the base direction for ONE physical line.
+   *
+   * Rules, in priority order:
+   *  1) Pure Latin -> LTR; pure RTL letters -> RTL.
+   *  2) Numeric/math-only -> LTR.
+   *  3) Mixed text beginning with an RTL letter -> RTL.
+   *  4) Mixed text beginning with Latin -> LTR only when there is convincing
+   *     English-sentence evidence (grammar marker or strong Latin-word
+   *     dominance). Otherwise default to RTL, exactly as requested for
+   *     ambiguous "English first, Persian later" cases.
    */
-  function isExtensionWrappedParagraph(paragraph) {
-    if (typeof paragraph !== 'string') return false;
-    return paragraph.startsWith(RLE) && paragraph.endsWith(PDF);
+  function classifyLineDirection(line) {
+    const hasRtl = containsRtlLetter(line);
+    const hasLatin = containsLatinLetter(line);
+    const firstStrong = getFirstStrongDirection(line);
+
+    if (!hasRtl && hasLatin) return 'ltr';
+    if (hasRtl && !hasLatin) return 'rtl';
+    if (!hasRtl && !hasLatin) {
+      return DIGIT_REGEX.test(line) ? 'ltr' : null;
+    }
+
+    if (firstStrong === 'rtl') return 'rtl';
+
+    if (firstStrong === 'ltr') {
+      if (hasEnglishLeadGrammar(line)) return 'ltr';
+
+      const { rtl, ltr } = countScriptWords(line);
+      if (ltr >= Math.max(2, rtl * 2)) return 'ltr';
+
+      // Conservative fallback requested by the user for genuinely ambiguous
+      // Latin-first + Persian mixed sentences.
+      return 'rtl';
+    }
+
+    return 'rtl';
   }
 
   /**
-   * Wrap an individual RTL paragraph with RLE and PDF
+   * Normalize only a terminal question mark. Internal "?" characters in a
+   * URL, code sample, etc. are left untouched.
    */
-  function wrapRtlParagraph(paragraph) {
-    return `${RLE}${paragraph}${PDF}`;
+  function normalizeTerminalQuestionMark(line, direction) {
+    const mark = direction === 'ltr' ? '?' : '؟';
+    return line.replace(/[?؟](?=(?:["'”’»)\]}]\s*)?$)/u, mark);
   }
 
   /**
-   * Internal compatibility helper for LTR embedding.
-   * Inactive by default; native Adobe Connect renders LTR-first mixed messages cleanly.
+   * Protect arithmetic as an LTR island inside an RTL sentence.
    */
-  function wrapLtrParagraph(paragraph) {
-    return `${LRE}${paragraph}${PDF}`;
+  function protectInlineMath(line) {
+    return line.replace(INLINE_MATH_REGEX, (expression) => `${LRE}${expression}${PDF}`);
   }
 
   /**
-   * Transform outgoing message text on a per-paragraph basis:
-   * - RTL-first paragraphs -> wrapped with RLE + paragraph + PDF
-   * - LTR-first and neutral paragraphs -> sent unchanged as typed
-   * - Exact line breaks (\r\n, \n, \r) and blank lines preserved
+   * Check if a line was already wrapped by this feature.
    */
-  function transformOutgoingMessage(text) {
+  function isExtensionWrappedLine(line) {
+    if (typeof line !== 'string') return false;
+    return (line.startsWith(RLE) || line.startsWith(LRE)) && line.endsWith(PDF);
+  }
+
+  /**
+   * Transform one line according to its own BiDi context.
+   */
+  function transformOutgoingBidiLine(line) {
+    if (!line || line.trim().length === 0 || isExtensionWrappedLine(line)) {
+      return line;
+    }
+
+    const direction = classifyLineDirection(line);
+    if (!direction) return line;
+
+    const normalized = normalizeTerminalQuestionMark(line, direction);
+
+    if (direction === 'rtl') {
+      return `${RLE}${protectInlineMath(normalized)}${PDF}`;
+    }
+
+    // Pure Latin text already has a strong LTR character and Adobe renders it
+    // correctly. Mixed LTR/RTL and digit-only math are explicitly wrapped LTR
+    // so the surrounding RTL Chat CSS cannot choose the wrong base direction.
+    const needsExplicitLtrEmbedding =
+      containsRtlLetter(normalized) ||
+      (!containsLatinLetter(normalized) && DIGIT_REGEX.test(normalized));
+
+    if (needsExplicitLtrEmbedding) {
+      return `${LRE}${normalized}${PDF}`;
+    }
+
+    return normalized;
+  }
+
+  /**
+   * Transform outgoing message text while preserving the exact newline bytes.
+   * Every line created with Shift+Enter is classified and formatted from zero,
+   * independently of the line before it.
+   */
+  function transformOutgoingRtlMessage(text) {
     if (!text || typeof text !== 'string') return text;
 
     const parts = text.split(/(\r\n|\r|\n)/);
     for (let i = 0; i < parts.length; i += 2) {
-      const paragraph = parts[i];
-      if (!paragraph || paragraph.trim().length === 0) {
-        continue;
-      }
-      const dir = getFirstStrongDirection(paragraph);
-      if (dir === 'rtl') {
-        if (!isExtensionWrappedParagraph(paragraph)) {
-          parts[i] = wrapRtlParagraph(paragraph);
-        }
-      }
-      // LTR-first and neutral paragraphs remain unchanged by default
+      parts[i] = transformOutgoingBidiLine(parts[i]);
     }
-
     return parts.join('');
-  }
-
-  // Alias for backward compatibility
-  const transformOutgoingRtlMessage = transformOutgoingMessage;
-
-  /**
-   * Ensure composer editor has dir="auto" when RTL Chat is enabled
-   */
-  function ensureComposerAutoDir(el) {
-    if (!el || typeof el.hasAttribute !== 'function' || !isRtlChatEnabled()) return;
-    if (!el.hasAttribute('dir')) {
-      el.setAttribute('dir', 'auto');
-      el.setAttribute('data-acd-dir-auto', 'true');
-    }
   }
 
   /**
@@ -187,13 +243,11 @@
 
     // Must be in chat compose area, chat pod, or child container
     if (el.closest && el.closest('[class*="chatComposeArea"], [class*="chatPod"], .chat-input-container')) {
-      ensureComposerAutoDir(el);
       return true;
     }
 
     const className = typeof el.className === 'string' ? el.className : (el.getAttribute('class') || '');
     if (/typingArea/i.test(className) && el.closest && el.closest('[class*="childContainerDiv"]')) {
-      ensureComposerAutoDir(el);
       return true;
     }
 
@@ -455,19 +509,7 @@
     });
   }
 
-  /**
-   * Handle FocusIn event to ensure composer editor has dir="auto"
-   */
-  function handleFocusIn(event) {
-    if (!isRtlChatEnabled()) return;
-    const target = (event.composedPath && event.composedPath()[0]) || event.target;
-    if (isChatEditor(target)) {
-      ensureComposerAutoDir(target);
-    }
-  }
-
   // Install document-level capturing listeners to catch composed events from light DOM and open Shadow DOM
   document.addEventListener('keydown', handleKeyDown, true);
   document.addEventListener('click', handleClick, true);
-  document.addEventListener('focusin', handleFocusIn, true);
 })();

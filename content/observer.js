@@ -79,7 +79,7 @@
      * Filter and queue mutation elements and their subtrees
      */
     handleMutations(mutations) {
-      if (!this.themeEngine || (!this.themeEngine.isEnabled() && !this.themeEngine.isChatRtlEnabled())) {
+      if (!this.themeEngine || !this.themeEngine.isEnabled()) {
         return;
       }
 
@@ -112,7 +112,7 @@
 
       this.debounceTimer = setTimeout(() => {
         this.debounceTimer = null;
-        if (!this.isObserving || (!this.themeEngine.isEnabled() && !this.themeEngine.isChatRtlEnabled()) || this.batch.length === 0) {
+        if (!this.isObserving || !this.themeEngine.isEnabled() || this.batch.length === 0) {
           this.batch = [];
           return;
         }
