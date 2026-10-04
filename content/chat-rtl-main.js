@@ -53,6 +53,15 @@
   // Replay guard to prevent recursive interception during programmatic send replay
   let replayingSend = false;
 
+  // Live-composer formatting guard. The editor value is decorated with the
+  // exact same Unicode embeddings used for outgoing messages, so users see
+  // the final BiDi order while they are still typing.
+  let formattingLiveEditor = false;
+  const composingEditors = new WeakSet();
+  const trackedEditors = new Set();
+  const scheduledEditors = new WeakSet();
+  const EXTENSION_BIDI_CONTROL_REGEX = /[\u202A\u202B\u202C]/g;
+
   /**
    * Check if RTL chat is enabled on the current document
    */
@@ -226,6 +235,151 @@
   }
 
   /**
+   * Remove only the BiDi controls inserted by this extension. Live formatting
+   * canonicalizes from plain user text on every pass, preventing nested RLE/LRE
+   * wrappers after edits, paste, undo/redo, or Shift+Enter.
+   */
+  function stripExtensionBidiControls(text) {
+    if (typeof text !== 'string' || !text) return text || '';
+    return text.replace(EXTENSION_BIDI_CONTROL_REGEX, '');
+  }
+
+  function isBidiControlChar(ch) {
+    return ch === LRE || ch === RLE || ch === PDF;
+  }
+
+  /**
+   * Convert a caret/selection offset from a decorated editor value to its
+   * equivalent position in the plain user text.
+   */
+  function decoratedOffsetToRaw(value, offset) {
+    const limit = Math.max(0, Math.min(Number.isFinite(offset) ? offset : 0, value.length));
+    let raw = 0;
+    for (let i = 0; i < limit; i += 1) {
+      if (!isBidiControlChar(value[i])) raw += 1;
+    }
+    return raw;
+  }
+
+  /**
+   * Convert a plain-text caret/selection offset back into the decorated value.
+   * At the beginning of a wrapped line the caret is placed after RLE/LRE, and
+   * at the end it is kept before the matching PDF so subsequent typing stays
+   * inside the directional embedding.
+   */
+  function rawOffsetToDecorated(value, rawOffset) {
+    const wanted = Math.max(0, Number.isFinite(rawOffset) ? rawOffset : 0);
+    let raw = 0;
+    let boundary = 0;
+
+    for (let i = 0; i < value.length; i += 1) {
+      const ch = value[i];
+      if (isBidiControlChar(ch)) {
+        if ((ch === LRE || ch === RLE) && raw === wanted) {
+          boundary = i + 1;
+          continue;
+        }
+        if (ch === PDF && raw === wanted) {
+          return i;
+        }
+        continue;
+      }
+
+      if (raw === wanted) return Math.max(boundary, i);
+      raw += 1;
+      boundary = i + 1;
+    }
+
+    return value.length;
+  }
+
+  function getTextControlSelection(element, value) {
+    if (!(element instanceof HTMLTextAreaElement) &&
+        !(element instanceof HTMLInputElement) &&
+        element.tagName !== 'TEXTAREA' && element.tagName !== 'INPUT') {
+      return null;
+    }
+
+    try {
+      return {
+        start: decoratedOffsetToRaw(value, element.selectionStart ?? value.length),
+        end: decoratedOffsetToRaw(value, element.selectionEnd ?? value.length),
+        direction: element.selectionDirection || 'none'
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getContentEditableSelection(element, value) {
+    if (!element?.isContentEditable || !window.getSelection) return null;
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return null;
+
+    const range = selection.getRangeAt(0);
+    if (!element.contains(range.startContainer) || !element.contains(range.endContainer)) {
+      return null;
+    }
+
+    try {
+      const startRange = range.cloneRange();
+      startRange.selectNodeContents(element);
+      startRange.setEnd(range.startContainer, range.startOffset);
+
+      const endRange = range.cloneRange();
+      endRange.selectNodeContents(element);
+      endRange.setEnd(range.endContainer, range.endOffset);
+
+      return {
+        start: decoratedOffsetToRaw(value, startRange.toString().length),
+        end: decoratedOffsetToRaw(value, endRange.toString().length),
+        direction: 'none'
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getRawEditorSelection(element, value) {
+    return getTextControlSelection(element, value) ||
+      getContentEditableSelection(element, value) ||
+      {
+        start: stripExtensionBidiControls(value).length,
+        end: stripExtensionBidiControls(value).length,
+        direction: 'none'
+      };
+  }
+
+  function restoreEditorSelection(element, decoratedValue, rawSelection) {
+    if (!element || !rawSelection) return;
+
+    const start = rawOffsetToDecorated(decoratedValue, rawSelection.start);
+    const end = rawOffsetToDecorated(decoratedValue, rawSelection.end);
+
+    if ((element instanceof HTMLTextAreaElement) ||
+        (element instanceof HTMLInputElement) ||
+        element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') {
+      try {
+        element.setSelectionRange(start, end, rawSelection.direction);
+      } catch (e) {}
+      return;
+    }
+
+    if (element.isContentEditable && window.getSelection) {
+      try {
+        const textNode = element.firstChild;
+        if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
+        const range = document.createRange();
+        range.setStart(textNode, Math.min(start, textNode.length));
+        range.setEnd(textNode, Math.min(end, textNode.length));
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      } catch (e) {}
+    }
+  }
+
+  /**
    * Verify if element is a Live Chat editor input/textarea/contenteditable
    */
   function isChatEditor(el) {
@@ -233,6 +387,14 @@
     const isInputOrTextarea = el.tagName === 'TEXTAREA' || el.tagName === 'INPUT' || el.isContentEditable;
     if (!isInputOrTextarea) return false;
     if (el.readOnly || el.disabled) return false;
+
+    // Adobe Connect's current Chat composer uses this stable ID. Prefer the
+    // exact target discovered in the saved meeting DOM, while retaining the
+    // class/container fallbacks below for older/newer Connect builds.
+    if (el.id === 'chatTypingArea') {
+      const composeArea = el.closest?.('#chatComposeArea, [class*="chatComposeArea"]');
+      if (composeArea) return true;
+    }
 
     // Exclude non-chat pods (Notes, Polls, Q&A)
     if (el.closest && el.closest(
@@ -268,7 +430,7 @@
     }
 
     const btn = target.closest(
-      'button[class*="sendButton"], button[class*="secondSendButton"], button[class*="chatSendButton"], [class*="sendButton"], [class*="secondSendButton"], button[aria-label*="Send" i]'
+      '#sendButton, button[class*="sendButton"], button[class*="secondSendButton"], button[class*="chatSendButton"], [class*="sendButton"], [class*="secondSendButton"], button[aria-label*="Send" i]'
     );
     if (btn) {
       if (btn.closest && btn.closest('[class*="chatComposeArea"], [class*="chatPod"], [class*="childContainerDiv"], .chat-input-container')) {
@@ -290,14 +452,14 @@
     );
     if (container) {
       const editor = container.querySelector(
-        '[class*="typingArea"], textarea, input, [contenteditable="true"]'
+        '#chatTypingArea, [class*="typingArea"], textarea, input, [contenteditable="true"]'
       );
       if (editor && isChatEditor(editor)) return editor;
     }
 
     const parent = sendButton.parentElement;
     if (parent) {
-      const editor = parent.querySelector('[class*="typingArea"], textarea, input, [contenteditable="true"]');
+      const editor = parent.querySelector('#chatTypingArea, [class*="typingArea"], textarea, input, [contenteditable="true"]');
       if (editor && isChatEditor(editor)) return editor;
     }
 
@@ -315,7 +477,7 @@
     );
     if (container) {
       const btn = container.querySelector(
-        'button[class*="sendButton"], button[class*="secondSendButton"], button[class*="chatSendButton"], [class*="sendButton"], [class*="secondSendButton"], button[aria-label*="Send" i]'
+        '#sendButton, button[class*="sendButton"], button[class*="secondSendButton"], button[class*="chatSendButton"], [class*="sendButton"], [class*="secondSendButton"], button[aria-label*="Send" i]'
       );
       if (btn) {
         return btn.tagName === 'BUTTON' ? btn : (btn.closest('button') || btn);
@@ -404,6 +566,143 @@
       const changeEvt = new Event('change', { bubbles: true, cancelable: true });
       element.dispatchEvent(changeEvt);
     } catch (e) {}
+  }
+
+  /**
+   * Replace editor text for live formatting and synchronize Adobe Connect's
+   * React-controlled state without firing a synthetic `change` on every
+   * keystroke. The regular send-time setter remains unchanged.
+   */
+  function setEditorTextLive(element, value, rawSelection) {
+    if (!element) return;
+
+    formattingLiveEditor = true;
+    try {
+      if (element instanceof HTMLTextAreaElement || element.tagName === 'TEXTAREA') {
+        const desc = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value');
+        if (desc?.set) desc.set.call(element, value);
+        else element.value = value;
+      } else if (element instanceof HTMLInputElement || element.tagName === 'INPUT') {
+        const desc = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+        if (desc?.set) desc.set.call(element, value);
+        else element.value = value;
+      } else if (element.isContentEditable) {
+        element.textContent = value;
+      } else {
+        element.value = value;
+      }
+
+      try {
+        if (element._valueTracker && typeof element._valueTracker.setValue === 'function') {
+          element._valueTracker.setValue('');
+        }
+      } catch (e) {}
+
+      try {
+        element.dispatchEvent(new InputEvent('input', {
+          bubbles: true,
+          cancelable: false,
+          data: null,
+          inputType: 'insertReplacementText'
+        }));
+      } catch (e) {
+        element.dispatchEvent(new Event('input', { bubbles: true, cancelable: false }));
+      }
+
+      restoreEditorSelection(element, value, rawSelection);
+
+      // React may commit a controlled-value update after the input event.
+      // Re-assert only the selection on the next frame; never rewrite text here.
+      requestAnimationFrame(() => {
+        if (document.activeElement === element || element.matches?.(':focus')) {
+          restoreEditorSelection(element, getEditorText(element), rawSelection);
+        }
+      });
+    } finally {
+      formattingLiveEditor = false;
+    }
+  }
+
+  /**
+   * Apply the exact outgoing BiDi transformation to the visible composer.
+   * Existing extension controls are stripped first, so this operation is
+   * idempotent and safe across repeated input events.
+   */
+  function formatLiveEditor(element) {
+    if (!element || !isChatEditor(element) || composingEditors.has(element)) return;
+    trackedEditors.add(element);
+
+    const currentValue = getEditorText(element);
+    const rawSelection = getRawEditorSelection(element, currentValue);
+    const rawValue = stripExtensionBidiControls(currentValue);
+
+    if (!isRtlChatEnabled()) {
+      if (currentValue !== rawValue) {
+        setEditorTextLive(element, rawValue, rawSelection);
+      }
+      return;
+    }
+
+    const decoratedValue = transformOutgoingRtlMessage(rawValue);
+    if (decoratedValue === currentValue) return;
+    setEditorTextLive(element, decoratedValue, rawSelection);
+  }
+
+  function scheduleLiveEditorFormat(element) {
+    if (!element || scheduledEditors.has(element)) return;
+    scheduledEditors.add(element);
+    queueMicrotask(() => {
+      scheduledEditors.delete(element);
+      if (!element.isConnected || composingEditors.has(element)) return;
+      formatLiveEditor(element);
+    });
+  }
+
+  function handleLiveInput(event) {
+    if (formattingLiveEditor || replayingSend || event.isComposing) return;
+    const target = (event.composedPath && event.composedPath()[0]) || event.target;
+    if (!isChatEditor(target)) return;
+    trackedEditors.add(target);
+    scheduleLiveEditorFormat(target);
+  }
+
+  function handleComposerFocus(event) {
+    const target = (event.composedPath && event.composedPath()[0]) || event.target;
+    if (!isChatEditor(target)) return;
+    trackedEditors.add(target);
+    scheduleLiveEditorFormat(target);
+  }
+
+  function handleCompositionStart(event) {
+    const target = (event.composedPath && event.composedPath()[0]) || event.target;
+    if (!isChatEditor(target)) return;
+    trackedEditors.add(target);
+    composingEditors.add(target);
+  }
+
+  function handleCompositionEnd(event) {
+    const target = (event.composedPath && event.composedPath()[0]) || event.target;
+    if (!isChatEditor(target)) return;
+    composingEditors.delete(target);
+    scheduleLiveEditorFormat(target);
+  }
+
+  function cleanupTrackedEditorsWhenDisabled() {
+    if (isRtlChatEnabled()) {
+      for (const editor of trackedEditors) {
+        if (!editor?.isConnected) trackedEditors.delete(editor);
+        else scheduleLiveEditorFormat(editor);
+      }
+      return;
+    }
+
+    for (const editor of trackedEditors) {
+      if (!editor?.isConnected) {
+        trackedEditors.delete(editor);
+        continue;
+      }
+      scheduleLiveEditorFormat(editor);
+    }
   }
 
   /**
@@ -509,7 +808,26 @@
     });
   }
 
-  // Install document-level capturing listeners to catch composed events from light DOM and open Shadow DOM
+  // Install document-level capturing listeners to catch composed events from light DOM and open Shadow DOM.
+  // `input` keeps the visible composer synchronized with the outgoing BiDi
+  // algorithm; composition events protect IME input from mid-composition edits.
+  document.addEventListener('input', handleLiveInput, true);
+  document.addEventListener('focusin', handleComposerFocus, true);
+  document.addEventListener('compositionstart', handleCompositionStart, true);
+  document.addEventListener('compositionend', handleCompositionEnd, true);
   document.addEventListener('keydown', handleKeyDown, true);
   document.addEventListener('click', handleClick, true);
+
+  // If the user toggles RTL Chat while text is already present, immediately
+  // decorate (enable) or strip our invisible controls (disable) from editors
+  // we have observed, preventing stale BiDi markers from being sent later.
+  const rtlStateObserver = new MutationObserver((records) => {
+    if (records.some((record) => record.attributeName === 'data-acd-chat-rtl')) {
+      cleanupTrackedEditorsWhenDisabled();
+    }
+  });
+  rtlStateObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-acd-chat-rtl']
+  });
 })();
