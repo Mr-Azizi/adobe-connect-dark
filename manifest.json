@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Adobe Connect Dark Mode",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Professional Dark Mode for Adobe Connect Web - حالت تاریک پیشرفته برای ادوبی کانکت وب",
   "icons": {
     "16": "icons/icon16.png",
