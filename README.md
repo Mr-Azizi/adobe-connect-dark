@@ -5,76 +5,82 @@
 
 # Adobe Connect Dark
 
-### Premium dark mode + RTL chat for Adobe Connect
+### Advanced Dark Mode, Intelligent RTL Chat & Two-Row Layout for Adobe Connect Web
 
-A source-driven Chrome / Edge extension that modernizes Adobe Connect without recoloring the content you actually came to see.
+A source-driven Chromium extension (Manifest V3) that modernizes the Adobe Connect web interface while strictly preserving shared slides, PDFs, whiteboards, video streams, and screen sharing.
 
-[![Version](https://img.shields.io/badge/version-1.8.0-6EA8FE?style=flat-square)](#release-checklist)
-[![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#how-it-works)
+[![Version](https://img.shields.io/badge/version-1.8.0-6EA8FE?style=flat-square)](#v180)
+[![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#technical-architecture)
 [![Chrome](https://img.shields.io/badge/Chrome-supported-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#browser-compatibility)
 [![Edge](https://img.shields.io/badge/Edge-supported-0C59A4?style=flat-square&logo=microsoftedge&logoColor=white)](#browser-compatibility)
-[![Adobe Connect](https://img.shields.io/badge/Adobe%20Connect-11.2.x-FF0000?style=flat-square&logo=adobe&logoColor=white)](#adobe-connect-compatibility)
+[![Adobe Connect](https://img.shields.io/badge/Adobe%20Connect-Web%20UI-FF0000?style=flat-square&logo=adobe&logoColor=white)](#adobe-connect-compatibility)
 
 <br>
 
-<img src="docs/screenshots/popup-comparison.png" alt="Adobe Connect Dark extension popup – inactive and active states" width="900">
+<p align="center">
+  <img src="docs/screenshots/popup-comparison.png" width="850" alt="Adobe Connect Dark extension popup comparison – inactive and active states">
+</p>
 
 <br>
 
-**Dark Mode · RTL Chat · Per-site permissions · Dynamic SPA support · Media-safe theming**
+**Dark Mode · RTL Chat Text · Send RTL Formatting · Two-Row Chat Layout · Media Preservation · Permission on Demand**
 
 </div>
 
 <div align="center">
 
-<a href="#installation"><strong>Install</strong></a> ·
-<a href="#usage"><strong>How to Use</strong></a> ·
+<a href="#overview"><strong>Overview</strong></a> ·
+<a href="#problems-this-extension-solves"><strong>Problems Solved</strong></a> ·
 <a href="#features"><strong>Features</strong></a> ·
-<a href="#rtl-chat"><strong>RTL Chat</strong></a> ·
-<a href="#browser-compatibility"><strong>Compatibility</strong></a> ·
-<a href="#troubleshooting"><strong>Troubleshooting</strong></a>
+<a href="#feature-architecture"><strong>Architecture</strong></a> ·
+<a href="#rtl-chat-text"><strong>RTL Chat</strong></a> ·
+<a href="#installation"><strong>Install</strong></a> ·
+<a href="#usage"><strong>Usage</strong></a> ·
+<a href="#screenshots"><strong>Screenshots</strong></a> ·
+<a href="#release-notes"><strong>Release Notes</strong></a>
 
 </div>
 
+---
+
 ## Quick Navigation
 
-### Getting started
-
+### Getting Started
 - [Overview](#overview)
-- [Features](#features)
+- [Problems This Extension Solves](#problems-this-extension-solves)
+- [Screenshots](#screenshots)
+- [Features Overview](#features)
+- [Feature Architecture](#feature-architecture)
+- [Core Features](#core-features)
+  - [1. Dark Mode & Media Preservation](#1-dark-mode)
+  - [2. RTL Chat Text](#2-rtl-chat-text)
+  - [3. Send RTL Formatting](#3-send-rtl-formatting)
+  - [4. Two-Row Chat Layout](#4-two-row-chat-layout)
+- [Popup Controls & UI](#popup-controls)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Media preservation](#media-preservation)
-- [RTL Chat](#rtl-chat)
-- [Adobe Connect coverage](#coverage)
-- [Browser compatibility](#browser-compatibility)
-- [Adobe Connect compatibility](#adobe-connect-compatibility)
-- [Known limitations](#known-limitations)
+- [Usage Guide](#usage)
+
+### Technical Architecture & Deep Dive
+- [Per-Site Settings & Storage Model](#per-site-behavior)
+- [Permission-on-Demand Model](#permission-on-demand)
+- [Dynamic Runtime Registration](#dynamic-runtime-registration)
+- [Open Shadow DOM Support](#shadow-dom-support)
+- [Media & Content Preservation Architecture](#media-preservation)
+- [Root State Attributes](#root-state-attributes)
+- [Project Structure](#project-structure)
+- [Adobe Connect Interface Coverage](#coverage)
+
+### Compatibility & Governance
+- [Browser Compatibility](#browser-compatibility)
+- [Adobe Connect Compatibility](#adobe-connect-compatibility)
+- [Privacy & Security](#privacy-security)
+- [Known Limitations](#known-limitations)
 - [Troubleshooting](#troubleshooting)
-
-### Under the hood
-
-- [Permissions & privacy](#permissions-privacy)
-- [How it works](#how-it-works)
-- [Theme architecture](#theme-architecture)
-- [Project structure](#project-structure)
-- [Storage model](#storage)
-- [Root state attributes](#root-state)
-
-### Development & contribution
-
-- [Development](#development)
-- [Source-driven development guidelines](#development-guidelines)
-- [Manual QA checklist](#qa-checklist)
-- [Security notes for contributors](#security)
-- [Contributing](#contributing)
-- [Roadmap](#roadmap)
-- [Release checklist](#release-checklist)
-- [License](#license)
-- [Disclaimer](#disclaimer)
-
-Just want to install it? Jump straight to [Installation](#installation).  
-Having a problem? Go to [Troubleshooting](#troubleshooting).
+- [Development & Contributing](#development)
+- [Manual QA Checklist](#qa-checklist)
+- [Release Notes (v1.8.0)](#release-notes)
+- [License & Disclaimer](#license)
+- [راهنمای سریع فارسی](#persian-guide)
 
 ---
 
@@ -82,34 +88,224 @@ Having a problem? Go to [Troubleshooting](#troubleshooting).
 
 ## Overview
 
-Adobe Connect is still widely used for classes, meetings, webinars, and recorded sessions, but long sessions in a bright interface can be tiring—especially when the surrounding browser and operating system are already dark.
+Adobe Connect is widely used for live virtual classrooms, webinars, meetings, and recorded session playback. However, spending long hours in its default bright white interface can lead to severe eye fatigue—particularly when the user's operating system, browser, and neighboring applications are already dark.
 
-**Adobe Connect Dark** adds a carefully scoped dark interface while preserving the original appearance of shared content such as PDFs, slides, whiteboards, video, and screen sharing.
+**Adobe Connect Dark** provides a carefully engineered, layered dark interface tailored to the HTML5 web client of Adobe Connect without interfering with shared meeting content.
 
-It is deliberately **not** a page-wide color inversion filter. The extension combines explicit, source-derived Adobe Connect component styling with a conservative fallback layer for unknown UI surfaces.
+It is deliberately **not** a blanket full-page inversion filter or CSS `invert()` overlay. The extension applies source-derived component styling for known Adobe Connect and Adobe Spectrum components alongside an automated conservative fallback scanner for unmapped containers.
 
-It also includes an independent **RTL Chat Text** mode for Persian and Arabic users.
+In addition to visual theming, it provides an independent **RTL Chat Text** engine with intelligent bidirectional language classification for Persian, Arabic, and mixed-language chat, an optional **Send RTL Formatting** utility that embeds Unicode BiDi controls for other participants, and an independent **Two-Row Chat Layout** that stacks sender names above message bodies.
+
+---
+
+<a id="problems-this-extension-solves"></a>
+
+## Problems This Extension Solves
+
+| Problem | Root Cause | Solution in Adobe Connect Dark |
+| :--- | :--- | :--- |
+| **Bright Adobe Connect interface** | Long class sessions, webinars, and meeting replays in a stark white UI cause visual fatigue and eye strain. | **Independent Dark Mode**: Applies deep, consistent dark palettes to pods, toolbars, sidebars, forms, and dialogs. |
+| **Destroyed slides, PDFs, and video** | Naive dark mode extensions invert everything, rendering presentations, webcams, PDFs, and whiteboards illegible. | **Protected Content-Aware Theming**: Explicitly excludes shared stages, video streams, slides, PDFs, canvases, and content SVGs. |
+| **Mixed Persian/English chat direction** | Typing mixed Persian and English text (e.g., technical terms or questions) results in flipped punctuation and reversed word order. | **Intelligent RTL Chat Text**: Accurately classifies direction, isolates inline math, handles English question markers, and adjusts alignment. |
+| **Outgoing messages broken for other users** | When a user sends mixed RTL/LTR text, participants on default Adobe Connect clients often see inverted words and misplaced punctuation. | **Send RTL Formatting**: Optionally embeds standard Unicode BiDi formatting (`RLE`/`LRE`/`PDF`) into outgoing messages at send time. |
+| **Visually crowded chat stream** | Adobe Connect places the sender name and message body on the same line, causing long Persian/Arabic names and messages to collide. | **Two-Row Chat Layout**: Automatically splits the chat item into Row 1 (Sender Name + Timestamp) and Row 2 (Message Body). |
+| **Excessive extension permissions** | Many extensions require access to "all websites" at all times, raising privacy and compliance concerns. | **Permission-on-Demand Architecture**: Host permissions are requested strictly per-origin when you activate a feature for that specific site. |
+
+---
+
+<a id="screenshots"></a>
+
+## Screenshots
+
+### Popup Controls
+
+<p align="center">
+  <img src="docs/screenshots/popup-comparison.png" width="850" alt="Extension Popup comparison showing Inactive and Active states">
+</p>
+
+### Meeting Interface (Light vs. Dark Mode)
+
+<p align="center">
+  <img src="docs/screenshots/light-mode.png" width="49%" alt="Adobe Connect Native Light Mode">
+  <img src="docs/screenshots/dark-mode.png" width="49%" alt="Adobe Connect Dark Mode with protected shared content">
+</p>
+
+### Chat Presentation Modes
+
+<p align="center">
+  <img src="docs/screenshots/chat-default.png" width="32%" alt="Default Chat Layout">
+  <img src="docs/screenshots/chat-rtl.png" width="32%" alt="RTL Chat Text with right alignment">
+  <img src="docs/screenshots/chat-two-row.png" width="32%" alt="Two-Row Chat Layout with sender above message">
+</p>
 
 ---
 
 <a id="features"></a>
 
-## Features
+## Features Overview
 
-| Feature | What it does |
-| --- | --- |
-| **Premium Dark Mode** | Applies a layered, restrained dark theme to Adobe Connect UI surfaces |
-| **RTL Chat Text** | Makes chat sender/message flow right-to-left while preserving timestamps and controls |
-| **Two-Row Chat Layout** | Optionally displays the sender name and message body on separate rows |
-| **Per-site settings** | Dark Mode, RTL Chat, and Two-Row Layout are stored independently for each origin |
-| **Permission on demand** | Host access is requested only when you enable a feature for the current site |
-| **Adobe Connect Central support** | Styles navigation, search, Calendar Week/Month/Activity, Reports, forms, tables, dialogs, and more |
-| **Meeting / Recording support** | Styles pods, Chat, Attendees, Video chrome, Share chrome, playback controls, sidebars, menus, and dialogs |
-| **SPA-aware theming** | Handles dynamically mounted Adobe Connect components via MutationObserver |
-| **Open Shadow DOM support** | Injects compatible styling into supported open shadow roots |
-| **Media preservation** | Keeps PDFs, slides, video, screen sharing, canvas content, and whiteboards visually intact |
-| **Self-healing registration** | Reconciles saved state, permissions, and dynamic content-script registrations on install/startup |
-| **No telemetry** | The current extension code contains no analytics, telemetry, or remote-code loading |
+| Feature | Type | Responsibility |
+| :--- | :---: | :--- |
+| **Dark Mode** | Top-level | Themes Adobe Connect Central, live meeting rooms, recording playback, pods, sidebars, and dialogs while protecting shared media. |
+| **RTL Chat Text** | Top-level | Implements intelligent bidirectional text classification, right alignment, and Vazirmatn typography for Persian and Arabic chat. |
+| **Send RTL Formatting** | Sub-feature | Applies standard Unicode BiDi embedding controls to outgoing chat messages so other attendees view proper ordering. |
+| **Two-Row Chat Layout** | Top-level | Restructures chat messages into a clean two-row grid layout: Row 1 displays the sender and timestamp; Row 2 displays the message text. |
+| **Per-Site Settings** | Core | Stores preferences independently per `protocol://hostname` origin. |
+| **Permission on Demand** | Core | Requests origin permissions only when a feature is activated for that specific site. |
+| **Dynamic SPA & MutationObserver** | Engine | Detects and themes dynamically mounted pods, dialogs, and chat items with debounced DOM observers. |
+| **Open Shadow DOM Styling** | Engine | Injects stylesheets and attaches observers to accessible Open Shadow DOM roots across the page. |
+| **Media Preservation** | Core | Ensures webcam streams, screen sharing, PDFs, slides, whiteboard canvases, and session media remain completely uncolored. |
+| **Self-Healing Reconciliation** | Service Worker | Reconciles stored preferences, active permissions, and registered content scripts upon startup and updates. |
+| **Zero Telemetry** | Privacy | Fully local execution with zero network tracking, external APIs, or analytics SDKs. |
+
+---
+
+<a id="feature-architecture"></a>
+
+## Feature Architecture
+
+The extension features are structured as independent top-level modules, with the exception of outgoing formatting, which operates as a sub-feature under RTL Chat Text:
+
+```text
+Adobe Connect Dark (v1.8.0)
+│
+├── Dark Mode (Top-level)
+│   └── Independent activation
+│
+├── RTL Chat Text (Top-level)
+│   ├── Incoming message BiDi direction classification (data-acd-bidi-dir)
+│   ├── Live composer BiDi formatting & caret preservation
+│   └── Send RTL Formatting (Sub-feature)
+│           └── Depends strictly on RTL Chat Text being active
+│
+└── Two-Row Chat Layout (Top-level)
+    └── Independent activation
+```
+
+### Feature State Matrix
+
+Because Dark Mode, RTL Chat Text, and Two-Row Chat Layout are decoupled, you can enable any combination that fits your workflow:
+
+| Dark Mode | RTL Chat Text | Send RTL Formatting | Two-Row Layout | Effective Result |
+| :---: | :---: | :---: | :---: | :--- |
+| **Off** | **Off** | Disabled | **Off** | Native Adobe Connect interface and default single-line chat. |
+| **Off** | **Off** | Disabled | **On** | Native light theme with two-row chat layout. |
+| **On** | **Off** | Disabled | **Off** | Dark theme across all pods with default native chat layout. |
+| **Off** | **On** | Off | **Off** | Native light theme + local RTL chat display (outgoing text sent raw). |
+| **Off** | **On** | On | **Off** | Native light theme + local RTL chat + outgoing BiDi formatting for other participants. |
+| **Off** | **On** | On | **On** | Native light theme + RTL chat + outgoing formatting + two-row layout. |
+| **On** | **On** | Off | **On** | Full dark theme + local RTL chat + two-row layout (outgoing text sent raw). |
+| **On** | **On** | On | **On** | Full dark theme + RTL chat + outgoing formatting + two-row layout. |
+
+> [!NOTE]
+> The extension status badge in the popup indicates **Active** whenever **Dark Mode**, **RTL Chat Text**, or **Two-Row Chat Layout** is enabled.
+
+---
+
+<a id="core-features"></a>
+
+## Core Features
+
+<a id="1-dark-mode"></a>
+
+### 1. Dark Mode
+
+Dark Mode is an independent top-level feature built specifically for the Adobe Connect Web architecture.
+
+- **Non-Invasive Theming**: Rather than applying a global CSS `invert()` filter that washes out colors and distorts images, the theme engine injects semantic CSS rules targeting Adobe Connect pods, toolbars, sidebars, menus, dialogs, and inputs.
+- **Two-Layer Architecture**:
+  - *Layer 1 (Conservative Fallback)*: Dynamically evaluates unmapped container elements via computed styles and safely themes bright backgrounds (`Luminance > 185`) and dark text (`Luminance < 110`) using the ITU-R BT.601 standard.
+  - *Layer 2 (Source-Derived Component Styling)*: Applies explicit dark tokens (`var(--acd-bg-main)`, `var(--acd-bg-panel)`, etc.) to verified Adobe Connect and Spectrum classes using resilient prefix and substring selectors.
+- **Media Preservation Guard**: Guarantees that presentation materials, video cameras, and shared documents remain untouched (see [Media Preservation](#media-preservation)).
+
+---
+
+<a id="2-rtl-chat-text"></a>
+
+### 2. RTL Chat Text
+
+RTL Chat Text provides dedicated right-to-left layout and intelligent bidirectional text handling for Persian and Arabic users.
+
+- **Scoped to Chat Content**: It intentionally avoids mirroring the pod structure, tabs, send buttons, pod headers, or scrollbars, ensuring that the meeting layout remains familiar and stable.
+- **Shared Bidirectional Classifier**: Both incoming message rendering and composer processing share the project's lexical classifier (`classifyLineDirection`). Direction is decided by strong directional letters rather than digits or punctuation:
+  - Digits (`0-9`, `۰-۹`, `٠-٩`) and neutral punctuation do not turn a line RTL on their own.
+  - **Inline Math Isolation**: Expressions like `22 - 2` or `۲۲ - ۲ = ۲۰` are detected and preserved as LTR islands inside RTL text.
+  - **English Lead Grammar Detection**: Lines beginning with Latin text are evaluated for English sentence starters (`what`, `who`, `is`, `are`, `can`, `how`, etc.). If an English grammatical frame is detected, the line remains LTR. If a Latin technical term is merely introducing a Persian phrase, the classifier conservatively defaults to RTL.
+- **Classification Examples**:
+  - `سلام alireza چطوری؟` → **RTL** (begins with strong Persian text; punctuation aligned right).
+  - `linux چیه ؟` → **RTL** (technical English term followed by Persian question; classified RTL).
+  - `who is علیرضا ؟` → **LTR** (detected English interrogative lead frame; retains LTR direction).
+  - `hello world` → **LTR** (pure English; left-aligned).
+- **Incoming Messages**: Observed via `MutationObserver`. The message element is tagged with `data-acd-bidi-dir="rtl"` or `data-acd-bidi-dir="ltr"`, triggering CSS isolation (`unicode-bidi: isolate; direction: rtl; text-align: right;`). The underlying `textContent` is never altered.
+- **Live Composer & React State**: In the typing area (`#chatTypingArea`), the extension formats the text in real time so the user sees the actual BiDi layout while typing. Caret and selection positions are mapped between raw and formatted coordinates, and React's internal `_valueTracker` is updated to prevent input synchronization conflicts.
+
+---
+
+<a id="3-send-rtl-formatting"></a>
+
+### 3. Send RTL Formatting
+
+Send RTL Formatting is a specialized sub-feature of RTL Chat Text.
+
+- **Architecture Dependency**:
+  ```text
+  RTL Chat Text
+  └── Send RTL Formatting (optional sub-toggle)
+  ```
+- **Purpose**: By default, standard Adobe Connect clients do not have bidirectional line classification. When an RTL message is sent with mixed English tokens, other attendees on default web clients might see jumbled words or reversed punctuation.
+- **Implementation via Unicode BiDi Controls**: When enabled, the extension wraps outgoing lines at send time using standard Unicode bidirectional embeddings:
+  - `RLE` (`\u202B` - Right-to-Left Embedding) for RTL lines.
+  - `LRE` (`\u202A` - Left-to-Right Embedding) for inline math and embedded LTR lines.
+  - `PDF` (`\u202C` - Pop Directional Formatting) to close the directional boundary.
+  - Normalizes trailing English question marks (`?`) to Persian/Arabic question marks (`؟`) on RTL lines.
+- **Optional & Controllable**:
+  - If **Send RTL Formatting is ON**: Outgoing messages sent over the wire contain Unicode BiDi controls so that all participants see proper ordering.
+  - If **Send RTL Formatting is OFF**: Outgoing messages are sent as raw plain text without BiDi controls. Local RTL styling, incoming message classification, and live typing alignment remain fully functional.
+  - If **RTL Chat Text is OFF**: Send RTL Formatting is automatically disabled and dimmed in the popup.
+
+---
+
+<a id="4-two-row-chat-layout"></a>
+
+### 4. Two-Row Chat Layout
+
+Two-Row Chat Layout is an independent top-level feature designed to eliminate visual crowding in active chat sessions.
+
+- **Layout Structure**:
+  - **Row 1**: Displays the **Sender Name** on the left and the **Timestamp** on the right.
+  - **Row 2**: Displays the **Message Body** spanning the full width of the container.
+- **Example Comparison**:
+  - *Standard Single-Row Layout*:
+    ```text
+    Alireza: سلام alireza چطوری؟                          10:45 AM
+    ```
+  - *Two-Row Layout*:
+    ```text
+    Alireza                                              10:45 AM
+    سلام alireza چطوری؟
+    ```
+- **Grid-Based Styling**: Implemented via CSS Grid (`display: inline-grid !important; grid-template-columns: minmax(0, 1fr) auto !important; grid-template-rows: auto auto !important;`), preventing long names from truncating or bumping message text unpredictably.
+- **Decoupled**: Operates independently of both Dark Mode and RTL Chat Text.
+
+---
+
+<a id="popup-controls"></a>
+
+## Popup Controls & UI
+
+The extension popup provides clear, per-site toggles with real-time state feedback:
+
+| UI Control | Element ID | Function |
+| :--- | :--- | :--- |
+| **Current Domain** | `#current-domain` | Displays the detected origin protocol and host (e.g., `connect.example.com (HTTPS)`). |
+| **Status Badge** | `#status-badge` | Indicates `Active` (blue) if any top-level feature is enabled, or `Inactive` (gray). |
+| **Dark Mode Toggle** | `#theme-toggle` | Toggles the dark theme for the current site. |
+| **RTL Chat Text Toggle** | `#rtl-toggle` | Toggles right-to-left chat handling for the current site. |
+| **Send RTL Formatting** | `#send-rtl-toggle` | Nested sub-toggle; formats outgoing messages with Unicode BiDi controls. Disabled if RTL Chat is off. |
+| **Two-Row Chat Layout** | `#chat-two-row-toggle` | Toggles the two-row sender/message layout for the current site. |
+| **Reset Site Button** | `#reset-btn` | Clears all stored settings for the origin, unregisters content scripts, and revokes host permission. |
+| **Protected Content Note** | `.safety-badge` | Displays safety notice: *"Webcam, screen share & slides protected"*. |
+| **Version Indicator** | `#extension-version` | Automatically displays the version read from `manifest.json` (`v1.8.0`). |
 
 ---
 
@@ -117,299 +313,113 @@ It also includes an independent **RTL Chat Text** mode for Persian and Arabic us
 
 ## Installation
 
-### Google Chrome
+Adobe Connect Dark is distributed as an unpacked Manifest V3 browser extension for Chromium-based browsers.
 
-1. Download or clone this repository.
-2. Open:
+### Compatible Browsers
+- **Google Chrome**
+- **Microsoft Edge**
+- **Brave Browser**
+- **Opera / Opera GX**
+- Other Chromium-based browsers
 
-   ```text
-   chrome://extensions
-   ```
+### Installation Steps
 
-3. Enable **Developer mode**.
-4. Click **Load unpacked**.
-5. Select the project folder containing `manifest.json`.
-6. Pin **Adobe Connect Dark Mode** from the Extensions menu if desired.
+1. **Obtain the Extension**:
+   - Clone this repository:
+     ```bash
+     git clone https://github.com/Mr-Azizi/adobe-connect-dark.git
+     ```
+   - *Or* download the repository as a ZIP archive and extract it to a local folder.
+2. **Open Extensions Page**:
+   - In Chrome / Brave / Opera: Navigate to `chrome://extensions`
+   - In Microsoft Edge: Navigate to `edge://extensions`
+3. **Enable Developer Mode**:
+   - Toggle the **Developer mode** switch (usually located in the top-right or left sidebar).
+4. **Load Unpacked**:
+   - Click the **Load unpacked** button.
+   - Select the root project directory (the folder containing `manifest.json`).
+5. **Verify**:
+   - **Adobe Connect Dark Mode** will appear in your installed extensions list.
+   - Pin the extension icon to your browser toolbar for quick access.
 
-### Microsoft Edge
-
-1. Download or clone this repository.
-2. Open:
-
-   ```text
-   edge://extensions
-   ```
-
-3. Enable **Developer mode**.
-4. Click **Load unpacked**.
-5. Select the project folder containing `manifest.json`.
-
-> No build step is required for unpacked development use.
+> [!NOTE]
+> No build step, Node.js compile, or bundler is required. The extension runs directly from its source files.
 
 ---
 
 <a id="usage"></a>
 
-## Usage
+## Usage Guide
 
-Open an Adobe Connect site and click the extension icon.
-
-The popup exposes three independent per-site controls:
-
-### Dark Mode
-
-Enables the dark interface for the current Adobe Connect origin.
-
-### RTL Chat Text
-
-Enables right-to-left text flow for Persian / Arabic chat while keeping the surrounding Chat Pod layout stable.
-- **Send RTL Formatting**: Sub-feature under RTL Chat that applies BiDi unicode markers so messages appear correctly formatted for all participants.
-
-### Two-Row Chat Layout
-
-Optionally displays the sender name on row 1 (along with the timestamp) and the message body on row 2.
-Two-Row Chat Layout is completely independent of RTL Chat and Dark Mode.
-
-### Feature combinations
-
-| Dark Mode | RTL Chat | Two-Row Layout | Result |
-| :---: | :---: | :---: | --- |
-| Off | Off | Off | Native Adobe Connect |
-| Off | Off | On  | Two-Row Chat presentation only |
-| On  | Off | Off | Dark theme only |
-| Off | On  | Off | Native Adobe styling + RTL chat text |
-| Off | On  | On  | RTL chat text + Two-Row layout |
-| On  | Off | On  | Dark theme + Two-Row layout |
-| On  | On  | Off | Dark theme + RTL chat text |
-| On  | On  | On  | Dark theme + RTL chat text + Two-Row layout |
-
-The popup status becomes **Active** when any feature is enabled.
-
-### Reset Site
-
-**Reset Site** restores the current origin to its default state by:
-
-- disabling Dark Mode
-- disabling RTL Chat
-- removing the origin from extension storage
-- unregistering the dynamic content script for that site
-- revoking the optional host permission for that origin
+1. **Navigate to Adobe Connect**:
+   - Open your organization's Adobe Connect room, webinar, or recording URL (e.g., `https://connect.example.com/room-name`).
+2. **Open the Popup**:
+   - Click the **Adobe Connect Dark** icon in the browser toolbar.
+3. **Enable Desired Features**:
+   - Switch on **Dark Mode** to darken the application UI.
+   - Switch on **RTL Chat Text** to enable right-to-left Persian/Arabic chat text.
+   - *(Optional)* Adjust **Send RTL Formatting** if you want outgoing messages formatted for other participants.
+   - Switch on **Two-Row Chat Layout** if you prefer sender names stacked above messages.
+4. **Grant Origin Permission**:
+   - On first activation for a new domain, your browser will prompt you to allow access to that specific origin. Click **Allow**.
+5. **Persistent Storage**:
+   - Your preferences are automatically saved for that origin. When you revisit the room, your settings are applied immediately at `document_start`.
+6. **Resetting a Site**:
+   - Click **Reset Site / بازنشانی دامنه** in the popup to return the site to default native behavior and revoke origin permissions.
 
 ---
 
-<a id="media-preservation"></a>
+<a id="per-site-behavior"></a>
 
-## Media preservation
+## Per-Site Settings & Storage Model
 
-The extension follows one core rule:
+All configuration is strictly scoped to the site's origin (`protocol + hostname`). Separate records are maintained for HTTP and HTTPS variants.
 
-> **Theme the application, not the user's content.**
+### Storage Keys
 
-The following content is intentionally protected from darkening or inversion:
+The extension uses `chrome.storage.local` with the following schema:
 
-- PDF pages
-- Presentation slides
-- Webcam/video streams
-- Screen sharing
-- Canvas-rendered content
-- Whiteboard drawings
-- Images and embedded media
+| Storage Key | Value Type | Purpose | Scope |
+| :--- | :--- | :--- | :--- |
+| `acd_enabled_sites` | `Record<string, boolean>` | Stores per-site Dark Mode state (`true` = active). | Origin key (e.g., `https://connect.example.com`) |
+| `acd_rtl_chat_sites` | `Record<string, boolean>` | Stores per-site RTL Chat Text state (`true` = active). | Origin key |
+| `acd_send_rtl_formatting_sites` | `Record<string, boolean>` | Stores per-site outgoing Send RTL Formatting preference (`true`/`false`). | Origin key (defaults to `true` when RTL Chat is enabled) |
+| `acd_chat_two_row_sites` | `Record<string, boolean>` | Stores per-site Two-Row Chat Layout state (`true` = active). | Origin key |
+| `acd_enabled_domains` | `Record<string, boolean>` | *Legacy key*. Automatically migrated to `acd_enabled_sites` on startup. | Legacy hostname key |
 
-This is why a PDF can remain white while the Adobe Connect pod and surrounding workspace are dark.
+### Example Stored State
 
----
-
-<a id="rtl-chat"></a>
-
-## RTL Chat
-
-RTL Chat is intentionally scoped to chat text rather than mirroring the entire interface.
-
-When enabled, it applies RTL behavior to:
-
-- message sender names
-- message content
-- the chat message flow
-- compose / typing areas
-- placeholder alignment
-
-It intentionally leaves these UI elements structurally unchanged:
-
-- timestamps
-- Chat tabs
-- Send button placement
-- menus and icons
-- scrollbars
-- the overall Adobe Connect pod layout
-
-### Mixed Persian / English text
-
-The message rules are bidi-safe, so mixed content remains readable:
-
-```text
-این الگوریتم از Q-learning استفاده می‌کند.
+```json
+{
+  "acd_enabled_sites": {
+    "https://connect.example.com": true
+  },
+  "acd_rtl_chat_sites": {
+    "https://connect.example.com": true
+  },
+  "acd_send_rtl_formatting_sites": {
+    "https://connect.example.com": true
+  },
+  "acd_chat_two_row_sites": {
+    "https://connect.example.com": true
+  }
+}
 ```
 
-```text
-جلسه ساعت 10:30 AM شروع می‌شود.
-```
-
-```text
-https://example.com را باز کنید.
-```
-
-The extension does not rewrite chat strings or use `bidi-override`.
-
 ---
 
-<a id="coverage"></a>
+<a id="permission-on-demand"></a>
 
-## Adobe Connect coverage
+## Permission-on-Demand Model
 
-The current styling is developed primarily against the **Adobe Connect 11.2.x HTML5 web client and Recording UI**.
+To ensure optimal privacy, security, and performance, Adobe Connect Dark adheres to a strict permission-on-demand model:
 
-### Adobe Connect Central
+### Declared Manifest Permissions
+- `storage`: Required to persist user preferences in `chrome.storage.local`.
+- `activeTab`: Grants temporary access to the active tab when the popup is opened.
+- `scripting`: Required to register dynamic content scripts for enabled sites.
 
-Explicit styling includes:
-
-- Legacy global navigation
-- Search controls
-- Main application layout
-- Primary / secondary navigation
-- Calendar Week view
-- Calendar Month view
-- Calendar Activity view
-- Current / past / future day states
-- Calendar events, sidebars, and popovers
-- Reports cards and states
-- Forms and inputs
-- Tables
-- Menus
-- Dialogs and popovers
-
-### Meeting / Recording client
-
-Explicit styling includes:
-
-- Meeting / Recording shell
-- Pod chrome and pod headers
-- Pod control buttons
-- Chat Pod
-- Chat tabs and compose area
-- Attendees Pod
-- Hosts / Presenters / Participants sections
-- Participant rows and states
-- Video Pod chrome and empty states
-- Share / PDF surrounding UI
-- Recording playback bar
-- Progress rail and played progress
-- Volume UI
-- Recording event/index sidebar
-- Notes Pod
-- Files Pod
-- Web Links Pod
-- Poll Pod
-- Adobe Spectrum controls
-- Menus, dialogs, fields, tabs, and tree views
-
-<p align="right"><a href="#top">↑ Back to top</a></p>
-
----
-
-<a id="browser-compatibility"></a>
-
-## Browser compatibility
-
-| Browser | Status |
-| --- | --- |
-| Google Chrome | ✅ Primary target |
-| Microsoft Edge | ✅ Supported |
-| Other Chromium browsers | ⚠️ Likely compatible, not primary target |
-| Firefox | ❌ Not currently targeted |
-
----
-
-<a id="adobe-connect-compatibility"></a>
-
-## Adobe Connect compatibility
-
-The component map is currently optimized for **Adobe Connect 11.2.x**.
-
-Because Adobe Connect releases can change DOM structure, CSS-module names, Spectrum components, and native state styles, future major versions may require selector updates.
-
-The extension avoids generated class hashes to reduce that maintenance burden, but it cannot guarantee compatibility with every Adobe Connect release.
-
----
-
-<a id="known-limitations"></a>
-
-## Known limitations
-
-- The theme is primarily validated against Adobe Connect 11.2.x.
-- Shared documents and media are intentionally **not** darkened.
-- RTL Chat is a manual per-site preference; there is no per-message automatic language-direction detection.
-- Closed Shadow DOM cannot be styled from the extension in the same way as open Shadow DOM.
-- Native Adobe Connect behaviors outside the theme/RTL scope are intentionally preserved. For example, the project does not override Adobe's own Recording Chat auto-scroll behavior.
-- Cross-origin embedded content may require its own browser permission if it needs extension access.
-
----
-
-<a id="troubleshooting"></a>
-
-## Troubleshooting
-
-### Nothing changes after enabling Dark Mode
-
-1. Confirm the popup shows the current site as **Active**.
-2. Confirm browser permission was granted for the current origin.
-3. Open `chrome://extensions` and reload the extension.
-4. Reload Adobe Connect.
-5. Verify `data-acd-theme="dark"` exists on `<html>`.
-
-### RTL Chat is enabled but the entire Chat Pod is not mirrored
-
-That is expected.
-
-RTL mode intentionally changes text flow while preserving Adobe's native tabs, buttons, timestamps, icons, and layout.
-
-### A PDF stays white
-
-That is expected and intentional.
-
-Only the Adobe Connect interface surrounding the document is themed.
-
-### Dark Mode works in Central but a Meeting/Recording component looks wrong
-
-Adobe Connect can differ between versions and server deployments. Capture the affected component's sanitized `outerHTML` and native styles, then add a narrowly scoped source-derived selector.
-
-### The badge still says `ON`
-
-The toolbar badge is active when **either** Dark Mode or RTL Chat is enabled for the current site.
-
-Use **Reset Site** to clear both features and revoke the current origin permission.
-
-<p align="right"><a href="#top">↑ Back to top</a></p>
-
----
-
-<a id="permissions-privacy"></a>
-
-## Permissions & privacy
-
-The extension uses a **permission-on-demand** model.
-
-### Manifest permissions
-
-| Permission | Why it is used |
-| --- | --- |
-| `storage` | Stores per-origin Dark Mode and RTL Chat preferences |
-| `activeTab` | Reads/interacts with the currently active tab when the popup is used |
-| `scripting` | Dynamically registers or injects the extension runtime for enabled sites |
-
-### Optional host access
-
-The manifest declares:
-
+### Optional Host Permissions
 ```json
 "optional_host_permissions": [
   "http://*/*",
@@ -417,461 +427,355 @@ The manifest declares:
 ]
 ```
 
-This does **not** grant automatic access to every website.
-
-When a user enables Dark Mode or RTL Chat, the extension requests access only for the current origin, for example:
-
-```text
-https://connect.example.com/*
-```
-
-Settings are keyed by:
-
-```text
-protocol + hostname
-```
-
-So these are treated as different sites:
-
-```text
-http://connect.example.com
-https://connect.example.com
-```
-
-### Local-only behavior
-
-The current codebase does not include analytics, telemetry, remote API calls, or remote-code execution. Theme and RTL state are handled locally through Chrome extension APIs and the page DOM.
-
-<p align="right"><a href="#top">↑ Back to top</a></p>
+### How Permissions Are Managed
+- The extension does **not** possess blanket access to all websites upon installation.
+- When you enable a feature for a domain, the extension invokes `chrome.permissions.request({ origins: ["https://domain.com/*"] })`.
+- If the permission is granted, the dynamic content script is registered.
+- Dynamic script registration is maintained only as long as at least one top-level feature remains enabled:
+  ```javascript
+  const siteNeedsExtension = isDarkEnabled || isRtlEnabled || isTwoRowEnabled;
+  ```
+- If all features are turned off or if **Reset Site** is clicked, the registration is removed, and `chrome.permissions.remove` revokes origin host access.
 
 ---
 
-<a id="how-it-works"></a>
+<a id="dynamic-runtime-registration"></a>
 
-## How it works
+## Dynamic Runtime Registration
+
+To eliminate white flashes and interact seamlessly with Adobe Connect's single-page React client, scripts are registered dynamically rather than statically declared across all pages:
 
 ```mermaid
 flowchart TD
-    A[Popup UI] --> B[Per-origin settings]
-    B --> C{Feature enabled?}
-    C -->|Dark or RTL enabled| D[Request optional host permission]
-    D --> E[Register dynamic content scripts]
-    E --> F[Content runtime at document_start]
-    F --> G{Stored site state}
-    G -->|Dark Mode| H[data-acd-theme=dark]
-    G -->|RTL Chat| I[data-acd-chat-rtl=true]
-    H --> J[Component-aware dark CSS]
-    I --> K[RTL chat rules]
-    F --> L[SPA / MutationObserver handling]
-    F --> M[Open Shadow DOM handling]
-    F --> N[Media preservation]
-    J --> O[Adobe Connect UI]
-    K --> O
-    L --> O
-    M --> O
-    N --> P[PDF / video / canvas / whiteboard remain unchanged]
+    A[User toggles feature in Popup] --> B[Request Optional Host Permission]
+    B -->|Granted| C[Register Dynamic Content Scripts]
+    C --> D[ISOLATED World Script: acd_cs_*]
+    C --> E[MAIN World Script: acd_main_*]
+    D --> F[Theme Engine & Fallback Scanner]
+    D --> G[DOM MutationObserver]
+    E --> H[React Composer Interceptor & Outgoing Bridge]
+    E --> I[Incoming BiDi Classifier & Two-Row DOM Tagger]
+    F --> J[Apply Dark Stylesheet & Root Attributes]
+    H --> K[Cooperate with React controlled inputs]
+    I --> L[Tag data-acd-bidi-dir on messages]
 ```
 
-### Dynamic runtime registration
+### Execution Worlds
 
-Content scripts are registered per origin using IDs derived from protocol + hostname:
+1. **ISOLATED World** (`acd_cs_<protocol>_<host>`):
+   - **Files**: `content/theme-engine.js`, `content/observer.js`, `content/content.js`
+   - **Configuration**: `runAt: "document_start"`, `allFrames: true`, `world: "ISOLATED"`
+   - **Responsibilities**:
+     - Synchronizes storage settings with `documentElement`.
+     - Injects extension stylesheets (`styles/variables.css`, `styles/base.css`, etc.).
+     - Runs Layer 1 color detection and observes DOM mutations.
+     - Inspects and styles accessible Open Shadow DOM roots.
+2. **MAIN World** (`acd_main_<protocol>_<host>`):
+   - **Files**: `content/chat-rtl-main.js`
+   - **Configuration**: `runAt: "document_start"`, `allFrames: true`, `world: "MAIN"`
+   - **Responsibilities**:
+     - Executes in the page's execution context to cooperate directly with Adobe Connect's React state.
+     - Intercepts Chat typing and Send events without triggering input desynchronization.
+     - Intercepts `Element.prototype.attachShadow` to capture dynamically mounted open shadow trees.
+     - Performs line classification and tags incoming chat message elements.
 
-```text
-acd_cs_<protocol>_<hostname>
-```
-
-They run at:
-
-```text
-document_start
-```
-
-and are registered with:
-
-```text
-allFrames: true
-```
-
-The service worker performs a startup/install reconciliation between:
-
-1. saved feature state
-2. currently granted host permissions
-3. dynamically registered content scripts
-
-If a saved site no longer has permission, stale state is removed. If permission exists but a required script registration is missing, it is repaired.
-
-<p align="right"><a href="#top">↑ Back to top</a></p>
+### Self-Healing Synchronization
+On browser startup (`runtime.onStartup`) and extension installation/update (`runtime.onInstalled`), the background service worker executes `syncRegisteredScripts()`:
+- Verifies stored active sites against actual granted permissions via `chrome.permissions.contains`.
+- Purges stale records if host access was revoked externally.
+- Automatically re-registers content scripts if permissions exist but registration was cleared by the browser.
 
 ---
 
-<a id="theme-architecture"></a>
+<a id="shadow-dom-support"></a>
 
-## Theme architecture
+## Open Shadow DOM Support
 
-The theme uses two complementary layers.
+Adobe Connect Web components frequently employ Shadow DOM encapsulation for pod controls, menus, and custom elements.
 
-### Layer 1 — conservative fallback
+- **Open Shadow Roots**:
+  - The extension hooks `Element.prototype.attachShadow` in the MAIN world to discover newly created open shadow roots.
+  - In the ISOLATED world, `themeEngine.scanForShadowRoots()` traverses the DOM tree to locate existing shadow roots.
+  - Dedicated stylesheets (`styles/shadow-dom.css`) and layout styles are injected directly into each open root.
+  - A lightweight `MutationObserver` is attached to each shadow root to process dynamically added shadow elements.
+- **Closed Shadow Roots Limitation**:
+  - Web platform security prevents browser extensions from traversing or styling closed shadow roots (`mode: "closed"`). Elements encapsulated within closed shadow roots cannot be directly restyled.
 
-The theme engine can detect bright UI surfaces and dark text in unknown interface areas.
+---
 
-This layer is intentionally conservative and excludes sensitive content containers.
+<a id="media-preservation"></a>
 
-### Layer 2 — source-driven component styling
+## Media & Content Preservation Architecture
 
-Known Adobe Connect components are styled explicitly using stable semantic selectors derived from the actual Adobe Connect interface.
+The foundational rule of Adobe Connect Dark is:
 
-Adobe's generated CSS-module hashes are **not hardcoded**. Rules use semantic class prefixes and structural scoping instead.
+> **Theme the application shell, never the user's presentation content.**
 
-This provides more reliable coverage for:
+### Protected Elements & Containers
 
-- hover states
-- active / selected states
-- focus-visible states
-- inline light backgrounds
-- legacy image-based chrome
-- Adobe Spectrum components
-- dynamically mounted components
+The following elements and selector patterns are explicitly protected from color filtering, inversion, or forced background changes:
 
-<p align="right"><a href="#top">↑ Back to top</a></p>
+- **Webcam & Video Streams**: `video`, `.video-stream-element`, `[class*="streamPlayerLoaderScreen--"]`
+- **Presentation Slides**: `.presentation-content`, `.slide-container`, `[data-ac-role="presentation"]`
+- **PDF Viewer & Renderers**: `#pdf-viewer`, `.canvasHTMLPDF`, `.canvasSingleHTMLPDF`, `[class^="pdfLoaderScreen--"]`
+- **Screen Sharing Surfaces**: `[class^="screenShareLoader--"]`, `[data-ac-role="screenshare"]`
+- **Whiteboard & Canvas**: `canvas`, `.whiteboard-canvas`, `[class*="whiteboardWrapper--"]`, `[class*="wbShapesWrapper--"]`
+- **Embedded Images & Pictures**: `img`, `picture`
+- **Preserved Containers**: Elements tagged with `[data-acd-preserve="true"]` or `.acd-preserve`
+
+### SVG Differentiation
+
+- **Content SVGs**: SVGs inside slide containers, presentation viewports, or whiteboard canvases are treated as sensitive content and preserved with `filter: none !important; mix-blend-mode: normal !important;`.
+- **UI SVGs**: Toolbar icons, pod menu glyphs, and button icons inherit theme colors via `currentColor`, ensuring high contrast against dark backgrounds.
+
+---
+
+<a id="root-state-attributes"></a>
+
+## Root State Attributes
+
+The extension communicates runtime state using attributes on the `<html>` (`documentElement`) element and individual message wrappers:
+
+| Attribute | Location | Possible Values | Meaning |
+| :--- | :--- | :--- | :--- |
+| `data-acd-theme` | `<html>` | `"dark"` | Dark Mode is active for this site. |
+| `data-acd-chat-rtl` | `<html>` | `"true"` | RTL Chat Text is active for this site. |
+| `data-acd-send-rtl-formatting` | `<html>` | `"true"`, `"false"` | Outgoing Send RTL Formatting state (effective when RTL Chat is on). |
+| `data-acd-chat-two-row` | `<html>` | `"true"` | Two-Row Chat Layout is active for this site. |
+| `data-acd-bidi-dir` | Chat Message Body | `"rtl"`, `"ltr"` | Dynamically applied direction computed by the BiDi classifier. |
+| `data-acd-chat-two-line` | Message Wrapper | `"true"` | Marks message container for two-row grid styling. |
+| `data-acd-surface` | Internal Elements | `"bright"` | Flagged by Layer 1 fallback scanner as bright surface needing dark background. |
+| `data-acd-text` | Internal Elements | `"dark"` | Flagged by Layer 1 fallback scanner as dark text needing light color. |
+| `data-acd-preserve` | Any Container | `"true"` | Explicitly exempts element and its subtree from theming. |
 
 ---
 
 <a id="project-structure"></a>
 
-## Project structure
+## Project Structure
 
 ```text
-.
-├── manifest.json
-├── background.js
+adobe-connect-dark/
+├── manifest.json                 # Manifest V3 metadata, permissions & resource declarations
+├── background.js                 # Service worker: self-healing script sync & badge management
 ├── content/
-│   ├── content.js
-│   ├── observer.js
-│   └── theme-engine.js
+│   ├── content.js                # Content script entry point & storage-to-DOM synchronizer
+│   ├── observer.js               # Debounced MutationObserver for SPA DOM additions
+│   ├── theme-engine.js           # Theme lifecycle, fallback scanner & shadow DOM manager
+│   └── chat-rtl-main.js          # MAIN-world bridge: React composer interceptor & BiDi engine
 ├── popup/
-│   ├── popup.html
-│   ├── popup.css
-│   └── popup.js
+│   ├── popup.html                # Extension popup markup
+│   ├── popup.css                 # Popup user interface styling
+│   └── popup.js                  # Popup controls, permission requester & storage controller
 ├── styles/
-│   ├── variables.css
-│   ├── base.css
-│   ├── components.css
-│   ├── connect-central.css
-│   ├── adobe-connect.css
-│   └── shadow-dom.css
+│   ├── variables.css             # CSS custom properties & color tokens
+│   ├── base.css                  # Document root, scrollbars & media preservation guards
+│   ├── components.css            # Common menus, dialogs, forms & Spectrum controls
+│   ├── connect-central.css        # Adobe Connect Central views (Calendar, Reports, etc.)
+│   ├── adobe-connect.css         # Live meeting pods, recording player & chat layout rules
+│   └── shadow-dom.css            # Encapsulation-safe rules for Open Shadow DOM roots
+├── assets/
+│   └── fonts/
+│       ├── OFL.txt               # Open Font License for Vazirmatn
+│       └── Vazirmatn-Regular.woff2# Bundled local Persian/Arabic font
 ├── icons/
-│   ├── icon16.png
-│   ├── icon32.png
-│   ├── icon48.png
-│   └── icon128.png
-└── README.md
+│   ├── icon16.png                # Toolbar icon (16x16)
+│   ├── icon32.png                # Toolbar icon (32x32)
+│   ├── icon48.png                # Extensions management icon (48x48)
+│   └── icon128.png               # Web store & display icon (128x128)
+├── docs/
+│   └── screenshots/              # Repository screenshots & comparison assets
+│       ├── popup-comparison.png  # Popup inactive/active side-by-side
+│       ├── light-mode.png        # Native Adobe Connect Web client
+│       ├── dark-mode.png         # Themed Adobe Connect Web client
+│       ├── chat-default.png      # Default single-row chat pod
+│       ├── chat-rtl.png          # RTL-aligned chat pod
+│       └── chat-two-row.png      # Two-row sender/message chat pod
+└── README.md                     # Comprehensive project documentation
 ```
-
-### Main files
-
-| File | Responsibility |
-| --- | --- |
-| `manifest.json` | Manifest V3 configuration, permissions, popup, service worker, icons |
-| `background.js` | Storage migration, self-healing dynamic registrations, toolbar badge state |
-| `popup/popup.js` | Per-origin feature controls, permission requests, registration/reset flow |
-| `content/content.js` | Synchronizes stored settings with the current document/frame |
-| `content/observer.js` | Lightweight debounced SPA DOM observation |
-| `content/theme-engine.js` | Theme lifecycle, CSS injection, fallback scanning, Shadow DOM handling, media exclusions |
-| `styles/variables.css` | Design tokens and premium dark palette |
-| `styles/base.css` | Base/fallback styling and content-preservation rules |
-| `styles/components.css` | Shared menus, dialogs, form controls, buttons, and interactive states |
-| `styles/connect-central.css` | Adobe Connect Central-specific styling |
-| `styles/adobe-connect.css` | Meeting / Recording component styling and RTL Chat rules |
-| `styles/shadow-dom.css` | Equivalent styles for supported open shadow roots |
 
 ---
 
-<a id="storage"></a>
+<a id="coverage"></a>
 
-## Storage model
+## Adobe Connect Interface Coverage
 
-Dark Mode sites are stored under:
+The extension provides comprehensive component coverage across the web application:
 
-```text
-acd_enabled_sites
-```
+### Adobe Connect Central
+- **Navigation**: Legacy top header bar, primary navigation tabs, breadcrumbs, and user menu.
+- **Search & Filter**: Global search fields, dropdown filters, and result lists.
+- **Calendar**: Week view, Month view, Activity view, day headers, current/past/future day badges, and event popovers.
+- **Reports & Administration**: Reporting cards, summary tables, participant logs, and download dialogs.
+- **Forms & Dialogs**: Spectrum dialog overlays, modal windows, textboxes, dropdowns, and checkboxes.
 
-RTL Chat sites are stored under:
-
-```text
-acd_rtl_chat_sites
-```
-
-Two-Row Chat Layout sites are stored under:
-
-```text
-acd_chat_two_row_sites
-```
-
-Each value is an object keyed by site origin:
-
-```json
-{
-  "https://connect.example.com": true
-}
-```
-
-The code also contains backward-compatible migration support from the older `acd_enabled_domains` format.
+### Live Meeting & Recording Playback
+- **Pod Shells**: Pod titles, headers, borders, pod menus, and minimize/maximize buttons.
+- **Chat Pod**: Message list, sender names, timestamps, message content, compose textarea, and send button.
+- **Attendees Pod**: Hosts, Presenters, and Participants accordion sections, user rows, status icons, and search filter.
+- **Video Pod**: Video chrome, speaker label overlays, multi-camera grid frames, and empty state placeholders.
+- **Share Pod Chrome**: Surrounding control bar, layout switcher, zoom controls, and page navigation (inner shared content preserved).
+- **Recording Player**: Timeline scrubber, play/pause controls, progress rail, elapsed/total time, volume slider, and event index sidebar.
+- **Other Pods**: Notes Pod, Polls Pod (questions/answers), Files Pod, and Web Links Pod chrome.
 
 ---
 
-<a id="root-state"></a>
+<a id="browser-compatibility"></a>
 
-## Root state attributes
+## Browser Compatibility
 
-Dark Mode adds:
+| Browser | Support Level | Engine | Notes |
+| :--- | :---: | :--- | :--- |
+| **Google Chrome** | Full | Chromium (V8 / Blink) | Primary development and validation target. |
+| **Microsoft Edge** | Full | Chromium (V8 / Blink) | Fully supported; identical Manifest V3 behavior. |
+| **Brave** | Full | Chromium (V8 / Blink) | Verified compatible with Shields enabled. |
+| **Opera / Opera GX** | Full | Chromium (V8 / Blink) | Supported via Chromium extensions management. |
+| **Mozilla Firefox** | Not Targeted | Gecko / SpiderMonkey | Manifest V3 background script differences not implemented. |
+| **Apple Safari** | Not Targeted | WebKit | Requires separate WebExtension packaging. |
 
-```html
-<html data-acd-theme="dark">
-```
+---
 
-RTL Chat adds:
+<a id="adobe-connect-compatibility"></a>
 
-```html
-<html data-acd-chat-rtl="true">
-```
+## Adobe Connect Compatibility
 
-Two-Row Chat Layout adds:
+- **Target Interface**: Adobe Connect HTML5 Web Client and Recording UI.
+- **Tested Environment**: Validated against current Adobe Connect Web UI deployments (including Adobe Connect 11.2.x and subsequent HTML5 web releases).
+- **Resilient Selectors**: The extension strictly avoids hardcoded CSS-module hash suffixes (e.g., `chatMessageSender--abc123xyz`), relying instead on resilient prefix selectors (`[class^="chatMessageSender--"]`) and semantic container hierarchies.
 
-```html
-<html data-acd-chat-two-row="true">
-```
+---
 
-All three features are deliberately independent.
+<a id="privacy-security"></a>
+
+## Privacy & Security
+
+Adobe Connect Dark is designed with a strict local-first privacy posture:
+
+- **No Analytics & No Telemetry**: The codebase contains zero analytics libraries, tracking pixels, or telemetry calls.
+- **No External Network Calls**: The extension makes no `fetch()` or `XMLHttpRequest` calls to remote endpoints.
+- **No Remote Code Execution**: All stylesheets, scripts, and fonts (`Vazirmatn`) are bundled directly within the extension package, adhering to Manifest V3 security requirements.
+- **Origin Isolation**: Host permissions and stored configuration are strictly scoped to the specific Adobe Connect domain authorized by the user.
+
+---
+
+<a id="known-limitations"></a>
+
+## Known Limitations
+
+- **Chromium Target**: The extension is built and tested specifically for Chromium-based browsers; Firefox and Safari are not currently supported.
+- **Closed Shadow DOM**: Adobe Connect components rendered inside closed shadow roots cannot be styled by browser extensions due to browser security boundaries.
+- **Future Adobe Connect DOM Updates**: If Adobe makes structural architectural changes to HTML5 client class names or pod DOM trees, selectors may require updates.
+- **Complex Multilingual Edge Cases**: While the bidirectional classifier handles mixed English/Persian sentences, inline math, and punctuation, unusual multilingual mixed sentences (e.g., three languages intermingled in one line) may rely on browser default BiDi resolution.
+
+---
+
+<a id="troubleshooting"></a>
+
+## Troubleshooting
+
+### Dark Mode does not appear after enabling
+1. Verify that the popup status badge indicates **Active**.
+2. Ensure you clicked **Allow** on the browser's permission prompt for the domain.
+3. Refresh the Adobe Connect page (`F5` or `Ctrl+R`).
+4. Inspect the page HTML in DevTools: verify that `<html data-acd-theme="dark">` is present.
+
+### RTL Chat is enabled but the Chat Pod layout did not mirror
+- This is expected and intentional. The extension specifically adjusts text direction, message flow, and typing alignment without mirroring pod headers, tabs, or buttons.
+
+### Shared slides or PDF documents remain white
+- This is an intentional feature. The extension protects all shared lesson content, presentations, whiteboard drawings, and video streams from discoloration or inversion.
+
+### Two-Row Chat Layout is not displaying on two lines
+1. Confirm that **Two-Row Chat Layout** is toggled ON in the popup.
+2. Verify that `<html data-acd-chat-two-row="true">` is present on the root element.
+3. If Adobe Connect loaded in an unexpected iframe, verify that the extension has permission for that iframe origin.
+
+### Outgoing messages look correct locally but unformatted for other participants
+- Ensure the nested sub-toggle **Send RTL Formatting** is enabled in the popup. If disabled, outgoing text is transmitted in raw form.
 
 ---
 
 <a id="development"></a>
 
-## Development
+## Development & Contributing
 
-### Local development loop
+### Local Development Loop
 
-1. Modify the extension source.
-2. Open `chrome://extensions` or `edge://extensions`.
-3. Click **Reload** for the unpacked extension.
-4. Reload the Adobe Connect page.
-5. Test the affected UI state in the browser.
+1. Clone or edit the repository locally.
+2. Open `chrome://extensions` and click the **Reload** icon on the Adobe Connect Dark card.
+3. Refresh your Adobe Connect tab.
+4. Open Chrome DevTools (`F12`) to inspect DOM attributes:
+   ```javascript
+   // Check theme state
+   document.documentElement.getAttribute('data-acd-theme'); // "dark"
+   
+   // Check RTL state
+   document.documentElement.getAttribute('data-acd-chat-rtl'); // "true"
+   
+   // Check Two-Row state
+   document.documentElement.getAttribute('data-acd-chat-two-row'); // "true"
+   ```
+5. To inspect registered content scripts from the background service worker console:
+   ```javascript
+   chrome.scripting.getRegisteredContentScripts().then(console.log);
+   ```
 
-### Inspecting state
-
-In DevTools Console:
-
-```javascript
-document.documentElement.getAttribute('data-acd-theme');
-```
-
-Expected when Dark Mode is enabled:
-
-```text
-dark
-```
-
-For RTL Chat:
-
-```javascript
-document.documentElement.getAttribute('data-acd-chat-rtl');
-```
-
-Expected when enabled:
-
-```text
-true
-```
-
-### Inspecting dynamic registrations
-
-From the extension service worker console:
-
-```javascript
-chrome.scripting.getRegisteredContentScripts().then(console.log);
-```
-
-<p align="right"><a href="#top">↑ Back to top</a></p>
-
----
-
-<a id="development-guidelines"></a>
-
-## Source-driven development guidelines
-
-When adding support for a new Adobe Connect component:
-
-1. Inspect the actual component DOM.
-2. Identify stable semantic class prefixes, roles, IDs, or ARIA structure.
-3. Inspect Adobe's native normal/hover/selected/focus behavior.
-4. Prefer explicit component CSS over expanding the generic fallback.
-5. Never hardcode CSS-module hash suffixes.
-6. Keep selectors narrowly scoped.
-7. Preserve user/session media.
-8. Test both Dark Mode and RTL combinations.
-
-For CSS modules such as:
-
-```text
-chatMessageSender--GENERATED_HASH
-```
-
-prefer resilient selectors such as:
-
-```css
-[class^="chatMessageSender--"],
-[class*=" chatMessageSender--"]
-```
-
-instead of copying the generated hash.
+### Code Style Guidelines
+- **No Generated Hashes**: Never hardcode build hashes like `class="pod--a8f9d"`. Use prefix matching (`[class^="pod--"]`).
+- **Media Safety First**: Always verify that new CSS rules do not bleed into shared presentation canvases, screen sharing, or video tags.
+- **Idempotency**: All activation functions (`applyDarkTheme`, `applyChatRtl`, `applyChatTwoRow`) must be safe to call repeatedly without duplicating styles or listeners.
 
 ---
 
 <a id="qa-checklist"></a>
 
-## Manual QA checklist
+## Manual QA Checklist
 
-Before publishing a change, test the real browser UI—not just selector presence.
+Before committing or releasing updates, verify the following checklist in a real browser session:
 
-### Feature combinations
+### Feature Combinations
+- [ ] Dark Mode OFF, RTL OFF, Two-Row OFF (native appearance)
+- [ ] Dark Mode ON, RTL OFF, Two-Row OFF
+- [ ] Dark Mode OFF, RTL ON, Two-Row OFF
+- [ ] Dark Mode OFF, RTL ON, Two-Row ON
+- [ ] Dark Mode ON, RTL ON, Two-Row ON
+- [ ] Toggle features off without page reload
+- [ ] Reload page with all features active
+- [ ] Reset Site cleans up storage, removes script registrations, and revokes host permissions
 
-- [ ] Dark OFF + RTL OFF
-- [ ] Dark ON + RTL OFF
-- [ ] Dark OFF + RTL ON
-- [ ] Dark ON + RTL ON
-- [ ] Dark ON → OFF without reload
-- [ ] RTL ON → OFF without reload
-- [ ] Reload page with settings already enabled
-- [ ] Reopen popup and verify state synchronization
-- [ ] Reset Site and verify origin access/state is removed
+### Chat Pod Verification
+- [ ] Pure Persian message: `سلام چطوری؟` (RTL, right-aligned)
+- [ ] Pure English message: `hello world` (LTR, left-aligned)
+- [ ] Latin-led mixed sentence: `linux چیه ؟` (classified RTL)
+- [ ] English grammar lead: `who is علیرضا ؟` (classified LTR)
+- [ ] Math expressions: `۲۲ - ۲ = ۲۰` or `15 + 5` (math preserved LTR inside RTL)
+- [ ] Two-Row layout displays sender name on row 1, message body on row 2
+- [ ] Shift+Enter multiline messages classified per line
 
-### Adobe Connect Central
-
-- [ ] Global navigation
-- [ ] Search
-- [ ] Calendar Week
-- [ ] Calendar Month
-- [ ] Calendar Activity
-- [ ] Reports
-- [ ] Profile / legacy Central pages
-- [ ] Menus, dialogs, forms, tables
-
-### Meeting / Recording
-
-- [ ] Pod shells and headers
-- [ ] Hosts / Presenters / Participants hover states
-- [ ] Participant rows
-- [ ] Chat messages
-- [ ] RTL sender ordering
-- [ ] Mixed Persian / English RTL message
-- [ ] Chat compose area
-- [ ] Video Pod chrome
-- [ ] Share / PDF Pod chrome
-- [ ] Playback controls
-- [ ] Keyboard focus-visible states
-- [ ] Menus and dropdowns
-
-### Media safety
-
-- [ ] PDF colors unchanged
-- [ ] Slides unchanged
-- [ ] Video unchanged
-- [ ] Canvas content unchanged
-- [ ] Whiteboard unchanged
-- [ ] Screen sharing unchanged
-
-<p align="right"><a href="#top">↑ Back to top</a></p>
+### Content Preservation Verification
+- [ ] Shared PowerPoint / PDF slide colors remain intact
+- [ ] Webcam video stream colors remain normal
+- [ ] Screen sharing area is uncolored
+- [ ] Whiteboard drawings and canvas elements remain intact
 
 ---
 
-<a id="security"></a>
+<a id="release-notes"></a>
 
-## Security notes for contributors
+## Release Notes
 
-Never commit diagnostic exports containing:
+<a id="v180"></a>
 
-- session tokens
-- authentication tickets
-- cookies
-- CSRF values
-- meeting/recording IDs when sensitive
-- private meeting URLs
-- private chat content
-- personal user information
+### v1.8.0
 
-The repository `.gitignore` already reserves common diagnostic/scratch locations, but contributors should still review `git status` before committing.
-
----
-
-<a id="contributing"></a>
-
-## Contributing
-
-Contributions are welcome—especially for additional Adobe Connect versions, component coverage, accessibility, and browser compatibility.
-
-Please keep changes aligned with the project's design principles:
-
-- source-derived selectors over guesses
-- component CSS over aggressive generic theming
-- no generated CSS-module hashes
-- no global color inversion
-- no unnecessary global `!important`
-- no layout redesign unless required for a real compatibility issue
-- preserve PDFs, video, slides, whiteboards, and screen sharing
-- distinguish static validation from real browser-render validation
-
-A good bug report includes:
-
-- Adobe Connect version, if known
-- browser/version
-- Central vs Live Meeting vs Recording
-- Dark Mode state
-- RTL Chat state
-- sanitized screenshot
-- sanitized affected DOM structure
-- steps to reproduce
-
----
-
-<a id="roadmap"></a>
-
-## Roadmap
-
-Potential future work—not commitments:
-
-- additional Adobe Connect version profiles
-- Chrome Web Store / Edge Add-ons packaging
-- more automated regression coverage
-- optional per-message direction detection
-- improved accessibility auditing
-- public sanitized screenshot gallery
-- localization of the popup UI
-
----
-
-<a id="release-checklist"></a>
-
-## Release checklist
-
-Before a public release:
-
-- [ ] Verify `manifest.json` version
-- [ ] Keep the popup-displayed version in sync with the manifest
-- [ ] Run final Chrome QA
-- [ ] Run final Edge QA
-- [ ] Test all four Dark/RTL combinations
-- [ ] Verify Central Week / Month / Activity
-- [ ] Verify Reports
-- [ ] Verify Meeting / Recording UI
-- [ ] Verify RTL sender ordering
-- [ ] Verify media preservation
-- [ ] Add sanitized screenshots
-- [ ] Review permissions
-- [ ] Remove private diagnostic artifacts
-- [ ] Verify Git history contains no sensitive snapshots
-- [ ] Add an open-source `LICENSE`
-- [ ] Write release notes
+- **Independent Two-Row Chat Layout**: Decoupled Two-Row Chat Layout into an independent top-level feature with its own popup toggle, per-site storage key (`acd_chat_two_row_sites`), and root attribute (`data-acd-chat-two-line`).
+- **Refined RTL Chat & Classifier**: Unified bidirectional line classifier (`classifyLineDirection`) across incoming and outgoing chat processing. Added lexical English lead grammar detection and inline arithmetic preservation.
+- **Send RTL Formatting Sub-Feature**: Introduced explicit sub-toggle control for outgoing Unicode BiDi formatting (`acd_send_rtl_formatting_sites`), giving users full control over whether outgoing messages include directional controls.
+- **Dynamic Incoming Message Styling**: Implemented non-destructive direction tagging (`data-acd-bidi-dir="rtl"` / `"ltr"`) for incoming messages without altering received message text content.
+- **Live Composer Synchronization**: Added real-time composer BiDi formatting with caret/selection tracking that cooperates seamlessly with Adobe Connect's React-controlled state.
+- **Open Shadow DOM Architecture**: Intercepts `Element.prototype.attachShadow` and injects encapsulated styles and observers into accessible open shadow trees.
+- **Self-Healing Runtime Sync**: Background service worker automatically validates stored sites against granted permissions, cleaning up orphan registrations and restoring missing scripts.
+- **Documentation & Screenshot Synchronization**: Fully audited README aligned with Manifest V3 permissions, real storage keys, anonymized domain references, and actual v1.8.0 codebase behavior.
 
 ---
 
@@ -879,9 +783,7 @@ Before a public release:
 
 ## License
 
-A public open-source license is **not included yet**.
-
-Before publishing this repository as open source, add a `LICENSE` file and update this section. A permissive license such as MIT is a common choice for browser-extension projects, but the final choice belongs to the project owner.
+This project is currently distributed as an open-source extension project. An official license (such as MIT) may be added by the repository owner in a subsequent release.
 
 ---
 
@@ -889,43 +791,69 @@ Before publishing this repository as open source, add a `LICENSE` file and updat
 
 ## Disclaimer
 
-Adobe Connect is a product of Adobe.
+Adobe and Adobe Connect are registered trademarks of Adobe Systems Incorporated.
 
-**Adobe Connect Dark** is an independent browser extension and is not affiliated with, endorsed by, or distributed by Adobe.
+**Adobe Connect Dark** is an independent, community-driven browser extension and is **not** affiliated with, endorsed by, sponsored by, or officially associated with Adobe Systems Incorporated.
 
-Compatibility may change when Adobe updates the Adobe Connect web client.
+Compatibility is maintained on a best-effort basis and may be affected by updates to the Adobe Connect Web client.
 
 ---
 
+<a id="persian-guide"></a>
+
 <details>
-<summary><strong>راهنمای سریع فارسی</strong></summary>
+<summary><strong>راهنمای سریع به زبان فارسی (Persian Quick Guide)</strong></summary>
 
-### نصب
+<br>
 
-1. وارد `chrome://extensions` یا `edge://extensions` شوید.
-2. **Developer mode** را فعال کنید.
-3. روی **Load unpacked** بزنید.
-4. پوشه‌ای را انتخاب کنید که فایل `manifest.json` داخل آن قرار دارد.
+### معرفی افزونه
 
-### استفاده
+**Adobe Connect Dark** یک افزونه مدرن بر پایه Manifest V3 برای مرورگرهای کرومیوم (Chrome، Edge، Brave، Opera و ...) است که برای بهبود تجربه کاربری در وب‌کلاینت ادوبی کانکت طراحی شده است.
 
-- **Dark Mode**: تم تاریک را برای دامنه فعلی فعال می‌کند.
-- **RTL Chat Text**: متن چت فارسی/عربی را راست‌به‌چپ می‌کند (همراه با زیرگزینه Send RTL Formatting).
-- **Two-Row Chat Layout**: نام فرستنده و متن پیام را در دو سطر مجزا نمایش می‌دهد.
-- تمامی این سه قابلیت کاملاً مستقل از یکدیگر هستند.
-- تنظیمات برای هر دامنه به‌صورت جداگانه ذخیره می‌شوند.
-- **Reset Site** تنظیمات همان دامنه را پاک می‌کند، اسکریپت ثبت‌شده را حذف می‌کند و دسترسی همان دامنه را پس می‌گیرد.
+### قابلیت‌های اصلی
 
-### نکته مهم
+1. **حالت تاریک (Dark Mode)**:
+   - رابط کاربری ادوبی کانکت (پادها، نوار ابزار، منوها، فرم‌ها و پنجره‌ها) را تاریک می‌کند.
+   - از فیلتر Invert استفاده **نمی‌کند** و فایل‌های اشتراکی، اسلایدها، PDF، ویدیوها، اسکرین‌شیر و وایت‌برد را کاملاً دست‌نخورده نگه می‌دارد.
+2. **متن چت راست‌به‌چپ (RTL Chat Text)**:
+   - پیام‌های فارسی و عربی را با فونت بهینه‌شده وزیرمتن (Vazirmatn) و چیدمان راست‌به‌چپ نمایش می‌دهد.
+   - دارای تشخیص‌دهنده هوشمند جهت خطوط برای عبارات ترکیبی (مانند `linux چیه ؟` یا `who is علیرضا ؟`) و محافظت از فرمول‌های ریاضی (`۲۲ - ۲`).
+3. **فرمت‌بندی ارسالی (Send RTL Formatting)**:
+   - زیرگزینه‌ای برای چت RTL است که با اعمال کدهای یونیکد BiDi باعث می‌شود پیام‌های ارسالی برای سایر کاربران حاضر در جلسه نیز با چیدمان صحیح نمایش داده شوند.
+4. **چیدمان دو سطری چت (Two-Row Chat Layout)**:
+   - نام فرستنده و ساعت پیام را در سطر اول و متن پیام را در سطر دوم نمایش می‌دهد تا از شلوغی متن چت جلوگیری شود. این قابلیت کاملاً مستقل از دارک مود و RTL است.
 
-PDF، اسلاید، ویدیو، اسکرین‌شیر و وایت‌برد عمداً تغییر رنگ داده نمی‌شوند؛ فقط رابط کاربری Adobe Connect تم می‌گیرد.
+### استقلال تنظیمات
+
+```text
+Dark Mode (مستقل)
+RTL Chat Text (مستقل)
+└── Send RTL Formatting (وابسته به RTL Chat Text)
+Two-Row Chat Layout (مستقل)
+```
+
+### راهنمای نصب
+
+1. پروژه را دانلود یا Clone کنید (در صورت دانلود فایل ZIP، آن را Extract نمایید).
+2. در مرورگر به صفحه افزونه‌ها بروید:
+   - کروم: `chrome://extensions`
+   - اج: `edge://extensions`
+3. گزینه **Developer mode** را در بالای صفحه فعال کنید.
+4. روی دکمه **Load unpacked** کلیک کرده و پوشه حاوی فایل `manifest.json` را انتخاب کنید.
+5. وارد صفحه ادوبی کانکت شوید، روی آیکون افزونه کلیک کرده و قابلیت‌های مورد نظر خود را فعال کنید.
+
+### نکته امنیتی و حریم خصوصی
+
+این افزونه کاملاً به‌صورت محلی (Local) اجرا می‌شود و فاقد هرگونه ابزار تحلیلی، تبلیغاتی، جمع‌آوری داده یا ارسال درخواست به سرورهای خارجی است.
 
 </details>
 
----
+<br>
 
 <div align="center">
 
-**A dark theme should change the interface—not the lesson, presentation, or meeting content.**
+Made with care for students, educators, and professionals using Adobe Connect Web.
+
+<p align="right"><a href="#top">↑ بازگشت به بالا / Back to top</a></p>
 
 </div>
