@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const rtlToggleEl = document.getElementById('rtl-toggle');
   const sendRtlToggleEl = document.getElementById('send-rtl-toggle');
   const sendRtlContainerEl = document.getElementById('send-rtl-container');
+  const chatTwoRowToggleEl = document.getElementById('chat-two-row-toggle');
   const resetBtnEl = document.getElementById('reset-btn');
   const toastEl = document.getElementById('toast');
   const versionEl = document.getElementById('extension-version');
@@ -43,8 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2500);
   }
 
-  function updateStatusBadge(isDark, isRtl) {
-    if (isDark || isRtl) {
+  function updateStatusBadge(isDark, isRtl, isTwoRow) {
+    if (isDark || isRtl || isTwoRow) {
       statusBadgeEl.textContent = 'Active';
       statusBadgeEl.className = 'badge badge-active';
     } else {
@@ -128,8 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  async function cleanupRegistrationIfUnneeded(urlObj, keepDark, keepRtl) {
-    if (keepDark || keepRtl) return;
+  async function cleanupRegistrationIfUnneeded(urlObj, keepDark, keepRtl, keepTwoRow) {
+    if (keepDark || keepRtl || keepTwoRow) return;
     if (chrome.scripting && chrome.scripting.unregisterContentScripts) {
       const isolatedScriptId = getIsolatedScriptId(urlObj);
       const mainScriptId = getMainScriptId(urlObj);
@@ -182,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentDomainEl.textContent = 'No active tab found';
       themeToggleEl.disabled = true;
       if (rtlToggleEl) rtlToggleEl.disabled = true;
+      if (chatTwoRowToggleEl) chatTwoRowToggleEl.disabled = true;
       updateSendRtlUi(false, true);
       resetBtnEl.disabled = true;
       return;
@@ -196,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentDomainEl.textContent = 'Invalid URL';
       themeToggleEl.disabled = true;
       if (rtlToggleEl) rtlToggleEl.disabled = true;
+      if (chatTwoRowToggleEl) chatTwoRowToggleEl.disabled = true;
       updateSendRtlUi(false, true);
       resetBtnEl.disabled = true;
       return;
@@ -206,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentDomainEl.textContent = 'Browser Internal Page';
       themeToggleEl.disabled = true;
       if (rtlToggleEl) rtlToggleEl.disabled = true;
+      if (chatTwoRowToggleEl) chatTwoRowToggleEl.disabled = true;
       updateSendRtlUi(false, true);
       resetBtnEl.disabled = true;
       statusBadgeEl.textContent = 'Unsupported';
@@ -222,7 +226,13 @@ document.addEventListener('DOMContentLoaded', () => {
     currentDomainEl.title = currentSiteKey;
 
     // Load persisted state for this siteKey (with backward-compatibility migration)
-    chrome.storage.local.get(['acd_enabled_sites', 'acd_enabled_domains', 'acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites'], (result) => {
+    chrome.storage.local.get([
+      'acd_enabled_sites',
+      'acd_enabled_domains',
+      'acd_rtl_chat_sites',
+      'acd_send_rtl_formatting_sites',
+      'acd_chat_two_row_sites'
+    ], (result) => {
       if (chrome.runtime.lastError) {
         showToast('Error loading settings');
         return;
@@ -245,15 +255,31 @@ document.addEventListener('DOMContentLoaded', () => {
       const rtlSites = result.acd_rtl_chat_sites || {};
       const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
 
+      // Migration: If acd_chat_two_row_sites has never been set, default true for
+      // existing sites where Dark Mode OR RTL Chat was active to preserve layout behavior.
+      let twoRowSites = result.acd_chat_two_row_sites;
+      if (twoRowSites === undefined || twoRowSites === null) {
+        twoRowSites = {};
+        for (const [site, val] of Object.entries(enabledSites)) {
+          if (val) twoRowSites[site] = true;
+        }
+        for (const [site, val] of Object.entries(rtlSites)) {
+          if (val) twoRowSites[site] = true;
+        }
+        chrome.storage.local.set({ acd_chat_two_row_sites: twoRowSites });
+      }
+
       const isDark = Boolean(enabledSites[currentSiteKey]);
       const isRtl = Boolean(rtlSites[currentSiteKey]);
+      const isTwoRow = Boolean(twoRowSites[currentSiteKey]);
       const sendRtlStored = sendRtlSites[currentSiteKey] ?? true;
 
       themeToggleEl.checked = isDark;
       if (rtlToggleEl) rtlToggleEl.checked = isRtl;
+      if (chatTwoRowToggleEl) chatTwoRowToggleEl.checked = isTwoRow;
       updateSendRtlUi(isRtl, sendRtlStored);
 
-      updateStatusBadge(isDark, isRtl);
+      updateStatusBadge(isDark, isRtl, isTwoRow);
     });
   });
 
@@ -263,11 +289,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const wantsToEnable = themeToggleEl.checked;
     const isRtlActive = rtlToggleEl ? rtlToggleEl.checked : false;
+    const isTwoRowActive = chatTwoRowToggleEl ? chatTwoRowToggleEl.checked : false;
+
     if (wantsToEnable) {
       chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
         if (!granted) {
           themeToggleEl.checked = false;
-          updateStatusBadge(false, isRtlActive);
+          updateStatusBadge(false, isRtlActive, isTwoRowActive);
           showToast('Permission not granted / مجوز داده نشد');
           return;
         }
@@ -275,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const regOk = await ensureRegistration(currentUrl, currentOriginPattern);
         if (!regOk) {
           themeToggleEl.checked = false;
-          updateStatusBadge(false, isRtlActive);
+          updateStatusBadge(false, isRtlActive, isTwoRowActive);
           showToast('Registration failed / خطا در ثبت اسکریپت');
           return;
         }
@@ -285,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
           enabledSites[currentSiteKey] = true;
 
           chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
-            updateStatusBadge(true, isRtlActive);
+            updateStatusBadge(true, isRtlActive, isTwoRowActive);
             showToast('✓ Dark Mode enabled for ' + currentUrl.hostname);
             sendTabMessageWithFallback({ action: 'toggleDark', enabled: true, siteKey: currentSiteKey });
           });
@@ -296,10 +324,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const enabledSites = result.acd_enabled_sites || {};
         delete enabledSites[currentSiteKey];
 
-        await cleanupRegistrationIfUnneeded(currentUrl, false, isRtlActive);
+        await cleanupRegistrationIfUnneeded(currentUrl, false, isRtlActive, isTwoRowActive);
 
         chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
-          updateStatusBadge(false, isRtlActive);
+          updateStatusBadge(false, isRtlActive, isTwoRowActive);
           showToast('✓ Dark Mode disabled');
           sendTabMessageWithFallback({ action: 'toggleDark', enabled: false, siteKey: currentSiteKey });
         });
@@ -314,12 +342,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const wantsToEnable = rtlToggleEl.checked;
       const isDarkActive = themeToggleEl.checked;
+      const isTwoRowActive = chatTwoRowToggleEl ? chatTwoRowToggleEl.checked : false;
 
       if (wantsToEnable) {
         chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
           if (!granted) {
             rtlToggleEl.checked = false;
-            updateStatusBadge(isDarkActive, false);
+            updateStatusBadge(isDarkActive, false, isTwoRowActive);
             updateSendRtlUi(false, sendRtlToggleEl ? sendRtlToggleEl.checked : true);
             showToast('Permission not granted / مجوز داده نشد');
             return;
@@ -328,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const regOk = await ensureRegistration(currentUrl, currentOriginPattern);
           if (!regOk) {
             rtlToggleEl.checked = false;
-            updateStatusBadge(isDarkActive, false);
+            updateStatusBadge(isDarkActive, false, isTwoRowActive);
             updateSendRtlUi(false, sendRtlToggleEl ? sendRtlToggleEl.checked : true);
             showToast('Registration failed / خطا در ثبت اسکریپت');
             return;
@@ -342,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
             rtlSites[currentSiteKey] = true;
 
             chrome.storage.local.set({ acd_rtl_chat_sites: rtlSites }, () => {
-              updateStatusBadge(isDarkActive, true);
+              updateStatusBadge(isDarkActive, true, isTwoRowActive);
               updateSendRtlUi(true, sendRtlStored);
               showToast('✓ RTL Chat enabled for ' + currentUrl.hostname);
               sendTabMessageWithFallback({
@@ -362,10 +391,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
           delete rtlSites[currentSiteKey];
 
-          await cleanupRegistrationIfUnneeded(currentUrl, isDarkActive, false);
+          await cleanupRegistrationIfUnneeded(currentUrl, isDarkActive, false, isTwoRowActive);
 
           chrome.storage.local.set({ acd_rtl_chat_sites: rtlSites }, () => {
-            updateStatusBadge(isDarkActive, false);
+            updateStatusBadge(isDarkActive, false, isTwoRowActive);
             updateSendRtlUi(false, sendRtlStored);
             showToast('✓ RTL Chat disabled');
             sendTabMessageWithFallback({
@@ -402,6 +431,68 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Two-Row Chat Layout Toggle handler
+  if (chatTwoRowToggleEl) {
+    chatTwoRowToggleEl.addEventListener('change', () => {
+      if (!currentSiteKey || !currentTab || !currentOriginPattern || !currentUrl) return;
+
+      const wantsToEnable = chatTwoRowToggleEl.checked;
+      const isDarkActive = themeToggleEl.checked;
+      const isRtlActive = rtlToggleEl ? rtlToggleEl.checked : false;
+
+      if (wantsToEnable) {
+        chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
+          if (!granted) {
+            chatTwoRowToggleEl.checked = false;
+            updateStatusBadge(isDarkActive, isRtlActive, false);
+            showToast('Permission not granted / مجوز داده نشد');
+            return;
+          }
+
+          const regOk = await ensureRegistration(currentUrl, currentOriginPattern);
+          if (!regOk) {
+            chatTwoRowToggleEl.checked = false;
+            updateStatusBadge(isDarkActive, isRtlActive, false);
+            showToast('Registration failed / خطا در ثبت اسکریپت');
+            return;
+          }
+
+          chrome.storage.local.get(['acd_chat_two_row_sites'], (result) => {
+            const twoRowSites = result.acd_chat_two_row_sites || {};
+            twoRowSites[currentSiteKey] = true;
+
+            chrome.storage.local.set({ acd_chat_two_row_sites: twoRowSites }, () => {
+              updateStatusBadge(isDarkActive, isRtlActive, true);
+              showToast('✓ Two-Row Chat Layout enabled for ' + currentUrl.hostname);
+              sendTabMessageWithFallback({
+                action: 'toggleChatTwoRow',
+                enabled: true,
+                siteKey: currentSiteKey
+              });
+            });
+          });
+        });
+      } else {
+        chrome.storage.local.get(['acd_chat_two_row_sites'], async (result) => {
+          const twoRowSites = result.acd_chat_two_row_sites || {};
+          delete twoRowSites[currentSiteKey];
+
+          await cleanupRegistrationIfUnneeded(currentUrl, isDarkActive, isRtlActive, false);
+
+          chrome.storage.local.set({ acd_chat_two_row_sites: twoRowSites }, () => {
+            updateStatusBadge(isDarkActive, isRtlActive, false);
+            showToast('✓ Two-Row Chat Layout disabled');
+            sendTabMessageWithFallback({
+              action: 'toggleChatTwoRow',
+              enabled: false,
+              siteKey: currentSiteKey
+            });
+          });
+        });
+      }
+    });
+  }
+
   // Reset button handler
   resetBtnEl.addEventListener('click', () => {
     if (!currentSiteKey || !currentTab || !currentOriginPattern || !currentUrl) return;
@@ -415,23 +506,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Remove siteKey from storage
-    chrome.storage.local.get(['acd_enabled_sites', 'acd_rtl_chat_sites', 'acd_send_rtl_formatting_sites'], (result) => {
+    chrome.storage.local.get([
+      'acd_enabled_sites',
+      'acd_rtl_chat_sites',
+      'acd_send_rtl_formatting_sites',
+      'acd_chat_two_row_sites'
+    ], (result) => {
       const enabledSites = result.acd_enabled_sites || {};
       const rtlSites = result.acd_rtl_chat_sites || {};
       const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
+      const twoRowSites = result.acd_chat_two_row_sites || {};
       delete enabledSites[currentSiteKey];
       delete rtlSites[currentSiteKey];
       delete sendRtlSites[currentSiteKey];
+      delete twoRowSites[currentSiteKey];
 
       chrome.storage.local.set({
         acd_enabled_sites: enabledSites,
         acd_rtl_chat_sites: rtlSites,
-        acd_send_rtl_formatting_sites: sendRtlSites
+        acd_send_rtl_formatting_sites: sendRtlSites,
+        acd_chat_two_row_sites: twoRowSites
       }, () => {
         themeToggleEl.checked = false;
         if (rtlToggleEl) rtlToggleEl.checked = false;
+        if (chatTwoRowToggleEl) chatTwoRowToggleEl.checked = false;
         updateSendRtlUi(false, true);
-        updateStatusBadge(false, false);
+        updateStatusBadge(false, false, false);
         showToast('✓ Site settings reset');
 
         // 3. Message tab to reset

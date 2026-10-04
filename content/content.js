@@ -28,7 +28,8 @@
         'acd_enabled_sites',
         'acd_enabled_domains',
         'acd_rtl_chat_sites',
-        'acd_send_rtl_formatting_sites'
+        'acd_send_rtl_formatting_sites',
+        'acd_chat_two_row_sites'
       ], (result) => {
         if (chrome.runtime.lastError) return;
 
@@ -44,6 +45,15 @@
         const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
         const isSendRtlEnabled = sendRtlSites[currentSiteKey] ?? true;
 
+        let twoRowSites = result.acd_chat_two_row_sites;
+        let isTwoRowEnabled = false;
+        if (twoRowSites === undefined || twoRowSites === null) {
+          // Migration: default true for sites that already had dark or RTL enabled
+          isTwoRowEnabled = isDarkEnabled || isRtlEnabled;
+        } else {
+          isTwoRowEnabled = Boolean(twoRowSites[currentSiteKey]);
+        }
+
         // Dark Mode state synchronization
         if (isDarkEnabled) {
           themeEngine.applyDarkTheme();
@@ -56,6 +66,13 @@
           themeEngine.applyChatRtl(isSendRtlEnabled);
         } else {
           themeEngine.removeChatRtl();
+        }
+
+        // Two-Row Chat Layout state synchronization
+        if (isTwoRowEnabled) {
+          themeEngine.applyChatTwoRow();
+        } else {
+          themeEngine.removeChatTwoRow();
         }
       });
     } catch (e) {
@@ -96,6 +113,17 @@
         }
       });
     }
+
+    if (changes.acd_chat_two_row_sites) {
+      const newSites = changes.acd_chat_two_row_sites.newValue || {};
+      const shouldBeTwoRow = Boolean(newSites[currentSiteKey]);
+
+      if (shouldBeTwoRow && !themeEngine.isChatTwoRowEnabled()) {
+        themeEngine.applyChatTwoRow();
+      } else if (!shouldBeTwoRow && themeEngine.isChatTwoRowEnabled()) {
+        themeEngine.removeChatTwoRow();
+      }
+    }
   });
 
   // Listen for direct messages from the extension popup or background
@@ -116,6 +144,7 @@
           darkEnabled: themeEngine.isEnabled(),
           rtlEnabled: themeEngine.isChatRtlEnabled(),
           sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
+          chatTwoRowEnabled: themeEngine.isChatTwoRowEnabled(),
           siteKey: currentSiteKey
         });
         break;
@@ -135,6 +164,7 @@
           darkEnabled: themeEngine.isEnabled(),
           rtlEnabled: themeEngine.isChatRtlEnabled(),
           sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
+          chatTwoRowEnabled: themeEngine.isChatTwoRowEnabled(),
           siteKey: currentSiteKey
         });
         break;
@@ -146,6 +176,24 @@
           darkEnabled: themeEngine.isEnabled(),
           rtlEnabled: themeEngine.isChatRtlEnabled(),
           sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
+          chatTwoRowEnabled: themeEngine.isChatTwoRowEnabled(),
+          siteKey: currentSiteKey
+        });
+        break;
+
+      case 'toggleChatTwoRow':
+        if (request.enabled) {
+          themeEngine.applyChatTwoRow();
+        } else {
+          themeEngine.removeChatTwoRow();
+        }
+        sendResponse({
+          success: true,
+          enabled: themeEngine.isEnabled(),
+          darkEnabled: themeEngine.isEnabled(),
+          rtlEnabled: themeEngine.isChatRtlEnabled(),
+          sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
+          chatTwoRowEnabled: themeEngine.isChatTwoRowEnabled(),
           siteKey: currentSiteKey
         });
         break;
@@ -153,12 +201,14 @@
       case 'reset':
         themeEngine.removeDarkTheme();
         themeEngine.removeChatRtl();
+        themeEngine.removeChatTwoRow();
         sendResponse({
           success: true,
           enabled: false,
           darkEnabled: false,
           rtlEnabled: false,
           sendRtlFormattingEnabled: true,
+          chatTwoRowEnabled: false,
           siteKey: currentSiteKey
         });
         break;
@@ -170,6 +220,7 @@
           darkEnabled: themeEngine.isEnabled(),
           rtlEnabled: themeEngine.isChatRtlEnabled(),
           sendRtlFormattingEnabled: themeEngine.isSendRtlFormattingEnabled(),
+          chatTwoRowEnabled: themeEngine.isChatTwoRowEnabled(),
           siteKey: currentSiteKey
         });
         break;

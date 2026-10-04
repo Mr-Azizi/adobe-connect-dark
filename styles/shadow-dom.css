@@ -142,6 +142,85 @@
   font-family: "Vazirmatn", Tahoma, Arial, sans-serif !important;
 }
 
+/* ==========================================================================
+   Chat Two-Row Message Presentation (Sender on Row 1, Body on Row 2)
+   Separates sender label and message body into distinct vertical rows
+   while strictly preserving bubble alignment, timestamps, and RTL/LTR state.
+   Gated: Only active when data-acd-chat-two-row="true" is set on root.
+   ========================================================================== */
+:host-context([data-acd-chat-two-row="true"]) [class^="chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-two-row="true"]) [data-acd-chat-two-line="true"],
+:host-context([data-acd-chat-two-row="true"]) [class*="chatContentArea"] .chat-message,
+:host-context([data-acd-chat-two-row="true"]) [class*="chatContentArea"] .message-item,
+[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContentWrapperDiv--"],
+[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContentWrapperDiv--"],
+[data-acd-chat-two-row="true"] [data-acd-chat-two-line="true"] {
+  display: inline-grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto !important;
+  column-gap: 6px !important;
+  row-gap: 2px !important;
+  align-items: baseline !important;
+  box-sizing: border-box !important;
+}
+
+:host-context([data-acd-chat-two-row="true"]) [class^="chatMessageSender--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatMessageSender--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-user-name,
+:host-context([data-acd-chat-two-row="true"]) .sender-name,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-sender"],
+[data-acd-chat-two-row="true"] [class^="chatMessageSender--"],
+[data-acd-chat-two-row="true"] [class*=" chatMessageSender--"] {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  display: block !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+:host-context([data-acd-chat-two-row="true"]) [class^="chatMessageTime--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatMessageTime--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-time,
+:host-context([data-acd-chat-two-row="true"]) .message-time,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-time"],
+[data-acd-chat-two-row="true"] [class^="chatMessageTime--"],
+[data-acd-chat-two-row="true"] [class*=" chatMessageTime--"] {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  display: inline-block !important;
+  float: none !important;
+  justify-self: end !important;
+  align-self: baseline !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+:host-context([data-acd-chat-two-row="true"]) [class^="chatIndividualMessageContent--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatIndividualMessageContent--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-message-text,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-message-content"],
+[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContent--"],
+[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContent--"] {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  line-height: 1.35 !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: pre-wrap !important;
+  margin: 0 !important;
+}
+
 /* Real Chat Compose / Input Area inside Shadow DOM */
 [class^="chatComposeArea--"],
 [class*=" chatComposeArea--"],
@@ -529,6 +608,7 @@ picture,
 :host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageTime--"] {
   direction: ltr !important;
   unicode-bidi: isolate !important;
+  justify-self: end !important;
 }
 
 :host-context([data-acd-chat-rtl="true"]) [class^="typingArea--"],

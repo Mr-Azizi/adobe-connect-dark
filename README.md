@@ -9,7 +9,7 @@
 
 A source-driven Chrome / Edge extension that modernizes Adobe Connect without recoloring the content you actually came to see.
 
-[![Version](https://img.shields.io/badge/version-1.2.0-6EA8FE?style=flat-square)](#release-checklist)
+[![Version](https://img.shields.io/badge/version-1.7.0-6EA8FE?style=flat-square)](#release-checklist)
 [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#how-it-works)
 [![Chrome](https://img.shields.io/badge/Chrome-supported-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#browser-compatibility)
 [![Edge](https://img.shields.io/badge/Edge-supported-0C59A4?style=flat-square&logo=microsoftedge&logoColor=white)](#browser-compatibility)
@@ -100,7 +100,8 @@ It also includes an independent **RTL Chat Text** mode for Persian and Arabic us
 | --- | --- |
 | **Premium Dark Mode** | Applies a layered, restrained dark theme to Adobe Connect UI surfaces |
 | **RTL Chat Text** | Makes chat sender/message flow right-to-left while preserving timestamps and controls |
-| **Per-site settings** | Dark Mode and RTL Chat are stored independently for each origin |
+| **Two-Row Chat Layout** | Optionally displays the sender name and message body on separate rows |
+| **Per-site settings** | Dark Mode, RTL Chat, and Two-Row Layout are stored independently for each origin |
 | **Permission on demand** | Host access is requested only when you enable a feature for the current site |
 | **Adobe Connect Central support** | Styles navigation, search, Calendar Week/Month/Activity, Reports, forms, tables, dialogs, and more |
 | **Meeting / Recording support** | Styles pods, Chat, Attendees, Video chrome, Share chrome, playback controls, sidebars, menus, and dialogs |
@@ -153,7 +154,7 @@ It also includes an independent **RTL Chat Text** mode for Persian and Arabic us
 
 Open an Adobe Connect site and click the extension icon.
 
-The popup exposes two independent per-site controls:
+The popup exposes three independent per-site controls:
 
 ### Dark Mode
 
@@ -162,17 +163,27 @@ Enables the dark interface for the current Adobe Connect origin.
 ### RTL Chat Text
 
 Enables right-to-left text flow for Persian / Arabic chat while keeping the surrounding Chat Pod layout stable.
+- **Send RTL Formatting**: Sub-feature under RTL Chat that applies BiDi unicode markers so messages appear correctly formatted for all participants.
+
+### Two-Row Chat Layout
+
+Optionally displays the sender name on row 1 (along with the timestamp) and the message body on row 2.
+Two-Row Chat Layout is completely independent of RTL Chat and Dark Mode.
 
 ### Feature combinations
 
-| Dark Mode | RTL Chat | Result |
-| :---: | :---: | --- |
-| Off | Off | Native Adobe Connect |
-| On | Off | Dark theme only |
-| Off | On | Native Adobe styling + RTL chat text |
-| On | On | Dark theme + RTL chat text |
+| Dark Mode | RTL Chat | Two-Row Layout | Result |
+| :---: | :---: | :---: | --- |
+| Off | Off | Off | Native Adobe Connect |
+| Off | Off | On  | Two-Row Chat presentation only |
+| On  | Off | Off | Dark theme only |
+| Off | On  | Off | Native Adobe styling + RTL chat text |
+| Off | On  | On  | RTL chat text + Two-Row layout |
+| On  | Off | On  | Dark theme + Two-Row layout |
+| On  | On  | Off | Dark theme + RTL chat text |
+| On  | On  | On  | Dark theme + RTL chat text + Two-Row layout |
 
-The popup status becomes **Active** when either feature is enabled.
+The popup status becomes **Active** when any feature is enabled.
 
 ### Reset Site
 
@@ -591,6 +602,12 @@ RTL Chat sites are stored under:
 acd_rtl_chat_sites
 ```
 
+Two-Row Chat Layout sites are stored under:
+
+```text
+acd_chat_two_row_sites
+```
+
 Each value is an object keyed by site origin:
 
 ```json
@@ -619,7 +636,13 @@ RTL Chat adds:
 <html data-acd-chat-rtl="true">
 ```
 
-The two features are deliberately independent.
+Two-Row Chat Layout adds:
+
+```html
+<html data-acd-chat-two-row="true">
+```
+
+All three features are deliberately independent.
 
 ---
 
@@ -887,8 +910,9 @@ Compatibility may change when Adobe updates the Adobe Connect web client.
 ### استفاده
 
 - **Dark Mode**: تم تاریک را برای دامنه فعلی فعال می‌کند.
-- **RTL Chat Text**: متن چت فارسی/عربی را راست‌به‌چپ می‌کند.
-- هر دو قابلیت مستقل از یکدیگر هستند.
+- **RTL Chat Text**: متن چت فارسی/عربی را راست‌به‌چپ می‌کند (همراه با زیرگزینه Send RTL Formatting).
+- **Two-Row Chat Layout**: نام فرستنده و متن پیام را در دو سطر مجزا نمایش می‌دهد.
+- تمامی این سه قابلیت کاملاً مستقل از یکدیگر هستند.
 - تنظیمات برای هر دامنه به‌صورت جداگانه ذخیره می‌شوند.
 - **Reset Site** تنظیمات همان دامنه را پاک می‌کند، اسکریپت ثبت‌شده را حذف می‌کند و دسترسی همان دامنه را پس می‌گیرد.
 

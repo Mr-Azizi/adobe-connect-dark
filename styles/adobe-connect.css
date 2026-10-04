@@ -602,6 +602,76 @@ html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]
   font-family: "Vazirmatn", Tahoma, Arial, sans-serif !important;
 }
 
+/* ==========================================================================
+   Chat Two-Row Message Presentation (Sender on Row 1, Body on Row 2)
+   Separates sender label and message body into distinct vertical rows
+   while strictly preserving bubble alignment, timestamps, and RTL/LTR state.
+   Gated: Only active when data-acd-chat-two-row="true" is set on root.
+   ========================================================================== */
+html[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-chat-two-row="true"] [data-acd-chat-two-line="true"],
+html[data-acd-chat-two-row="true"] [class*="chatContentArea"] .chat-message,
+html[data-acd-chat-two-row="true"] [class*="chatContentArea"] .message-item {
+  display: inline-grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto !important;
+  column-gap: 6px !important;
+  row-gap: 2px !important;
+  align-items: baseline !important;
+  box-sizing: border-box !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatMessageSender--"],
+html[data-acd-chat-two-row="true"] [class*=" chatMessageSender--"],
+html[data-acd-chat-two-row="true"] .chat-user-name,
+html[data-acd-chat-two-row="true"] .sender-name,
+html[data-acd-chat-two-row="true"] [class*="chat-sender"] {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  display: block !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatMessageTime--"],
+html[data-acd-chat-two-row="true"] [class*=" chatMessageTime--"],
+html[data-acd-chat-two-row="true"] .chat-time,
+html[data-acd-chat-two-row="true"] .message-time,
+html[data-acd-chat-two-row="true"] [class*="chat-time"] {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  display: inline-block !important;
+  float: none !important;
+  justify-self: end !important;
+  align-self: baseline !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContent--"],
+html[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContent--"],
+html[data-acd-chat-two-row="true"] .chat-message-text,
+html[data-acd-chat-two-row="true"] [class*="chat-message-content"] {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  line-height: 1.35 !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: pre-wrap !important;
+  margin: 0 !important;
+}
+
 /* Message Sender */
 html[data-acd-theme="dark"] [class^="chatMessageSender--"],
 html[data-acd-theme="dark"] [class*=" chatMessageSender--"],
@@ -1480,6 +1550,7 @@ html[data-acd-chat-rtl="true"] .message-time,
 html[data-acd-chat-rtl="true"] [class*="chat-time"] {
   direction: ltr !important;
   unicode-bidi: isolate !important;
+  justify-self: end !important;
 }
 
 /* 5. Chat Compose / Typing Input Area */

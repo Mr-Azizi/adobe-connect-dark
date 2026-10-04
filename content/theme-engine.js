@@ -21,6 +21,100 @@
 
   const SHADOW_STYLESHEET_PATH = 'styles/shadow-dom.css';
 
+  const CHAT_LAYOUT_STYLE_ID = 'acd-chat-layout-style';
+  const CHAT_LAYOUT_CSS = `
+html[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-chat-two-row="true"] [data-acd-chat-two-line="true"],
+html[data-acd-chat-two-row="true"] [class*="chatContentArea"] .chat-message,
+html[data-acd-chat-two-row="true"] [class*="chatContentArea"] .message-item,
+:host-context([data-acd-chat-two-row="true"]) [class^="chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-two-row="true"]) [data-acd-chat-two-line="true"],
+:host-context([data-acd-chat-two-row="true"]) [class*="chatContentArea"] .chat-message,
+:host-context([data-acd-chat-two-row="true"]) [class*="chatContentArea"] .message-item,
+[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContentWrapperDiv--"],
+[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContentWrapperDiv--"] {
+  display: inline-grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto !important;
+  column-gap: 6px !important;
+  row-gap: 2px !important;
+  align-items: baseline !important;
+  box-sizing: border-box !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatMessageSender--"],
+html[data-acd-chat-two-row="true"] [class*=" chatMessageSender--"],
+html[data-acd-chat-two-row="true"] .chat-user-name,
+html[data-acd-chat-two-row="true"] .sender-name,
+html[data-acd-chat-two-row="true"] [class*="chat-sender"],
+:host-context([data-acd-chat-two-row="true"]) [class^="chatMessageSender--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatMessageSender--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-user-name,
+:host-context([data-acd-chat-two-row="true"]) .sender-name,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-sender"],
+[data-acd-chat-two-row="true"] [class^="chatMessageSender--"],
+[data-acd-chat-two-row="true"] [class*=" chatMessageSender--"] {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  display: block !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatMessageTime--"],
+html[data-acd-chat-two-row="true"] [class*=" chatMessageTime--"],
+html[data-acd-chat-two-row="true"] .chat-time,
+html[data-acd-chat-two-row="true"] .message-time,
+html[data-acd-chat-two-row="true"] [class*="chat-time"],
+:host-context([data-acd-chat-two-row="true"]) [class^="chatMessageTime--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatMessageTime--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-time,
+:host-context([data-acd-chat-two-row="true"]) .message-time,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-time"],
+[data-acd-chat-two-row="true"] [class^="chatMessageTime--"],
+[data-acd-chat-two-row="true"] [class*=" chatMessageTime--"] {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  display: inline-block !important;
+  float: none !important;
+  justify-self: end !important;
+  align-self: baseline !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContent--"],
+html[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContent--"],
+html[data-acd-chat-two-row="true"] .chat-message-text,
+html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
+:host-context([data-acd-chat-two-row="true"]) [class^="chatIndividualMessageContent--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatIndividualMessageContent--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-message-text,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-message-content"],
+[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContent--"],
+[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContent--"] {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  line-height: 1.35 !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: pre-wrap !important;
+  margin: 0 !important;
+}
+`;
+
   // Tags that MUST NEVER be altered or darkened (Media & embeds)
   const SENSITIVE_TAGS = new Set([
     'VIDEO',
@@ -90,6 +184,7 @@
       this.enabled = false;
       this.chatRtlEnabled = false;
       this.sendRtlFormattingEnabled = true;
+      this.chatTwoRowEnabled = false;
       this.observer = null; // Associated ACDObserver
       this.injectedElements = new Set();
       this.attachedShadowRoots = new Set();
@@ -97,6 +192,50 @@
       this.hasScannedInitialDOM = false;
       this.processQueue = [];
       this.isProcessingQueue = false;
+    }
+
+    /**
+     * Ensure Chat Two-Row presentation layout stylesheet is injected
+     */
+    ensureChatLayoutStyle(target) {
+      if (!this.chatTwoRowEnabled || !target) return;
+      const container = target === document
+        ? (document.head || document.documentElement)
+        : target;
+      if (!container || !container.querySelector) return;
+      if (!container.querySelector(`#${CHAT_LAYOUT_STYLE_ID}`)) {
+        const style = document.createElement('style');
+        style.id = CHAT_LAYOUT_STYLE_ID;
+        style.textContent = CHAT_LAYOUT_CSS;
+        style.setAttribute('data-acd-layout-injected', 'true');
+        container.appendChild(style);
+      }
+    }
+
+    /**
+     * Remove Chat Two-Row presentation layout stylesheet
+     */
+    removeChatLayoutStyle(target) {
+      if (!target) return;
+      const container = target === document
+        ? (document.head || document.documentElement)
+        : target;
+      if (!container || !container.querySelector) return;
+      const existing = container.querySelector(`#${CHAT_LAYOUT_STYLE_ID}`);
+      if (existing) {
+        if (typeof existing.remove === 'function') {
+          existing.remove();
+        } else if (existing.parentNode) {
+          existing.parentNode.removeChild(existing);
+        }
+      }
+    }
+
+    /**
+     * Check if Two-Row chat layout is currently enabled
+     */
+    isChatTwoRowEnabled() {
+      return this.chatTwoRowEnabled;
     }
 
     /**
@@ -187,8 +326,8 @@
         root.removeAttribute('data-acd-theme');
       }
 
-      // 4. Remove all injected document stylesheet elements ONLY if chat RTL is not active
-      if (!this.chatRtlEnabled) {
+      // 4. Remove all injected document stylesheet elements ONLY if neither chat RTL nor Two-Row is active
+      if (!this.chatRtlEnabled && !this.chatTwoRowEnabled) {
         this.cleanupStylesheets();
       }
 
@@ -248,8 +387,47 @@
         root.removeAttribute('data-acd-send-rtl-formatting');
       }
 
-      // If neither dark mode nor RTL is active, clean up injected stylesheets
-      if (!this.enabled && !this.chatRtlEnabled) {
+      // If neither dark mode, RTL, nor Two-Row is active, clean up injected stylesheets
+      if (!this.enabled && !this.chatRtlEnabled && !this.chatTwoRowEnabled) {
+        this.cleanupStylesheets();
+      }
+    }
+
+    /**
+     * CONSOLIDATED ACTIVATION PATH FOR TWO-ROW CHAT LAYOUT
+     */
+    applyChatTwoRow() {
+      this.chatTwoRowEnabled = true;
+      const root = document.documentElement;
+      if (root && !root.hasAttribute('data-acd-chat-two-row')) {
+        root.setAttribute('data-acd-chat-two-row', 'true');
+      }
+      this.injectStylesheets(document);
+      this.ensureChatLayoutStyle(document);
+      this.attachedShadowRoots.forEach((sr) => {
+        this.ensureChatLayoutStyle(sr);
+      });
+      if (document.body) {
+        this.scanForShadowRoots(document.body);
+      }
+    }
+
+    /**
+     * CONSOLIDATED DEACTIVATION PATH FOR TWO-ROW CHAT LAYOUT
+     */
+    removeChatTwoRow() {
+      this.chatTwoRowEnabled = false;
+      const root = document.documentElement;
+      if (root) {
+        root.removeAttribute('data-acd-chat-two-row');
+      }
+      this.removeChatLayoutStyle(document);
+      this.attachedShadowRoots.forEach((sr) => {
+        this.removeChatLayoutStyle(sr);
+      });
+
+      // If neither dark mode, RTL, nor Two-Row is active, clean up injected stylesheets
+      if (!this.enabled && !this.chatRtlEnabled && !this.chatTwoRowEnabled) {
         this.cleanupStylesheets();
       }
     }
@@ -306,7 +484,7 @@
      * Inject extension stylesheets into the document
      */
     injectStylesheets(target) {
-      if (!this.enabled && !this.chatRtlEnabled) return;
+      if (!this.enabled && !this.chatRtlEnabled && !this.chatTwoRowEnabled) return;
 
       const container = target === document
         ? (document.head || document.documentElement)
@@ -416,9 +594,16 @@
      * Handle Open Shadow Root styling and observe dynamic shadow mutations
      */
     attachToShadowRoot(shadowRoot) {
-      if (!this.enabled || !shadowRoot) return;
+      if (!shadowRoot) return;
 
       this.attachedShadowRoots.add(shadowRoot);
+
+      // Inject Two-Row Chat presentation layout style inside shadow root ONLY if enabled
+      if (this.chatTwoRowEnabled) {
+        this.ensureChatLayoutStyle(shadowRoot);
+      }
+
+      if (!this.enabled) return;
 
       // 1. Inject dedicated Shadow DOM stylesheet (encapsulation-friendly)
       const shadowStyleId = 'acd-shadow-theme-style';
@@ -503,6 +688,10 @@
       // 2. Remove injected styles and clean up Layer 1 attributes
       this.attachedShadowRoots.forEach((shadowRoot) => {
         try {
+          if (!this.chatTwoRowEnabled) {
+            this.removeChatLayoutStyle(shadowRoot);
+          }
+
           if (shadowRoot.querySelectorAll) {
             const injected = shadowRoot.querySelectorAll('[data-acd-shadow-injected]');
             injected.forEach((el) => {
@@ -520,14 +709,17 @@
         }
       });
 
-      this.attachedShadowRoots.clear();
+      if (!this.chatTwoRowEnabled) {
+        this.attachedShadowRoots.clear();
+      }
     }
 
     /**
      * Scan container for custom elements with open shadow roots
      */
     scanForShadowRoots(container) {
-      if (!this.enabled || !container) return;
+      if (!container) return;
+      if (!this.enabled && !this.chatRtlEnabled && !this.chatTwoRowEnabled) return;
 
       try {
         const allElements = container.querySelectorAll('*');
