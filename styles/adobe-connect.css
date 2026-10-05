@@ -1713,43 +1713,100 @@ html[data-acd-theme="dark"] [class*="broadcastMessageTextArea--"] {
 
 /* ==========================================================================
    "Switch to Desktop Application" & Spectrum Modal Dialogs
-   Overriding Adobe's high-specificity ID rules (#confirmationDialog, #notificationDialog)
+   Root-only elevated card hierarchy with darkened translucent underlay
    ========================================================================== */
-html[data-acd-theme="dark"] #confirmationDialog,
-html[data-acd-theme="dark"] #notificationDialog,
-html[data-acd-theme="dark"] #openPOAFromPodsMenuDialog,
+
+/* 1. Modal Underlay / Backdrop: Darker translucent overlay so background page recedes */
+html[data-acd-theme="dark"] #confirmationDialog:not(.spectrum-Dialog),
+html[data-acd-theme="dark"] #notificationDialog:not(.spectrum-Dialog),
+html[data-acd-theme="dark"] [class^="spectrumModalDialog--"],
+html[data-acd-theme="dark"] [class*=" spectrumModalDialog--"],
+html[data-acd-theme="dark"] .spectrum-Underlay,
+html[data-acd-theme="dark"] .react-spectrum-Underlay,
+html[data-acd-theme="dark"] [class^="spectrum-Underlay"],
+html[data-acd-theme="dark"] [class*=" spectrum-Underlay"],
+html[data-acd-theme="dark"] [class^="modal--"],
+html[data-acd-theme="dark"] [class*=" modal--"] {
+  background: var(--acd-backdrop-modal) !important;
+  background-color: var(--acd-backdrop-modal) !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Prevent double-darkening if an underlay or wrapper is nested inside #confirmationDialog */
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Underlay,
+html[data-acd-theme="dark"] #confirmationDialog .react-spectrum-Underlay,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Underlay,
+html[data-acd-theme="dark"] #notificationDialog .react-spectrum-Underlay,
+html[data-acd-theme="dark"] [class*="spectrumModalDialog--"] .spectrum-Underlay,
+html[data-acd-theme="dark"] [class*="spectrumModalDialog--"] .react-spectrum-Underlay,
+html[data-acd-theme="dark"] .spectrum-Dialog-wrapper,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-wrapper"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 2. Modal Root Card: Only the actual dialog root is an elevated card surface */
 html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog,
 html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog,
 html[data-acd-theme="dark"] #room #notificationDialog .spectrum-Dialog,
 html[data-acd-theme="dark"] #mainRoomRecording #notificationDialog .spectrum-Dialog,
-html[data-acd-theme="dark"] .spectrum-Dialog,
-html[data-acd-theme="dark"] [class~="spectrum-Dialog"],
-html[data-acd-theme="dark"] [class^="spectrum-Dialog--"],
-html[data-acd-theme="dark"] [class*=" spectrum-Dialog--"],
-html[data-acd-theme="dark"] [class*="podsMenuManagePodsDialog--"],
-html[data-acd-theme="dark"] [class*="promotionDialog--"],
-html[data-acd-theme="dark"] [class*="popup_inner--"] {
-  background-color: var(--acd-bg-panel) !important;
+html[data-acd-theme="dark"] #openPOAFromPodsMenuDialog.spectrum-Dialog,
+html[data-acd-theme="dark"] #openPOAFromPodsMenuDialog .spectrum-Dialog,
+html[data-acd-theme="dark"] #openPOAFromPodsMenuDialog:not(:has(.spectrum-Dialog)),
+html[data-acd-theme="dark"] .spectrum-Dialog:not(#reconnect-loader *),
+html[data-acd-theme="dark"] .react-spectrum-Dialog:not(#reconnect-loader *),
+html[data-acd-theme="dark"] [class~="spectrum-Dialog"]:not(#reconnect-loader *),
+html[data-acd-theme="dark"] [class^="spectrum-Dialog--"]:not(#reconnect-loader *),
+html[data-acd-theme="dark"] [class*=" spectrum-Dialog--"]:not(#reconnect-loader *),
+html[data-acd-theme="dark"] [class^="podsMenuManagePodsDialog--"],
+html[data-acd-theme="dark"] [class*=" podsMenuManagePodsDialog--"],
+html[data-acd-theme="dark"] [class^="popup_inner--"],
+html[data-acd-theme="dark"] [class*=" popup_inner--"] {
+  background: var(--acd-bg-elevated) !important;
+  background-color: var(--acd-bg-elevated) !important;
   border: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
-  box-shadow: var(--acd-shadow-lg) !important;
-  border-radius: 6px !important;
+  box-shadow: var(--acd-shadow-modal) !important;
+  border-radius: 8px !important;
+  padding: 24px 28px !important;
 }
 
+/* Balanced modal content width for Switch to Application / Confirmation dialogs */
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog,
+html[data-acd-theme="dark"] #openPOAFromPodsMenuDialog.spectrum-Dialog,
+html[data-acd-theme="dark"] #openPOAFromPodsMenuDialog .spectrum-Dialog {
+  width: fit-content !important;
+  min-width: 26rem !important;
+  max-width: 38rem !important;
+}
+
+/* 3. Modal Header: Clean title separation, single subtle divider, no native ::after double line */
 html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-header,
 html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-header,
 html[data-acd-theme="dark"] .spectrum-Dialog-header,
 html[data-acd-theme="dark"] [class*="spectrum-Dialog-header"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
   border-bottom: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   color: var(--acd-text-primary) !important;
+  padding: 0 0 12px 0 !important;
+  margin: 0 0 14px 0 !important;
 }
 
 html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-header::after,
-html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-header::after {
-  background: var(--acd-border-subtle) !important;
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-header::after,
+html[data-acd-theme="dark"] .spectrum-Dialog-header::after,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-header"]::after {
+  display: none !important;
+  content: none !important;
+  background: transparent !important;
 }
 
 html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-title,
@@ -1757,41 +1814,69 @@ html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-title,
 html[data-acd-theme="dark"] .spectrum-Dialog-title,
 html[data-acd-theme="dark"] [class*="spectrum-Dialog-title"],
 html[data-acd-theme="dark"] [class*="podsMenuDialogTitle--"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
   color: var(--acd-text-primary) !important;
+  font-size: 1.125rem !important;
+  line-height: 1.35 !important;
   font-weight: 600 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-footer,
-html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-footer,
-html[data-acd-theme="dark"] .spectrum-Dialog-footer,
-html[data-acd-theme="dark"] [class*="spectrum-Dialog-footer"] {
-  background-color: transparent !important;
-  border: none !important;
-  border-top: 1px solid var(--acd-border-subtle) !important;
-  box-shadow: none !important;
-  color: var(--acd-text-primary) !important;
-}
-
-/* Modal Body Text & Step Content */
-html[data-acd-theme="dark"] [class*="promotionDialog--"] p,
-html[data-acd-theme="dark"] [class*="stepContent--"],
+/* 4. Modal Body & Description: Plain readable content, NO inner card / textarea look */
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-content,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-content,
 html[data-acd-theme="dark"] .spectrum-Dialog-content,
 html[data-acd-theme="dark"] [class*="spectrum-Dialog-content"],
+html[data-acd-theme="dark"] [class^="promotionDialog--"],
+html[data-acd-theme="dark"] [class*=" promotionDialog--"],
+html[data-acd-theme="dark"] [class*="promotionDialog--"] p,
+html[data-acd-theme="dark"] [class^="stepDiv--"],
+html[data-acd-theme="dark"] [class*=" stepDiv--"],
+html[data-acd-theme="dark"] [class^="stepContent--"],
+html[data-acd-theme="dark"] [class*=" stepContent--"],
+html[data-acd-theme="dark"] [class*="podsMenuDialogContentSection--"],
 html[data-acd-theme="dark"] [class*="setupContentClass--"],
 html[data-acd-theme="dark"] [class*="rightPanel--"],
 html[data-acd-theme="dark"] [class*="leftPanel--"] {
   color: var(--acd-text-secondary) !important;
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
+  outline: none !important;
+}
+
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-content,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-content,
+html[data-acd-theme="dark"] .spectrum-Dialog-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1.55 !important;
+}
+
+html[data-acd-theme="dark"] [class*="promotionDialog--"] p {
+  font-size: 0.9rem !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-acd-theme="dark"] [class*="promotionDialog--"] [class*="spacing64--"],
+html[data-acd-theme="dark"] [class*="promotionDialog--"] [class*="spacing32--"] {
+  margin-top: 16px !important;
 }
 
 html[data-acd-theme="dark"] [class*="stepContent--"] [class*="headingDiv--"] {
   color: var(--acd-text-primary) !important;
   font-weight: 600 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 html[data-acd-theme="dark"] [class*="promotionDialog--"] a,
@@ -1799,6 +1884,9 @@ html[data-acd-theme="dark"] [class*="promotionDialogLink--"],
 html[data-acd-theme="dark"] [class*="restartDownlaodButton--"],
 html[data-acd-theme="dark"] #confirmationDialog a {
   color: var(--acd-accent) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 html[data-acd-theme="dark"] [class*="promotionDialog--"] a:hover,
@@ -1809,10 +1897,76 @@ html[data-acd-theme="dark"] #confirmationDialog a:hover {
   text-decoration: underline !important;
 }
 
-/* Dialog Action Buttons */
+/* 5. Modal Footer: Clean button alignment, no noisy extra divider */
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-footer,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-footer,
+html[data-acd-theme="dark"] .spectrum-Dialog-footer,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-footer"],
+html[data-acd-theme="dark"] [class*="podsMenuDialogBottomSection--"],
+html[data-acd-theme="dark"] .react-spectrum-Dialog-buttons {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--acd-text-primary) !important;
+  padding: 22px 0 0 0 !important;
+  margin: 0 !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+html[data-acd-theme="dark"] .spectrum-Dialog-footer > .spectrum-Button,
+html[data-acd-theme="dark"] .spectrum-Dialog-footer > * {
+  margin: 0 !important;
+}
+
+/* 6. Dialog Action Buttons: Clean modern geometry, no heavy pill or double ::after border */
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button,
+html[data-acd-theme="dark"] .spectrum-Button--cta,
+html[data-acd-theme="dark"] .spectrum-Button--secondary,
+html[data-acd-theme="dark"] [class*="managePodsDialogCancelDoneButton--"] {
+  border-radius: 6px !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  min-height: 34px !important;
+  padding: 6px 16px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  box-shadow: none !important;
+  transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast), color var(--acd-transition-fast) !important;
+}
+
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button::after,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button::after,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button::after,
+html[data-acd-theme="dark"] .spectrum-Button--cta::after,
+html[data-acd-theme="dark"] .spectrum-Button--secondary::after {
+  display: none !important;
+  content: none !important;
+  box-shadow: none !important;
+}
+
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button .spectrum-Button-label,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button .spectrum-Button-label,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button .spectrum-Button-label,
+html[data-acd-theme="dark"] .spectrum-Button--cta .spectrum-Button-label,
+html[data-acd-theme="dark"] .spectrum-Button--secondary .spectrum-Button-label {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+
+/* Primary CTA Button (e.g. Launch Adobe Connect) */
 html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--cta,
 html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--cta,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button--cta,
 html[data-acd-theme="dark"] .spectrum-Button--cta {
+  background: var(--acd-accent) !important;
   background-color: var(--acd-accent) !important;
   border-color: var(--acd-accent) !important;
   color: #ffffff !important;
@@ -1820,28 +1974,57 @@ html[data-acd-theme="dark"] .spectrum-Button--cta {
 
 html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--cta:hover,
 html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--cta:hover,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button--cta:hover,
 html[data-acd-theme="dark"] .spectrum-Button--cta:hover {
+  background: var(--acd-accent-hover) !important;
   background-color: var(--acd-accent-hover) !important;
   border-color: var(--acd-accent-hover) !important;
   color: #ffffff !important;
 }
 
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--cta:active,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--cta:active,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button--cta:active,
+html[data-acd-theme="dark"] .spectrum-Button--cta:active {
+  background: var(--acd-accent-active) !important;
+  background-color: var(--acd-accent-active) !important;
+  border-color: var(--acd-accent-active) !important;
+  color: #ffffff !important;
+}
+
+/* Secondary Buttons (e.g. Cancel, Download Adobe Connect) */
 html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--secondary,
 html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--secondary,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button--secondary,
 html[data-acd-theme="dark"] .spectrum-Button--secondary,
 html[data-acd-theme="dark"] [class*="managePodsDialogCancelDoneButton--"] {
-  background-color: var(--acd-bg-panel) !important;
-  border: 1px solid var(--acd-border-subtle) !important;
+  background: var(--acd-bg-secondary) !important;
+  background-color: var(--acd-bg-secondary) !important;
+  border: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
 }
 
 html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--secondary:hover,
 html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--secondary:hover,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button--secondary:hover,
 html[data-acd-theme="dark"] .spectrum-Button--secondary:hover,
 html[data-acd-theme="dark"] [class*="managePodsDialogCancelDoneButton--"]:hover {
+  background: var(--acd-bg-hover) !important;
   background-color: var(--acd-bg-hover) !important;
-  border-color: var(--acd-border) !important;
+  border-color: var(--acd-text-muted) !important;
   color: var(--acd-text-primary) !important;
+}
+
+/* Single clean focus ring for dialog buttons */
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button:focus-visible,
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button.focus-ring,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button:focus-visible,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button.focus-ring,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button:focus-visible,
+html[data-acd-theme="dark"] .spectrum-Dialog .spectrum-Button.focus-ring {
+  outline: 2px solid var(--acd-border-focus) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
 }
 
 /* Form Controls & Action Buttons */

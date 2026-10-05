@@ -9,7 +9,7 @@
 
 A source-driven Chromium extension (Manifest V3) that modernizes the Adobe Connect web interface while strictly preserving shared slides, PDFs, whiteboards, video streams, and screen sharing.
 
-[![Version](https://img.shields.io/badge/version-1.8.4-6EA8FE?style=flat-square)](#v184)
+[![Version](https://img.shields.io/badge/version-1.8.5-6EA8FE?style=flat-square)](#v185)
 [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#technical-architecture)
 [![Chrome](https://img.shields.io/badge/Chrome-supported-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#browser-compatibility)
 [![Edge](https://img.shields.io/badge/Edge-supported-0C59A4?style=flat-square&logo=microsoftedge&logoColor=white)](#browser-compatibility)
@@ -84,7 +84,7 @@ A source-driven Chromium extension (Manifest V3) that modernizes the Adobe Conne
 - [Troubleshooting](#troubleshooting)
 - [Development & Contributing](#development)
 - [Manual QA Checklist](#qa-checklist)
-- [Release Notes (v1.8.4)](#release-notes)
+- [Release Notes (v1.8.5)](#release-notes)
 - [License & Disclaimer](#license)
 - [راهنمای سریع فارسی](#persian-guide)
 
@@ -769,6 +769,17 @@ Before committing or releasing updates, verify the following checklist in a real
 <a id="release-notes"></a>
 
 ## Release Notes
+
+<a id="v185"></a>
+
+### v1.8.5 — Modal Visual Polish
+
+- **Restored True Modal Separation & Underlay Dimming**: Separated the full-screen modal overlay/underlay (`#confirmationDialog`, `#notificationDialog`, `.spectrumModalDialog--...`, `.spectrum-Underlay`) from the dialog card root, applying a darker translucent backdrop (`--acd-backdrop-modal: rgba(0, 0, 0, 0.56)`) with zero border or shadow so the background workspace visually recedes.
+- **Single Elevated Modal Card Surface**: Styled only the true modal root (`#confirmationDialog .spectrum-Dialog`, `.spectrum-Dialog.react-spectrum-Dialog`, `#openPOAFromPodsMenuDialog`) with `--acd-bg-elevated` (`#222A34`), `1px solid var(--acd-border)`, `8px` border radius, and a deep elevated shadow (`--acd-shadow-modal`) so the modal stands out above `--acd-bg-main` and `--acd-bg-panel`.
+- **Removed "Textarea Look" from Modal Description**: Removed `[class*="promotionDialog--"]` from the card-surface selector group, eliminating the inner rectangular border, background, radius, and shadow around the `"If you have the Adobe Connect application installed..."` description block.
+- **Clean Header, Body & Footer Hierarchy and Spacing**: Hid the duplicate native `.spectrum-Dialog-header::after` divider, removed redundant footer borders, balanced vertical spacing across header (`12px` padding / `14px` margin), body (`1.55` line-height), and footer (`22px` top spacing), and refined Primary CTA (`Launch Adobe Connect`) and Secondary (`Cancel`, `Download Adobe Connect`) buttons without pill distortion or double `::after` borders.
+
+---
 
 <a id="v184"></a>
 

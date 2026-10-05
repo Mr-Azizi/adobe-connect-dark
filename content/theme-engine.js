@@ -1074,6 +1074,16 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
       // Skip elements that already have explicit layer 2 classes or styling
       if (element.hasAttribute('data-acd-surface')) return;
 
+      // Skip modal dialogs and underlays handled by Layer 2 elevated modal rules
+      if (
+        typeof element.closest === 'function' &&
+        element.closest(
+          '.spectrum-Dialog, .react-spectrum-Dialog, #confirmationDialog, #notificationDialog, #openPOAFromPodsMenuDialog, .spectrum-Underlay, .react-spectrum-Underlay, [class*="spectrumModalDialog--"], [class*="promotionDialog--"]'
+        )
+      ) {
+        return;
+      }
+
       const style = window.getComputedStyle(element);
       if (!style) return;
 

@@ -882,28 +882,54 @@ picture,
   box-shadow: none !important;
 }
 
+.spectrum-Underlay,
+.react-spectrum-Underlay,
+[class^="spectrum-Underlay"],
+[class*=" spectrum-Underlay"],
+[class^="spectrumModalDialog--"],
+[class*=" spectrumModalDialog--"] {
+  background: var(--acd-backdrop-modal) !important;
+  background-color: var(--acd-backdrop-modal) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
 .spectrum-Dialog,
+.react-spectrum-Dialog,
 [class~="spectrum-Dialog"],
 [class^="spectrum-Dialog--"],
 [class*=" spectrum-Dialog--"] {
-  background-color: var(--acd-bg-panel) !important;
+  background: var(--acd-bg-elevated) !important;
+  background-color: var(--acd-bg-elevated) !important;
   border: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
-  box-shadow: var(--acd-shadow-lg) !important;
-  border-radius: 6px !important;
+  box-shadow: var(--acd-shadow-modal) !important;
+  border-radius: 8px !important;
+  padding: 24px 28px !important;
 }
 
 .spectrum-Dialog-header,
 [class*="spectrum-Dialog-header"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
   border-bottom: 1px solid var(--acd-border-subtle) !important;
   box-shadow: none !important;
   color: var(--acd-text-primary) !important;
+  padding: 0 0 12px 0 !important;
+  margin: 0 0 14px 0 !important;
+}
+
+.spectrum-Dialog-header::after,
+[class*="spectrum-Dialog-header"]::after {
+  display: none !important;
+  content: none !important;
+  background: transparent !important;
 }
 
 .spectrum-Dialog-title,
 [class*="spectrum-Dialog-title"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -912,20 +938,29 @@ picture,
 }
 
 .spectrum-Dialog-content,
-[class*="spectrum-Dialog-content"] {
+[class*="spectrum-Dialog-content"],
+[class^="promotionDialog--"],
+[class*=" promotionDialog--"],
+[class^="stepContent--"],
+[class*=" stepContent--"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   color: var(--acd-text-secondary) !important;
 }
 
 .spectrum-Dialog-footer,
 [class*="spectrum-Dialog-footer"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
-  border-top: 1px solid var(--acd-border-subtle) !important;
   box-shadow: none !important;
   color: var(--acd-text-primary) !important;
+  padding: 22px 0 0 0 !important;
+  margin: 0 !important;
+  gap: 10px !important;
 }
 
 /* ==========================================================================

@@ -155,18 +155,20 @@ html[data-acd-theme="dark"] [class*="spectrum-Menu-sectionHeading"] {
 /* ==========================================================================
    2. Modals, Dialogs & Overlay Backdrops
    ========================================================================== */
-html[data-acd-theme="dark"] [role="dialog"],
-html[data-acd-theme="dark"] .modal,
+html[data-acd-theme="dark"] [role="dialog"]:not(#confirmationDialog):not(#notificationDialog):not(.spectrum-Dialog-wrapper),
+html[data-acd-theme="dark"] .modal:not([class*="modal--"]),
 html[data-acd-theme="dark"] .dialog,
-html[data-acd-theme="dark"] .spectrum-Dialog,
-html[data-acd-theme="dark"] [class~="spectrum-Dialog"],
-html[data-acd-theme="dark"] [class^="spectrum-Dialog--"],
-html[data-acd-theme="dark"] [class*=" spectrum-Dialog--"],
+html[data-acd-theme="dark"] .spectrum-Dialog:not(#reconnect-loader *),
+html[data-acd-theme="dark"] .react-spectrum-Dialog:not(#reconnect-loader *),
+html[data-acd-theme="dark"] [class~="spectrum-Dialog"]:not(#reconnect-loader *),
+html[data-acd-theme="dark"] [class^="spectrum-Dialog--"]:not(#reconnect-loader *),
+html[data-acd-theme="dark"] [class*=" spectrum-Dialog--"]:not(#reconnect-loader *),
 html[data-acd-theme="dark"] [class*="modal-dialog"] {
-  background-color: var(--acd-bg-panel) !important;
+  background: var(--acd-bg-elevated) !important;
+  background-color: var(--acd-bg-elevated) !important;
   border: 1px solid var(--acd-border) !important;
-  border-radius: 6px !important;
-  box-shadow: var(--acd-shadow-lg) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--acd-shadow-modal) !important;
   color: var(--acd-text-primary) !important;
 }
 
@@ -174,16 +176,26 @@ html[data-acd-theme="dark"] [class*="modal-dialog"] {
 html[data-acd-theme="dark"] .modal-backdrop,
 html[data-acd-theme="dark"] [class*="backdrop"],
 html[data-acd-theme="dark"] [class*="underlay"],
+html[data-acd-theme="dark"] .spectrum-Underlay,
+html[data-acd-theme="dark"] .react-spectrum-Underlay,
+html[data-acd-theme="dark"] [class^="spectrum-Underlay"],
+html[data-acd-theme="dark"] [class*=" spectrum-Underlay"],
+html[data-acd-theme="dark"] [class^="spectrumModalDialog--"],
+html[data-acd-theme="dark"] [class*=" spectrumModalDialog--"],
 html[data-acd-theme="dark"] .overlay {
-  background-color: rgba(0, 0, 0, 0.65) !important;
+  background: var(--acd-backdrop-modal) !important;
+  background-color: var(--acd-backdrop-modal) !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-/* Modal Headers & Footers: Dividers only, no nested card shadows */
+/* Modal Headers & Footers: Clean separation, no nested card shadows */
 html[data-acd-theme="dark"] .modal-header,
 html[data-acd-theme="dark"] [class*="modal-header"],
 html[data-acd-theme="dark"] [class*="dialog-header"],
 html[data-acd-theme="dark"] .spectrum-Dialog-header,
 html[data-acd-theme="dark"] [class*="spectrum-Dialog-header"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
   border-bottom: 1px solid var(--acd-border-subtle) !important;
@@ -191,14 +203,21 @@ html[data-acd-theme="dark"] [class*="spectrum-Dialog-header"] {
   color: var(--acd-text-primary) !important;
 }
 
+html[data-acd-theme="dark"] .spectrum-Dialog-header::after,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-header"]::after {
+  display: none !important;
+  content: none !important;
+  background: transparent !important;
+}
+
 html[data-acd-theme="dark"] .modal-footer,
 html[data-acd-theme="dark"] [class*="modal-footer"],
 html[data-acd-theme="dark"] [class*="dialog-footer"],
 html[data-acd-theme="dark"] .spectrum-Dialog-footer,
 html[data-acd-theme="dark"] [class*="spectrum-Dialog-footer"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
-  border-top: 1px solid var(--acd-border-subtle) !important;
   box-shadow: none !important;
   color: var(--acd-text-primary) !important;
 }
@@ -209,9 +228,13 @@ html[data-acd-theme="dark"] [class*="modal-body"],
 html[data-acd-theme="dark"] [class*="modal-content"],
 html[data-acd-theme="dark"] [class*="dialog-content"],
 html[data-acd-theme="dark"] .spectrum-Dialog-content,
-html[data-acd-theme="dark"] [class*="spectrum-Dialog-content"] {
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-content"],
+html[data-acd-theme="dark"] [class^="promotionDialog--"],
+html[data-acd-theme="dark"] [class*=" promotionDialog--"] {
+  background: transparent !important;
   background-color: transparent !important;
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   color: var(--acd-text-secondary) !important;
 }
