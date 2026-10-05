@@ -55,6 +55,8 @@ html[data-acd-theme="dark"] .app-header,
 html[data-acd-theme="dark"] .main-toolbar,
 html[data-acd-theme="dark"] #meeting-header,
 html[data-acd-theme="dark"] .meeting-app-header,
+html[data-acd-theme="dark"] [class^="actionBar--"],
+html[data-acd-theme="dark"] [class*=" actionBar--"],
 html[data-acd-theme="dark"] [class*="header-bar"],
 html[data-acd-theme="dark"] [class*="meeting-bar"],
 html[data-acd-theme="dark"] [class*="top-toolbar"] {
@@ -67,12 +69,25 @@ html[data-acd-theme="dark"] [class*="top-toolbar"] {
 html[data-acd-theme="dark"] .meeting-title,
 html[data-acd-theme="dark"] .room-title,
 html[data-acd-theme="dark"] [class*="meeting-name"],
-html[data-acd-theme="dark"] [class*="room-name"] {
+html[data-acd-theme="dark"] [class*="room-name"],
+html[data-acd-theme="dark"] [class*="meetingName--"],
+html[data-acd-theme="dark"] [class*="leftPaneMeeting--"],
+html[data-acd-theme="dark"] [class*="roomName--"] {
   color: var(--acd-text-primary) !important;
   font-weight: 600;
 }
 
-/* Header Action Buttons (Speaker, Mic, Camera, Raise Hand, Menu) */
+/* Meeting Title Dropdown Arrow */
+html[data-acd-theme="dark"] [class*="leftPaneMeetingDropDownIcon--"] {
+  fill: var(--acd-icon-primary) !important;
+  transition: fill var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class*="leftPaneMeeting--"]:hover [class*="leftPaneMeetingDropDownIcon--"] {
+  fill: var(--acd-icon-hover) !important;
+}
+
+/* Toolbar Controls & Buttons Base State */
 html[data-acd-theme="dark"] .main-toolbar button,
 html[data-acd-theme="dark"] .top-bar button,
 html[data-acd-theme="dark"] [class*="header-bar"] button,
@@ -80,13 +95,24 @@ html[data-acd-theme="dark"] [class*="action-button"],
 html[data-acd-theme="dark"] .top-bar [role="button"],
 html[data-acd-theme="dark"] .main-toolbar [role="button"],
 html[data-acd-theme="dark"] [class*="top-toolbar"] button,
-html[data-acd-theme="dark"] [class*="top-toolbar"] [role="button"] {
+html[data-acd-theme="dark"] [class*="top-toolbar"] [role="button"],
+html[data-acd-theme="dark"] [class*="actionBar--"] button,
+html[data-acd-theme="dark"] [class*="actionBar--"] [role="button"],
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButton--"],
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButtonUserStatus--"],
+html[data-acd-theme="dark"] [class*="centrePaneAudioDropDownBtn--"],
+html[data-acd-theme="dark"] [class*="helpButton--"],
+html[data-acd-theme="dark"] [class*="buttonColor--"],
+html[data-acd-theme="dark"] [class*="openedMenuHelpButton--"],
+html[data-acd-theme="dark"] [class*="appBarButton--"] {
   background-color: transparent !important;
   color: var(--acd-text-secondary) !important;
+  fill: var(--acd-icon-primary) !important;
   border-color: transparent !important;
-  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast), border-color var(--acd-transition-fast);
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast), fill var(--acd-transition-fast);
 }
 
+/* Toolbar Controls Hover State */
 html[data-acd-theme="dark"] .main-toolbar button:hover,
 html[data-acd-theme="dark"] .top-bar button:hover,
 html[data-acd-theme="dark"] [class*="header-bar"] button:hover,
@@ -94,43 +120,65 @@ html[data-acd-theme="dark"] [class*="action-button"]:hover,
 html[data-acd-theme="dark"] .top-bar [role="button"]:hover,
 html[data-acd-theme="dark"] .main-toolbar [role="button"]:hover,
 html[data-acd-theme="dark"] [class*="top-toolbar"] button:hover,
-html[data-acd-theme="dark"] [class*="top-toolbar"] [role="button"]:hover {
-  background-color: var(--acd-bg-hover) !important;
+html[data-acd-theme="dark"] [class*="top-toolbar"] [role="button"]:hover,
+html[data-acd-theme="dark"] [class*="actionBar--"] button:hover,
+html[data-acd-theme="dark"] [class*="actionBar--"] [role="button"]:hover,
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButton--"]:hover,
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButtonUserStatus--"]:hover,
+html[data-acd-theme="dark"] [class*="centrePaneAudioDropDownBtn--"]:hover,
+html[data-acd-theme="dark"] [class*="helpButton--"]:hover,
+html[data-acd-theme="dark"] [class*="buttonColor--"]:hover,
+html[data-acd-theme="dark"] [class*="openedMenuHelpButton--"]:hover,
+html[data-acd-theme="dark"] [class*="appBarButton--"]:hover {
+  background-color: var(--acd-control-hover) !important;
   color: var(--acd-text-primary) !important;
+  fill: var(--acd-icon-hover) !important;
   border-radius: 4px;
 }
 
+/* Toolbar Controls Focus-Visible State */
 html[data-acd-theme="dark"] .main-toolbar button:focus-visible,
 html[data-acd-theme="dark"] .top-bar button:focus-visible,
 html[data-acd-theme="dark"] [class*="header-bar"] button:focus-visible,
 html[data-acd-theme="dark"] [class*="action-button"]:focus-visible,
 html[data-acd-theme="dark"] .top-bar [role="button"]:focus-visible,
 html[data-acd-theme="dark"] .main-toolbar [role="button"]:focus-visible,
-html[data-acd-theme="dark"] [class*="top-toolbar"] button:focus-visible {
-  background-color: var(--acd-bg-hover) !important;
+html[data-acd-theme="dark"] [class*="top-toolbar"] button:focus-visible,
+html[data-acd-theme="dark"] [class*="actionBar--"] button:focus-visible,
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButton--"]:focus-visible,
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButtonUserStatus--"]:focus-visible {
+  background-color: var(--acd-control-hover) !important;
   color: var(--acd-text-primary) !important;
+  fill: var(--acd-icon-hover) !important;
   outline: 2px solid var(--acd-border-focus) !important;
   outline-offset: -1px !important;
   border-radius: 4px;
 }
 
+/* Toolbar Controls Active / Pressed State */
 html[data-acd-theme="dark"] .main-toolbar button:active,
 html[data-acd-theme="dark"] .top-bar button:active,
 html[data-acd-theme="dark"] [class*="header-bar"] button:active,
 html[data-acd-theme="dark"] [class*="action-button"]:active,
-html[data-acd-theme="dark"] .top-bar [role="button"]:active,
-html[data-acd-theme="dark"] .main-toolbar [role="button"]:active {
+html[data-acd-theme="dark"] [class*="actionBar--"] button:active,
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButton--"]:active,
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButtonUserStatus--"]:active {
   background-color: var(--acd-bg-active) !important;
   color: var(--acd-text-primary) !important;
+  fill: var(--acd-icon-hover) !important;
   border-radius: 4px;
 }
 
+/* Toolbar Controls Selected / Expanded State */
 html[data-acd-theme="dark"] .main-toolbar button[aria-expanded="true"],
 html[data-acd-theme="dark"] .top-bar button[aria-expanded="true"],
 html[data-acd-theme="dark"] [class*="header-bar"] button[aria-expanded="true"],
-html[data-acd-theme="dark"] [class*="action-button"][aria-expanded="true"] {
-  background-color: var(--acd-bg-hover) !important;
+html[data-acd-theme="dark"] [class*="action-button"][aria-expanded="true"],
+html[data-acd-theme="dark"] [class*="actionBar--"] button[aria-expanded="true"],
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButton--"][aria-expanded="true"] {
+  background-color: var(--acd-control-hover) !important;
   color: var(--acd-text-primary) !important;
+  fill: var(--acd-icon-hover) !important;
   border-radius: 4px;
 }
 
@@ -139,18 +187,49 @@ html[data-acd-theme="dark"] .main-toolbar button[aria-pressed="true"],
 html[data-acd-theme="dark"] [class*="header-bar"] button.active,
 html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"],
 html[data-acd-theme="dark"] [class*="action-button"].active,
-html[data-acd-theme="dark"] [class*="action-button"][aria-pressed="true"] {
+html[data-acd-theme="dark"] [class*="action-button"][aria-pressed="true"],
+html[data-acd-theme="dark"] [class*="actionBar--"] button[aria-pressed="true"],
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButtonUserStatus--"][aria-pressed="true"] {
   background-color: var(--acd-accent-bg) !important;
   color: var(--acd-accent) !important;
+  fill: var(--acd-accent) !important;
   border: 1px solid var(--acd-accent-border) !important;
 }
 
 html[data-acd-theme="dark"] .main-toolbar button.active:hover,
 html[data-acd-theme="dark"] .main-toolbar button[aria-pressed="true"]:hover,
 html[data-acd-theme="dark"] [class*="header-bar"] button.active:hover,
-html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"]:hover {
+html[data-acd-theme="dark"] [class*="header-bar"] button[aria-pressed="true"]:hover,
+html[data-acd-theme="dark"] [class*="actionBar--"] button[aria-pressed="true"]:hover,
+html[data-acd-theme="dark"] [class*="centrePaneMeetingDropDownButtonUserStatus--"][aria-pressed="true"]:hover {
   background-color: rgba(110, 168, 254, 0.18) !important;
   color: var(--acd-accent-hover) !important;
+  fill: var(--acd-accent-hover) !important;
+}
+
+/* Semantic Audio Status Icons Preservation */
+html[data-acd-theme="dark"] [class*="centrePaneAudioDropDownIcon--"] {
+  fill: var(--acd-icon-primary) !important;
+}
+html[data-acd-theme="dark"] [class*="centrePaneAudioDropDownIcon--"]:hover {
+  fill: var(--acd-icon-hover) !important;
+}
+html[data-acd-theme="dark"] [class*="centrePaneAudioDropDownActiveIcon--"] {
+  fill: #33ab84 !important;
+}
+html[data-acd-theme="dark"] [class*="centrePaneAudioDropDownActiveIcon--"]:hover {
+  fill: #58e8ba !important;
+}
+html[data-acd-theme="dark"] [class*="centrePaneAudioDropDownInactiveIcon--"] {
+  fill: #ec5b62 !important;
+}
+html[data-acd-theme="dark"] [class*="centrePaneAudioDropDownInactiveIcon--"]:hover {
+  fill: #ff7b82 !important;
+}
+
+/* Notification Area inside Toolbar */
+html[data-acd-theme="dark"] [class*="notificationArea--"] {
+  color: var(--acd-text-secondary) !important;
 }
 
 /* Layout Selector Sidebar */
@@ -498,9 +577,11 @@ html[data-acd-theme="dark"] [class^="chatTabButton--"],
 html[data-acd-theme="dark"] [class*=" chatTabButton--"],
 html[data-acd-theme="dark"] [class^="chatTabDisplayName--"],
 html[data-acd-theme="dark"] [class*=" chatTabDisplayName--"],
+html[data-acd-theme="dark"] [role="tab"][class*="chat"],
 html[data-acd-theme="dark"] .chat-tabs button,
 html[data-acd-theme="dark"] [class*="chat-tab-item"] {
   color: var(--acd-text-secondary) !important;
+  border-bottom: none !important;
   transition: color var(--acd-transition-fast), background-color var(--acd-transition-fast);
 }
 
@@ -513,13 +594,23 @@ html[data-acd-theme="dark"] .chat-tabs button:hover {
   background-color: var(--acd-bg-hover) !important;
 }
 
+/* Chat Active Tab Indicator: Single, clean bottom line placed on the active tab item */
 html[data-acd-theme="dark"] [class^="chatTabDisplayNameSelected--"],
 html[data-acd-theme="dark"] [class*=" chatTabDisplayNameSelected--"],
+html[data-acd-theme="dark"] [class*="chatTabDisplayNameSelected"],
 html[data-acd-theme="dark"] .chat-tabs button[aria-selected="true"],
 html[data-acd-theme="dark"] .chat-tabs button.active {
   color: var(--acd-text-primary) !important;
   font-weight: 600 !important;
   border-bottom: 2px solid var(--acd-accent) !important;
+}
+
+/* Prevent double underlines on other tab descendents or close buttons */
+html[data-acd-theme="dark"] [class*="chatTab"]:not([class*="chatTabDisplayNameSelected"]),
+html[data-acd-theme="dark"] [class*="chatTabButton"],
+html[data-acd-theme="dark"] [class*="chatTab"] *:not([class*="chatTabDisplayNameSelected"]) {
+  border-bottom: none !important;
+  border-bottom-color: transparent !important;
 }
 
 /* Chat Content Area & Message List */
@@ -542,24 +633,89 @@ html[data-acd-theme="dark"] [class*=" contentAreaDate--"] {
   color: var(--acd-text-muted) !important;
 }
 
-/* Real Chat Messages */
+/* Real Chat Messages - Default Dark Bubble
+   All message bubbles default to the dark neutral surface even when Adobe Connect
+   sets an inline light/white default background on chatIndividualMessageContentWrapperDiv. */
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"],
 html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="default"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="default"],
 html[data-acd-theme="dark"] .chat-message,
 html[data-acd-theme="dark"] .message-item,
 html[data-acd-theme="dark"] [class*="chat-message"] {
-  background-color: rgba(255, 255, 255, 0.02) !important;
-  color: var(--acd-text-primary) !important;
-  border: 1px solid var(--acd-border-subtle) !important;
+  background: var(--acd-chat-bubble-default) !important;
+  background-color: var(--acd-chat-bubble-default) !important;
+  color: var(--acd-chat-bubble-text, var(--acd-text-primary)) !important;
+  border: 1px solid var(--acd-chat-bubble-default-border) !important;
   border-radius: 4px !important;
   transition: background-color var(--acd-transition-fast), border-color var(--acd-transition-fast);
 }
 
-html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:hover,
-html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]:hover,
+/* Dark-Compatible Semantic Chat Color Bubbles (mapped via data-acd-chat-color) */
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="red"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="red"] {
+  background: var(--acd-chat-bubble-red) !important;
+  background-color: var(--acd-chat-bubble-red) !important;
+  border-color: var(--acd-chat-bubble-red-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="orange"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="orange"] {
+  background: var(--acd-chat-bubble-orange) !important;
+  background-color: var(--acd-chat-bubble-orange) !important;
+  border-color: var(--acd-chat-bubble-orange-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="green"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="green"] {
+  background: var(--acd-chat-bubble-green) !important;
+  background-color: var(--acd-chat-bubble-green) !important;
+  border-color: var(--acd-chat-bubble-green-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="brown"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="brown"] {
+  background: var(--acd-chat-bubble-brown) !important;
+  background-color: var(--acd-chat-bubble-brown) !important;
+  border-color: var(--acd-chat-bubble-brown-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="purple"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="purple"] {
+  background: var(--acd-chat-bubble-purple) !important;
+  background-color: var(--acd-chat-bubble-purple) !important;
+  border-color: var(--acd-chat-bubble-purple-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="pink"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="pink"] {
+  background: var(--acd-chat-bubble-pink) !important;
+  background-color: var(--acd-chat-bubble-pink) !important;
+  border-color: var(--acd-chat-bubble-pink-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="blue"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="blue"] {
+  background: var(--acd-chat-bubble-blue) !important;
+  background-color: var(--acd-chat-bubble-blue) !important;
+  border-color: var(--acd-chat-bubble-blue-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="grey"],
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="grey"] {
+  background: var(--acd-chat-bubble-grey) !important;
+  background-color: var(--acd-chat-bubble-grey) !important;
+  border-color: var(--acd-chat-bubble-grey-border) !important;
+}
+
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:not([data-acd-chat-color]):hover,
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]:not([data-acd-chat-color]):hover,
+html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="default"]:hover,
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="default"]:hover,
 html[data-acd-theme="dark"] .chat-message:hover {
+  background: var(--acd-bg-hover) !important;
   background-color: var(--acd-bg-hover) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"]:focus-visible,
@@ -570,7 +726,6 @@ html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"]
 
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContentWrapperDiv--"][aria-selected="true"],
 html[data-acd-theme="dark"] [class*=" chatIndividualMessageContentWrapperDiv--"][aria-selected="true"] {
-  background-color: var(--acd-bg-selected) !important;
   border-left: 2px solid var(--acd-accent) !important;
 }
 
@@ -672,7 +827,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"] {
   margin: 0 !important;
 }
 
-/* Message Sender */
+/* Message Sender (Default Dark Bubble) */
 html[data-acd-theme="dark"] [class^="chatMessageSender--"],
 html[data-acd-theme="dark"] [class*=" chatMessageSender--"],
 html[data-acd-theme="dark"] .chat-user-name,
@@ -682,19 +837,79 @@ html[data-acd-theme="dark"] [class*="chat-sender"] {
   font-weight: 600 !important;
 }
 
-/* Message Content Text */
+/* Hue-Aware High-Contrast Sender Foregrounds on Dark Semantic Colored Bubbles */
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="red"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="red"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-red) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="orange"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="orange"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-orange) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="green"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="green"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-green) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="brown"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="brown"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-brown) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="purple"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="purple"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-purple) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="pink"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="pink"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-pink) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="blue"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="blue"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-blue) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="grey"] [class^="chatMessageSender--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="grey"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-grey) !important;
+}
+
+/* Message Content Text (Crisp light text across Default & Dark-Compatible Colored Bubbles) */
 html[data-acd-theme="dark"] [class^="chatIndividualMessageContent--"],
-html[data-acd-theme="dark"] [class*=" chatIndividualMessageContent--"] {
+html[data-acd-theme="dark"] [class*=" chatIndividualMessageContent--"],
+html[data-acd-theme="dark"] .chat-message-text,
+html[data-acd-theme="dark"] [class*="chat-message-content"] {
+  color: var(--acd-chat-bubble-text, var(--acd-text-primary)) !important;
+}
+
+/* Chat Menu Color Swatches (Preserves native color circle dots without background override) */
+html[data-acd-theme="dark"] [class*="chatMenuItemColorCode"],
+html[data-acd-theme="dark"] [class*="colorSwatch"],
+html[data-acd-theme="dark"] [class*="chatColorMenuItem"] [class*="chatMenuItemColorCode"] {
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatMenuItemColorName"] {
   color: var(--acd-text-primary) !important;
 }
 
-/* Message Timestamps */
+/* Message Timestamps (Default & Colored Dark Bubbles) */
 html[data-acd-theme="dark"] [class^="chatMessageTime--"],
 html[data-acd-theme="dark"] [class*=" chatMessageTime--"],
 html[data-acd-theme="dark"] .chat-time,
 html[data-acd-theme="dark"] .message-time,
 html[data-acd-theme="dark"] [class*="chat-time"] {
   color: var(--acd-text-muted) !important;
+}
+
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color]:not([data-acd-chat-color="default"]) [class^="chatMessageTime--"],
+html[data-acd-theme="dark"] [class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color]:not([data-acd-chat-color="default"]) [class*=" chatMessageTime--"] {
+  color: var(--acd-chat-bubble-time, var(--acd-text-secondary)) !important;
 }
 
 /* Chat Compose / Input Area */
@@ -705,12 +920,22 @@ html[data-acd-theme="dark"] .chat-input-container {
   border-top: 1px solid var(--acd-border-subtle) !important;
 }
 
+/* Reset outer wrapper borders to avoid stacked double outlines */
+html[data-acd-theme="dark"] #chatChildContainerWrapper,
+html[data-acd-theme="dark"] [id^="childContainerDiv"] {
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Chat Compose / Input Container */
 html[data-acd-theme="dark"] [class^="childContainerDiv--"],
 html[data-acd-theme="dark"] [class*=" childContainerDiv--"],
 html[data-acd-theme="dark"] .chat-input-container {
   background-color: var(--acd-bg-input) !important;
   border: 1px solid var(--acd-border-subtle) !important;
-  border-radius: 4px;
+  border-radius: 4px !important;
+  outline: none !important;
   transition: border-color var(--acd-transition-fast), box-shadow var(--acd-transition-fast);
 }
 
@@ -725,7 +950,12 @@ html[data-acd-theme="dark"] .chat-input-container:focus-within {
   box-shadow: 0 0 0 1px var(--acd-focus-ring) !important;
 }
 
-/* Chat Compose / Editable Input Contrast & Caret */
+/* Chat Compose Editable Text Contrast (Focused AND Blurred/Unfocused) */
+html[data-acd-theme="dark"] [class*="chatPod"] [class*="chatComposeArea"] [class*="childContainerDiv"] [class*="typingArea"],
+html[data-acd-theme="dark"] [class*="chatPod"] [class*="chatComposeArea"] [class*="childContainerDiv"] [class*="typingAreaHasText"],
+html[data-acd-theme="dark"] [class*="chatComposeArea"] [class*="childContainerDiv"] [class*="typingArea"],
+html[data-acd-theme="dark"] [class*="chatComposeArea"] [class*="childContainerDiv"] [class*="typingAreaHasText"],
+html[data-acd-theme="dark"] [class*="childContainerDiv"] [class*="typingAreaHasText"],
 html[data-acd-theme="dark"] [class^="typingArea--"],
 html[data-acd-theme="dark"] [class*=" typingArea--"],
 html[data-acd-theme="dark"] [class^="typingAreaHasText--"],
@@ -759,6 +989,7 @@ html[data-acd-theme="dark"] .chat-input-container [contenteditable="true"]:focus
   color: var(--acd-text-primary) !important;
   caret-color: var(--acd-accent);
   outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Chat Compose Placeholder Contrast */
@@ -1325,20 +1556,179 @@ html[data-acd-theme="dark"] [class*=" choiceOptionProgressBar--"] {
 }
 
 /* ==========================================================================
-   13. Adobe Spectrum 11.2 Components In-Depth Overrides
+   13. Adobe Spectrum 11.2 Menus, Popovers, Modals & Transient Surfaces
    ========================================================================== */
-html[data-acd-theme="dark"] [class*="spectrum-Picker"],
-html[data-acd-theme="dark"] [class*="spectrum-Menu"],
-html[data-acd-theme="dark"] [class*="spectrum-Popover"],
-html[data-acd-theme="dark"] [class*="spectrum-Dropdown"] {
+
+/* Unified Card Surface for Popovers & Dropdowns */
+html[data-acd-theme="dark"] .spectrum-Picker,
+html[data-acd-theme="dark"] [class~="spectrum-Picker"],
+html[data-acd-theme="dark"] [class^="spectrum-Picker--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Picker--"],
+html[data-acd-theme="dark"] .spectrum-Popover,
+html[data-acd-theme="dark"] [class~="spectrum-Popover"],
+html[data-acd-theme="dark"] [class^="spectrum-Popover--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Popover--"],
+html[data-acd-theme="dark"] .spectrum-Dropdown,
+html[data-acd-theme="dark"] [class~="spectrum-Dropdown"],
+html[data-acd-theme="dark"] [class^="spectrum-Dropdown--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Dropdown--"],
+html[data-acd-theme="dark"] [class*="connectDropDownDiv"] {
   background-color: var(--acd-bg-elevated) !important;
-  border-color: var(--acd-border) !important;
+  border: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
   box-shadow: var(--acd-shadow-md) !important;
-  border-radius: 4px !important;
+  border-radius: 6px !important;
 }
 
-html[data-acd-theme="dark"] [class*="spectrum-Dialog"] {
+/* Inner Menu container is flat and transparent - Popover acts as the unified card surface */
+html[data-acd-theme="dark"] .spectrum-Menu,
+html[data-acd-theme="dark"] [class~="spectrum-Menu"],
+html[data-acd-theme="dark"] [class^="spectrum-Menu--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Menu--"],
+html[data-acd-theme="dark"] [role="menu"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--acd-text-primary) !important;
+  padding: 4px 0 !important;
+}
+
+/* Menu Items are flat with subtle highlights - no button bevel/border */
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"],
+html[data-acd-theme="dark"] [role="menuitem"],
+html[data-acd-theme="dark"] [class*="spectrum-SelectList-item"],
+html[data-acd-theme="dark"] [class*="userStatusMenuItem"],
+html[data-acd-theme="dark"] [class*="chatTabBarDropDownMenuItem"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--acd-text-primary) !important;
+  transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-focused,
+html[data-acd-theme="dark"] [role="menuitem"]:hover,
+html[data-acd-theme="dark"] [role="menuitem"]:focus,
+html[data-acd-theme="dark"] [class*="spectrum-SelectList-item"]:hover,
+html[data-acd-theme="dark"] [class*="userStatusMenuItem"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+  border-radius: 4px;
+}
+
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-selected,
+html[data-acd-theme="dark"] [role="menuitem"][aria-selected="true"],
+html[data-acd-theme="dark"] [class*="spectrum-SelectList-item"].is-selected {
+  background-color: var(--acd-bg-selected) !important;
+  color: var(--acd-accent) !important;
+  border-radius: 4px;
+}
+
+/* Section dividers inside menus */
+html[data-acd-theme="dark"] .spectrum-Menu-divider,
+html[data-acd-theme="dark"] [class*="separator--"],
+html[data-acd-theme="dark"] [class*="actionBarSeparator--"],
+html[data-acd-theme="dark"] [class*="dropDownSeparator--"],
+html[data-acd-theme="dark"] [class*="menuOptionsSeparator--"] {
+  height: 1px !important;
+  background-color: var(--acd-border-subtle) !important;
+  border: none !important;
+  margin: 4px 8px !important;
+}
+
+/* ==========================================================================
+   Connection Status Dialog / Popup (Zero-Flash Elevated Card)
+   ========================================================================== */
+html[data-acd-theme="dark"] [class*="connectionDetail--"] {
+  background-color: var(--acd-bg-elevated) !important;
+  border: 1px solid var(--acd-border) !important;
+  border-radius: 6px !important;
+  box-shadow: var(--acd-shadow-md) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="connectionDetail--"] [class*="title--"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 700 !important;
+}
+
+html[data-acd-theme="dark"] [class*="connectionDetail--"] [class*="description--"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="connectionDetail--"] [class*="closeBtn--"] {
+  color: var(--acd-text-secondary) !important;
+}
+
+html[data-acd-theme="dark"] [class*="connectionDetail--"] [class*="closeBtn--"]:hover {
+  color: var(--acd-text-primary) !important;
+}
+
+/* ==========================================================================
+   Toasts, Transient Bars, Notifiers & Broadcast Messages
+   ========================================================================== */
+html[data-acd-theme="dark"] .spectrum-Toast,
+html[data-acd-theme="dark"] [class~="spectrum-Toast"],
+html[data-acd-theme="dark"] [class^="spectrum-Toast--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Toast--"],
+html[data-acd-theme="dark"] .react-spectrum-ToastContainer,
+html[data-acd-theme="dark"] [class*="toastPosition--"],
+html[data-acd-theme="dark"] [class*="centerNotifiers--"] ul li > div,
+html[data-acd-theme="dark"] [class*="rightNotifiers--"] ul li > div,
+html[data-acd-theme="dark"] [class*="notifierContainer--"],
+html[data-acd-theme="dark"] .spectrum-Alert,
+html[data-acd-theme="dark"] [class*="broadcastDialog--"],
+html[data-acd-theme="dark"] [class*="broadcastMessage--"] {
+  background-color: var(--acd-bg-elevated) !important;
+  border: 1px solid var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+  box-shadow: var(--acd-shadow-md) !important;
+  border-radius: 6px !important;
+}
+
+/* Toast Child Elements: Pure content, no nested cards */
+html[data-acd-theme="dark"] .spectrum-Toast-content,
+html[data-acd-theme="dark"] [class*="spectrum-Toast-content"],
+html[data-acd-theme="dark"] [class*="broadcastMessageTitle--"],
+html[data-acd-theme="dark"] [class*="spanStyleHeading--"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .spectrum-Toast-typeIcon,
+html[data-acd-theme="dark"] [class*="spectrum-Toast-typeIcon"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-acd-theme="dark"] [class*="broadcastMessageTextArea--"] {
+  background-color: var(--acd-bg-input) !important;
+  color: var(--acd-text-primary) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+}
+
+/* ==========================================================================
+   "Switch to Desktop Application" & Spectrum Modal Dialogs
+   Overriding Adobe's high-specificity ID rules (#confirmationDialog, #notificationDialog)
+   ========================================================================== */
+html[data-acd-theme="dark"] #confirmationDialog,
+html[data-acd-theme="dark"] #notificationDialog,
+html[data-acd-theme="dark"] #openPOAFromPodsMenuDialog,
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog,
+html[data-acd-theme="dark"] #room #notificationDialog .spectrum-Dialog,
+html[data-acd-theme="dark"] #mainRoomRecording #notificationDialog .spectrum-Dialog,
+html[data-acd-theme="dark"] .spectrum-Dialog,
+html[data-acd-theme="dark"] [class~="spectrum-Dialog"],
+html[data-acd-theme="dark"] [class^="spectrum-Dialog--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Dialog--"],
+html[data-acd-theme="dark"] [class*="podsMenuManagePodsDialog--"],
+html[data-acd-theme="dark"] [class*="promotionDialog--"],
+html[data-acd-theme="dark"] [class*="popup_inner--"] {
   background-color: var(--acd-bg-panel) !important;
   border: 1px solid var(--acd-border) !important;
   color: var(--acd-text-primary) !important;
@@ -1346,14 +1736,115 @@ html[data-acd-theme="dark"] [class*="spectrum-Dialog"] {
   border-radius: 6px !important;
 }
 
-html[data-acd-theme="dark"] .spectrum-Dialog-title {
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-header,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-header,
+html[data-acd-theme="dark"] .spectrum-Dialog-header,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-header"] {
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--acd-border-subtle) !important;
+  box-shadow: none !important;
   color: var(--acd-text-primary) !important;
 }
 
-html[data-acd-theme="dark"] .spectrum-Dialog-content {
-  color: var(--acd-text-secondary) !important;
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-header::after,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-header::after {
+  background: var(--acd-border-subtle) !important;
 }
 
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-title,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-title,
+html[data-acd-theme="dark"] .spectrum-Dialog-title,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-title"],
+html[data-acd-theme="dark"] [class*="podsMenuDialogTitle--"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Dialog-footer,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Dialog-footer,
+html[data-acd-theme="dark"] .spectrum-Dialog-footer,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-footer"] {
+  background-color: transparent !important;
+  border: none !important;
+  border-top: 1px solid var(--acd-border-subtle) !important;
+  box-shadow: none !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Modal Body Text & Step Content */
+html[data-acd-theme="dark"] [class*="promotionDialog--"] p,
+html[data-acd-theme="dark"] [class*="stepContent--"],
+html[data-acd-theme="dark"] .spectrum-Dialog-content,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-content"],
+html[data-acd-theme="dark"] [class*="setupContentClass--"],
+html[data-acd-theme="dark"] [class*="rightPanel--"],
+html[data-acd-theme="dark"] [class*="leftPanel--"] {
+  color: var(--acd-text-secondary) !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-acd-theme="dark"] [class*="stepContent--"] [class*="headingDiv--"] {
+  color: var(--acd-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+html[data-acd-theme="dark"] [class*="promotionDialog--"] a,
+html[data-acd-theme="dark"] [class*="promotionDialogLink--"],
+html[data-acd-theme="dark"] [class*="restartDownlaodButton--"],
+html[data-acd-theme="dark"] #confirmationDialog a {
+  color: var(--acd-accent) !important;
+}
+
+html[data-acd-theme="dark"] [class*="promotionDialog--"] a:hover,
+html[data-acd-theme="dark"] [class*="promotionDialogLink--"]:hover,
+html[data-acd-theme="dark"] [class*="restartDownlaodButton--"]:hover,
+html[data-acd-theme="dark"] #confirmationDialog a:hover {
+  color: var(--acd-accent-hover) !important;
+  text-decoration: underline !important;
+}
+
+/* Dialog Action Buttons */
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--cta,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--cta,
+html[data-acd-theme="dark"] .spectrum-Button--cta {
+  background-color: var(--acd-accent) !important;
+  border-color: var(--acd-accent) !important;
+  color: #ffffff !important;
+}
+
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--cta:hover,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--cta:hover,
+html[data-acd-theme="dark"] .spectrum-Button--cta:hover {
+  background-color: var(--acd-accent-hover) !important;
+  border-color: var(--acd-accent-hover) !important;
+  color: #ffffff !important;
+}
+
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--secondary,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--secondary,
+html[data-acd-theme="dark"] .spectrum-Button--secondary,
+html[data-acd-theme="dark"] [class*="managePodsDialogCancelDoneButton--"] {
+  background-color: var(--acd-bg-panel) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] #confirmationDialog .spectrum-Button--secondary:hover,
+html[data-acd-theme="dark"] #notificationDialog .spectrum-Button--secondary:hover,
+html[data-acd-theme="dark"] .spectrum-Button--secondary:hover,
+html[data-acd-theme="dark"] [class*="managePodsDialogCancelDoneButton--"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  border-color: var(--acd-border) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Form Controls & Action Buttons */
 html[data-acd-theme="dark"] .spectrum-Textfield,
 html[data-acd-theme="dark"] [class*="spectrum-Textfield"] {
   background-color: var(--acd-bg-input) !important;
@@ -1370,32 +1861,14 @@ html[data-acd-theme="dark"] [class*="spectrum-Textfield"]:focus {
   box-shadow: 0 0 0 1px var(--acd-focus-ring) !important;
 }
 
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"] {
-  background-color: transparent !important;
-  color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:hover,
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-focused {
-  background-color: var(--acd-bg-hover) !important;
-  color: var(--acd-text-primary) !important;
-}
-
-html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-selected {
-  background-color: var(--acd-bg-selected) !important;
-  color: var(--acd-accent) !important;
-}
-
-html[data-acd-theme="dark"] [class*="spectrum-ActionButton"],
-html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"] {
+html[data-acd-theme="dark"] [class*="spectrum-ActionButton"] {
   background-color: var(--acd-bg-panel) !important;
   border-color: var(--acd-border-subtle) !important;
   color: var(--acd-text-primary) !important;
   border-radius: 4px;
 }
 
-html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:hover,
-html[data-acd-theme="dark"] [class*="spectrum-Button--secondary"]:hover {
+html[data-acd-theme="dark"] [class*="spectrum-ActionButton"]:hover {
   background-color: var(--acd-bg-hover) !important;
   border-color: var(--acd-border) !important;
   color: var(--acd-text-primary) !important;

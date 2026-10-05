@@ -6,7 +6,7 @@
 /* ==========================================================================
    1. Menus, Dropdowns & Context Menus
    ========================================================================== */
-html[data-acd-theme="dark"] [role="menu"],
+html[data-acd-theme="dark"] [role="menu"]:not(.spectrum-Popover *):not([class~="spectrum-Popover"] *):not([class^="spectrum-Popover--"] *):not([class*=" spectrum-Popover--"] *),
 html[data-acd-theme="dark"] [role="listbox"],
 html[data-acd-theme="dark"] .dropdown-menu,
 html[data-acd-theme="dark"] .context-menu,
@@ -15,22 +15,40 @@ html[data-acd-theme="dark"] [class*="dropdown-menu"],
 html[data-acd-theme="dark"] [class*="menu-container"],
 html[data-acd-theme="dark"] [class*="options-menu"] {
   background-color: var(--acd-bg-elevated) !important;
-  border: 1px solid var(--acd-border) !important;
-  border-radius: 4px !important;
+  border: 1px solid var(--acd-border-subtle) !important;
+  border-radius: 6px !important;
   box-shadow: var(--acd-shadow-md) !important;
   padding: 4px !important;
 }
 
-/* Menu Items */
+/* When a menu is nested inside a Popover/Dialog, keep menu container transparent so only popover is the card */
+html[data-acd-theme="dark"] .spectrum-Popover [role="menu"],
+html[data-acd-theme="dark"] [class~="spectrum-Popover"] [role="menu"],
+html[data-acd-theme="dark"] [class^="spectrum-Popover--"] [role="menu"],
+html[data-acd-theme="dark"] [class*=" spectrum-Popover--"] [role="menu"],
+html[data-acd-theme="dark"] .spectrum-Popover .spectrum-Menu,
+html[data-acd-theme="dark"] [class~="spectrum-Popover"] [class~="spectrum-Menu"],
+html[data-acd-theme="dark"] [class~="spectrum-Menu"] [class~="spectrum-Menu"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Menu Items: Flat, transparent by default, subtle rounded rectangle hover */
 html[data-acd-theme="dark"] [role="menuitem"],
 html[data-acd-theme="dark"] [role="option"],
 html[data-acd-theme="dark"] .menu-item,
 html[data-acd-theme="dark"] [class*="menu-item"],
 html[data-acd-theme="dark"] [class*="dropdown-item"],
-html[data-acd-theme="dark"] [class*="popover-item"] {
+html[data-acd-theme="dark"] [class*="popover-item"],
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"] {
   background-color: transparent !important;
   color: var(--acd-text-primary) !important;
-  border-radius: 3px !important;
+  border: none !important;
+  border-left: 2px solid transparent !important;
+  box-shadow: none !important;
+  border-radius: 4px !important;
   transition: background-color var(--acd-transition-fast), color var(--acd-transition-fast);
 }
 
@@ -40,20 +58,28 @@ html[data-acd-theme="dark"] .menu-item:hover,
 html[data-acd-theme="dark"] [class*="menu-item"]:hover,
 html[data-acd-theme="dark"] [class*="dropdown-item"]:hover,
 html[data-acd-theme="dark"] [class*="popover-item"]:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:hover,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-focused,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-highlighted,
 html[data-acd-theme="dark"] [role="menuitem"]:focus,
 html[data-acd-theme="dark"] [role="option"]:focus {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
+  border: none !important;
+  border-left: 2px solid transparent !important;
+  box-shadow: none !important;
 }
 
 html[data-acd-theme="dark"] [role="menuitem"]:focus-visible,
 html[data-acd-theme="dark"] [role="option"]:focus-visible,
 html[data-acd-theme="dark"] .menu-item:focus-visible,
-html[data-acd-theme="dark"] [class*="menu-item"]:focus-visible {
+html[data-acd-theme="dark"] [class*="menu-item"]:focus-visible,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"]:focus-visible {
   background-color: var(--acd-bg-hover) !important;
   color: var(--acd-text-primary) !important;
   outline: 2px solid var(--acd-border-focus) !important;
   outline-offset: -2px !important;
+  border: none !important;
 }
 
 html[data-acd-theme="dark"] [role="menuitem"]:active,
@@ -66,21 +92,64 @@ html[data-acd-theme="dark"] [class*="menu-item"]:active {
 
 html[data-acd-theme="dark"] [role="menuitem"][aria-selected="true"],
 html[data-acd-theme="dark"] [role="option"][aria-selected="true"],
+html[data-acd-theme="dark"] [class*="spectrum-Menu-item"].is-selected,
 html[data-acd-theme="dark"] .menu-item.selected,
 html[data-acd-theme="dark"] [class*="menu-item"].selected,
 html[data-acd-theme="dark"] [class*="dropdown-item"].selected,
 html[data-acd-theme="dark"] [class*="menu-item"].is-selected {
   background-color: var(--acd-bg-selected) !important;
   color: var(--acd-accent) !important;
+  border: none !important;
+  border-left: 2px solid var(--acd-accent) !important;
+  box-shadow: none !important;
 }
 
-/* Menu Dividers */
+/* Eliminate button-like appearance inside menus */
+html[data-acd-theme="dark"] [role="menu"] button,
+html[data-acd-theme="dark"] .spectrum-Menu button,
+html[data-acd-theme="dark"] [class~="spectrum-Menu"] button,
+html[data-acd-theme="dark"] .spectrum-Menu [class*="spectrum-ActionButton"],
+html[data-acd-theme="dark"] [class~="spectrum-Menu"] [class*="spectrum-ActionButton"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-acd-theme="dark"] [role="menu"] button:hover,
+html[data-acd-theme="dark"] .spectrum-Menu button:hover,
+html[data-acd-theme="dark"] [class~="spectrum-Menu"] button:hover,
+html[data-acd-theme="dark"] .spectrum-Menu [class*="spectrum-ActionButton"]:hover,
+html[data-acd-theme="dark"] [class~="spectrum-Menu"] [class*="spectrum-ActionButton"]:hover {
+  background-color: var(--acd-bg-hover) !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Menu Dividers & Separators */
 html[data-acd-theme="dark"] [role="separator"],
 html[data-acd-theme="dark"] .menu-divider,
-html[data-acd-theme="dark"] [class*="menu-divider"] {
+html[data-acd-theme="dark"] [class*="menu-divider"],
+html[data-acd-theme="dark"] .spectrum-Menu-divider,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-divider"],
+html[data-acd-theme="dark"] .separator,
+html[data-acd-theme="dark"] [class^="separator--"],
+html[data-acd-theme="dark"] [class*=" separator--"] {
   background-color: var(--acd-border-subtle) !important;
+  border: none !important;
   height: 1px !important;
-  margin: 4px 0 !important;
+  margin: 4px 10px !important;
+  padding: 0 !important;
+}
+
+/* Section Headings */
+html[data-acd-theme="dark"] .spectrum-Menu-sectionHeading,
+html[data-acd-theme="dark"] [class*="spectrum-Menu-sectionHeading"] {
+  color: var(--acd-text-muted) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  margin: 8px 12px 4px !important;
+  padding: 0 !important;
 }
 
 /* ==========================================================================
@@ -89,9 +158,11 @@ html[data-acd-theme="dark"] [class*="menu-divider"] {
 html[data-acd-theme="dark"] [role="dialog"],
 html[data-acd-theme="dark"] .modal,
 html[data-acd-theme="dark"] .dialog,
-html[data-acd-theme="dark"] [class*="modal-dialog"],
-html[data-acd-theme="dark"] [class*="modal-content"],
-html[data-acd-theme="dark"] [class*="dialog-content"] {
+html[data-acd-theme="dark"] .spectrum-Dialog,
+html[data-acd-theme="dark"] [class~="spectrum-Dialog"],
+html[data-acd-theme="dark"] [class^="spectrum-Dialog--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Dialog--"],
+html[data-acd-theme="dark"] [class*="modal-dialog"] {
   background-color: var(--acd-bg-panel) !important;
   border: 1px solid var(--acd-border) !important;
   border-radius: 6px !important;
@@ -107,20 +178,42 @@ html[data-acd-theme="dark"] .overlay {
   background-color: rgba(0, 0, 0, 0.65) !important;
 }
 
-/* Modal Headers & Footers */
+/* Modal Headers & Footers: Dividers only, no nested card shadows */
 html[data-acd-theme="dark"] .modal-header,
 html[data-acd-theme="dark"] [class*="modal-header"],
-html[data-acd-theme="dark"] [class*="dialog-header"] {
-  background-color: var(--acd-bg-toolbar) !important;
+html[data-acd-theme="dark"] [class*="dialog-header"],
+html[data-acd-theme="dark"] .spectrum-Dialog-header,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-header"] {
+  background-color: transparent !important;
+  border: none !important;
   border-bottom: 1px solid var(--acd-border-subtle) !important;
+  box-shadow: none !important;
   color: var(--acd-text-primary) !important;
 }
 
 html[data-acd-theme="dark"] .modal-footer,
 html[data-acd-theme="dark"] [class*="modal-footer"],
-html[data-acd-theme="dark"] [class*="dialog-footer"] {
-  background-color: var(--acd-bg-secondary) !important;
+html[data-acd-theme="dark"] [class*="dialog-footer"],
+html[data-acd-theme="dark"] .spectrum-Dialog-footer,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-footer"] {
+  background-color: transparent !important;
+  border: none !important;
   border-top: 1px solid var(--acd-border-subtle) !important;
+  box-shadow: none !important;
+  color: var(--acd-text-primary) !important;
+}
+
+/* Modal Body / Content: Transparent body text, no independent border or shadow */
+html[data-acd-theme="dark"] .modal-body,
+html[data-acd-theme="dark"] [class*="modal-body"],
+html[data-acd-theme="dark"] [class*="modal-content"],
+html[data-acd-theme="dark"] [class*="dialog-content"],
+html[data-acd-theme="dark"] .spectrum-Dialog-content,
+html[data-acd-theme="dark"] [class*="spectrum-Dialog-content"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--acd-text-secondary) !important;
 }
 
 /* ==========================================================================
@@ -130,7 +223,12 @@ html[data-acd-theme="dark"] [role="tooltip"],
 html[data-acd-theme="dark"] .tooltip,
 html[data-acd-theme="dark"] [class*="tooltip"],
 html[data-acd-theme="dark"] .popover,
-html[data-acd-theme="dark"] [class*="popover"] {
+html[data-acd-theme="dark"] .spectrum-Popover,
+html[data-acd-theme="dark"] [class~="spectrum-Popover"],
+html[data-acd-theme="dark"] [class^="spectrum-Popover--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Popover--"],
+html[data-acd-theme="dark"] [class^="popover--"],
+html[data-acd-theme="dark"] [class*=" popover--"] {
   background-color: var(--acd-bg-elevated) !important;
   color: var(--acd-text-primary) !important;
   border: 1px solid var(--acd-border) !important;
@@ -242,8 +340,8 @@ html[data-acd-theme="dark"] .tab-item:active {
   color: var(--acd-text-primary) !important;
 }
 
-html[data-acd-theme="dark"] [role="tab"][aria-selected="true"],
-html[data-acd-theme="dark"] .tab-item.active {
+html[data-acd-theme="dark"] [role="tab"][aria-selected="true"]:not([class*="chat"]):not([class*="Chat"]):not([class*="chatTabBar"] *):not([class*="ChatTabList"] *):not([class*="chatTab"] *),
+html[data-acd-theme="dark"] .tab-item.active:not([class*="chat"]):not([class*="Chat"]):not([class*="chatTabBar"] *):not([class*="ChatTabList"] *):not([class*="chatTab"] *) {
   color: var(--acd-text-primary) !important;
   border-bottom: 2px solid var(--acd-accent) !important;
   font-weight: 600;
@@ -254,11 +352,32 @@ html[data-acd-theme="dark"] .tab-item.active {
    ========================================================================== */
 html[data-acd-theme="dark"] .toast,
 html[data-acd-theme="dark"] .notification,
+html[data-acd-theme="dark"] .spectrum-Toast,
+html[data-acd-theme="dark"] [class~="spectrum-Toast"],
+html[data-acd-theme="dark"] [class^="spectrum-Toast--"],
+html[data-acd-theme="dark"] [class*=" spectrum-Toast--"],
 html[data-acd-theme="dark"] [class*="toast-message"],
 html[data-acd-theme="dark"] [class*="notification-banner"] {
   background-color: var(--acd-bg-elevated) !important;
   color: var(--acd-text-primary) !important;
-  border: 1px solid var(--acd-border) !important;
+  border: 1px solid var(--acd-border-subtle) !important;
   border-radius: 4px !important;
   box-shadow: var(--acd-shadow-md) !important;
 }
+
+/* Toast Child Elements: Pure text and icon, zero card styling */
+html[data-acd-theme="dark"] .spectrum-Toast-content,
+html[data-acd-theme="dark"] [class*="spectrum-Toast-content"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--acd-text-primary) !important;
+}
+
+html[data-acd-theme="dark"] .spectrum-Toast-typeIcon,
+html[data-acd-theme="dark"] [class*="spectrum-Toast-typeIcon"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+

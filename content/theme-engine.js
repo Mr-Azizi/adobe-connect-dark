@@ -167,6 +167,9 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     '[class*="shareContent--"] canvas',
     '[class*="whiteboardWrapper--"]',
     '[class*="wbShapesWrapper--"]',
+    '[class*="chatIndividualMessageContentWrapperDiv"]',
+    '[class*="chatMenuItemColorCode"]',
+    '[class*="colorSwatch"]',
     '[data-acd-preserve="true"]',
     '.acd-preserve'
   ].join(', ');
@@ -331,13 +334,16 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         this.cleanupStylesheets();
       }
 
-      // 5. Clean up Layer 1 attributes in main document
+      // 5. Clean up Layer 1 and chat color attributes in main document
       try {
         const brightSurfaces = document.querySelectorAll('[data-acd-surface]');
         brightSurfaces.forEach((el) => el.removeAttribute('data-acd-surface'));
 
         const darkTexts = document.querySelectorAll('[data-acd-text]');
         darkTexts.forEach((el) => el.removeAttribute('data-acd-text'));
+
+        const chatColored = document.querySelectorAll('[data-acd-chat-color]');
+        chatColored.forEach((el) => el.removeAttribute('data-acd-chat-color'));
       } catch (e) {
         // Suppress any DOM cleanup errors
       }
@@ -582,6 +588,9 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
       if (this.hasScannedInitialDOM && !force) return;
       this.hasScannedInitialDOM = true;
 
+      // Classify any existing chat message bubbles synchronously for zero-FOUC
+      this.classifyChatBubblesInTree(document.body);
+
       // Scan body and its key container children across entire subtree
       const candidates = this.getCandidateElements(document.body);
       this.queueNodesForEvaluation(candidates);
@@ -626,10 +635,23 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
           const addedElements = [];
           for (let i = 0; i < mutations.length; i++) {
             const mutation = mutations[i];
+            if (mutation.type === 'attributes') {
+              const target = mutation.target;
+              if (
+                target &&
+                target.nodeType === Node.ELEMENT_NODE &&
+                typeof target.className === 'string' &&
+                target.className.indexOf('chatIndividualMessageContentWrapperDiv--') !== -1
+              ) {
+                this.classifyChatBubble(target);
+              }
+              continue;
+            }
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
               for (let j = 0; j < mutation.addedNodes.length; j++) {
                 const node = mutation.addedNodes[j];
                 if (node.nodeType === Node.ELEMENT_NODE && !SENSITIVE_TAGS.has(node.tagName.toUpperCase())) {
+                  this.classifyChatBubblesInTree(node);
                   const subCandidates = this.getCandidateElements(node);
                   for (let k = 0; k < subCandidates.length; k++) {
                     addedElements.push(subCandidates[k]);
@@ -653,13 +675,18 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
 
         shadowObserver.observe(shadowRoot, {
           childList: true,
-          subtree: true
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['style']
         });
 
         this.shadowObservers.set(shadowRoot, shadowObserver);
       }
 
-      // 3. Evaluate existing elements inside shadow root
+      // 3. Classify existing chat bubbles inside shadow root
+      this.classifyChatBubblesInTree(shadowRoot);
+
+      // 4. Evaluate existing elements inside shadow root
       const shadowCandidates = [];
       for (let i = 0; i < shadowRoot.children.length; i++) {
         const sub = this.getCandidateElements(shadowRoot.children[i]);
@@ -669,7 +696,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
       }
       this.queueNodesForEvaluation(shadowCandidates);
 
-      // 4. Recursively check for nested shadow roots
+      // 5. Recursively check for nested shadow roots
       this.scanForShadowRoots(shadowRoot);
     }
 
@@ -703,6 +730,9 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
 
             const darkTexts = shadowRoot.querySelectorAll('[data-acd-text]');
             darkTexts.forEach((el) => el.removeAttribute('data-acd-text'));
+
+            const chatColored = shadowRoot.querySelectorAll('[data-acd-chat-color]');
+            chatColored.forEach((el) => el.removeAttribute('data-acd-chat-color'));
           }
         } catch (e) {
           // Suppress cleanup error for detached shadow roots
@@ -754,6 +784,39 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         return true;
       }
 
+      // Semantic status indicators, swatches, and user-selected Chat Color bubble preservation
+      if (element.matches) {
+        if (
+          element.matches('[class*="chatIndividualMessageContentWrapperDiv"]') ||
+          element.matches('[class*="chatMenuItemColorCode"]') ||
+          element.matches('[class*="colorSwatch"]') ||
+          element.matches('[class*="chatIndividualMessageContent"][style*="color"]') ||
+          element.matches('[class*="ConnectionStatus"]') ||
+          element.matches('[class*="connectionStatus"]') ||
+          element.matches('[class*="AudioDropDownActiveIcon"]') ||
+          element.matches('[class*="AudioDropDownInactiveIcon"]') ||
+          element.matches('[class*="centrePaneAudioDropDownActiveIcon"]') ||
+          element.matches('[class*="centrePaneAudioDropDownInactiveIcon"]') ||
+          element.matches('[class*="notificationCountDiv"]') ||
+          element.matches('[class*="Toast-typeIcon"]')
+        ) {
+          return true;
+        }
+      }
+
+      // Chat message bubble subtree and chat swatches must not be touched by Layer 1 dynamic coloring
+      try {
+        if (element.closest && (
+          element.closest('[class*="chatIndividualMessageContentWrapperDiv"]') ||
+          element.closest('[class*="chatIndividualMessage"]') ||
+          element.closest('[class*="chatContentArea"]') ||
+          element.closest('[class*="chatColorMenuItem"]') ||
+          element.closest('[class*="chatMenuItemColor"]')
+        )) {
+          return true;
+        }
+      } catch (e) {}
+
       // Ancestor check for media / presentation containers
       try {
         if (element.closest && element.closest(SENSITIVE_CONTAINER_SELECTORS)) {
@@ -803,6 +866,190 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         b: parseInt(match[3], 10),
         a: match[4] !== undefined ? parseFloat(match[4]) : 1.0
       };
+    }
+
+    /**
+     * Parse rgb/rgba or hex color string from inline style without mutating DOM
+     */
+    parseColorValue(rawStr) {
+      if (!rawStr || typeof rawStr !== 'string') return null;
+      const trimmed = rawStr.trim().toLowerCase();
+      if (
+        !trimmed ||
+        trimmed === 'transparent' ||
+        trimmed === 'none' ||
+        trimmed === 'inherit' ||
+        trimmed === 'initial' ||
+        trimmed === 'unset'
+      ) {
+        return null;
+      }
+      if (trimmed === 'white') {
+        return { r: 255, g: 255, b: 255, a: 1.0 };
+      }
+
+      const rgb = this.parseRgb(trimmed);
+      if (rgb) return rgb;
+
+      const hexMatch = trimmed.match(/#([0-9a-f]{3,8})\b/i);
+      if (hexMatch) {
+        const hex = hexMatch[1];
+        if (hex.length === 3) {
+          return {
+            r: parseInt(hex[0] + hex[0], 16),
+            g: parseInt(hex[1] + hex[1], 16),
+            b: parseInt(hex[2] + hex[2], 16),
+            a: 1.0
+          };
+        }
+        if (hex.length >= 6) {
+          return {
+            r: parseInt(hex.slice(0, 2), 16),
+            g: parseInt(hex.slice(2, 4), 16),
+            b: parseInt(hex.slice(4, 6), 16),
+            a: 1.0
+          };
+        }
+      }
+      return null;
+    }
+
+    /**
+     * Extract native inline background / background-color from a chat bubble element
+     * without reading computed styles or mutating inline style attributes.
+     */
+    extractInlineBackground(element) {
+      if (!element) return '';
+      if (element.style) {
+        if (element.style.backgroundColor) return element.style.backgroundColor;
+        if (element.style.background) return element.style.background;
+      }
+      if (element.getAttribute) {
+        const rawStyle = element.getAttribute('style');
+        if (rawStyle) {
+          const match = rawStyle.match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i);
+          if (match && match[1]) return match[1].trim();
+        }
+      }
+      return '';
+    }
+
+    /**
+     * Isolated Semantic Chat Bubble Color Classifier
+     * Maps native Adobe Connect inline bubble background RGB to one of:
+     * 'default' | 'red' | 'orange' | 'green' | 'brown' | 'purple' | 'pink' | 'blue' | 'grey'
+     */
+    classifyChatBubbleColor(rawColorStr) {
+      const rgb = this.parseColorValue(rawColorStr);
+      if (!rgb || rgb.a < 0.15) return 'default';
+
+      const { r, g, b } = rgb;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const delta = max - min;
+      const avg = (r + g + b) / 3;
+
+      const l = (max + min) / 510;
+      const s = delta === 0 ? 0 : delta / (255 - Math.abs(max + min - 255));
+
+      // 1. Achromatic / Near-Achromatic (Default light neutral vs explicit Grey chat color)
+      if (delta <= 10 || s < 0.065) {
+        // Native Adobe default bubble surfaces (#FFFFFF, #FAFAFA, #F5F5F5, #F0F0F0, #EEEEEE)
+        // or already-dark surfaces map to 'default'
+        if (avg >= 236 || avg <= 55) {
+          return 'default';
+        }
+        // Medium-light neutral pastel (e.g. rgb(228, 228, 228), rgb(218, 218, 218)) maps to 'grey'
+        return 'grey';
+      }
+
+      // Compute Hue in degrees [0, 360)
+      let h = 0;
+      if (max === r) {
+        h = ((g - b) / delta) * 60;
+        if (h < 0) h += 360;
+      } else if (max === g) {
+        h = ((b - r) / delta + 2) * 60;
+      } else {
+        h = ((r - g) / delta + 4) * 60;
+      }
+
+      // 2. Green (e.g. confirmed Adobe Connect Green rgb(215, 235, 218) -> h = 129°)
+      if (h >= 75 && h <= 168) {
+        return 'green';
+      }
+
+      // 3. Blue (e.g. rgb(212, 229, 247) -> h = 211°)
+      if (h > 168 && h <= 250) {
+        return 'blue';
+      }
+
+      // 4. Purple (e.g. rgb(228, 215, 242) -> h = 269°)
+      if (h > 250 && h <= 300) {
+        return 'purple';
+      }
+
+      // 5. Pink (e.g. rgb(247, 215, 232) -> h = 328°, or rose tint with b > g + 5)
+      if ((h > 300 && h <= 345) || (h > 345 && h <= 355 && b > g + 5)) {
+        return 'pink';
+      }
+
+      // 6. Red (e.g. rgb(245, 215, 215) -> h = 0°)
+      if (h > 345 || h <= 14) {
+        return 'red';
+      }
+
+      // 7. Warm band (14° < h < 75°): Distinguish Orange vs Brown
+      if (l >= 0.65) {
+        // Pastel bubble: Orange has higher saturation and bright red channel; Brown/Tan is muted
+        if (s >= 0.46 && r >= 240 && h <= 48) {
+          return 'orange';
+        }
+        return 'brown';
+      }
+
+      // Darker/medium swatch fallback
+      if (l < 0.48 || s < 0.55) {
+        return 'brown';
+      }
+      return 'orange';
+    }
+
+    /**
+     * Classify a single chatIndividualMessageContentWrapperDiv element
+     * and set data-acd-chat-color without mutating native inline styles.
+     */
+    classifyChatBubble(element) {
+      if (!element || element.nodeType !== Node.ELEMENT_NODE) return;
+      const rawBg = this.extractInlineBackground(element);
+      const family = this.classifyChatBubbleColor(rawBg);
+      if (element.getAttribute('data-acd-chat-color') !== family) {
+        element.setAttribute('data-acd-chat-color', family);
+      }
+    }
+
+    /**
+     * Classify all chat message bubbles inside a root container or subtree
+     */
+    classifyChatBubblesInTree(root) {
+      if (!root) return;
+      try {
+        if (
+          root.nodeType === Node.ELEMENT_NODE &&
+          typeof root.className === 'string' &&
+          root.className.indexOf('chatIndividualMessageContentWrapperDiv--') !== -1
+        ) {
+          this.classifyChatBubble(root);
+        }
+        if (root.querySelectorAll) {
+          const bubbles = root.querySelectorAll(
+            '[class^="chatIndividualMessageContentWrapperDiv--"], [class*=" chatIndividualMessageContentWrapperDiv--"]'
+          );
+          for (let i = 0; i < bubbles.length; i++) {
+            this.classifyChatBubble(bubbles[i]);
+          }
+        }
+      } catch (e) {}
     }
 
     /**

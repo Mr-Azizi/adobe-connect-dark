@@ -34,7 +34,53 @@
   --acd-text-muted: #7F8A96;     /* Low contrast metadata, timestamps */
   --acd-text-disabled: #545E6B;  /* Disabled text */
   --acd-text-placeholder: #636F7D; /* Input placeholder text */
+  --acd-icon-primary: #B8C0CA;   /* Default icon foreground (matches secondary text) */
+  --acd-icon-hover: #F0F3F6;     /* Hovered icon foreground (matches primary text) */
+  --acd-control-hover: #222A34;  /* Control hover surface background */
   --acd-font-chat: "Vazirmatn", Tahoma, Arial, sans-serif; /* Persian / Arabic friendly chat font stack */
+
+  /* ==========================================================================
+     Dark-Compatible Chat Bubble & Semantic Color Family Tokens
+     Maps Adobe Connect Chat Colors (Default + 8 semantic families) to subtle,
+     non-fluorescent dark tinted surfaces with light high-contrast typography.
+     ========================================================================== */
+  --acd-chat-bubble-default: #1E242D;        /* Slightly elevated neutral dark bubble */
+  --acd-chat-bubble-default-border: rgba(255, 255, 255, 0.07);
+
+  --acd-chat-bubble-red: #311C21;            /* Subtle dark crimson tint */
+  --acd-chat-bubble-red-border: rgba(248, 81, 73, 0.28);
+  --acd-chat-sender-red: #FCA5A5;
+
+  --acd-chat-bubble-orange: #312318;         /* Subtle dark amber/terracotta tint */
+  --acd-chat-bubble-orange-border: rgba(230, 145, 56, 0.28);
+  --acd-chat-sender-orange: #FDBA74;
+
+  --acd-chat-bubble-green: #192E26;          /* Subtle dark emerald/forest green tint */
+  --acd-chat-bubble-green-border: rgba(63, 185, 80, 0.28);
+  --acd-chat-sender-green: #6EE7B7;
+
+  --acd-chat-bubble-brown: #2A221D;          /* Subtle dark warm espresso/taupe tint */
+  --acd-chat-bubble-brown-border: rgba(186, 146, 112, 0.26);
+  --acd-chat-sender-brown: #E2C2A2;
+
+  --acd-chat-bubble-purple: #261E34;         /* Subtle dark plum/violet tint */
+  --acd-chat-bubble-purple-border: rgba(163, 113, 247, 0.28);
+  --acd-chat-sender-purple: #C4B5FD;
+
+  --acd-chat-bubble-pink: #311D2B;           /* Subtle dark rose/magenta tint */
+  --acd-chat-bubble-pink-border: rgba(236, 108, 180, 0.28);
+  --acd-chat-sender-pink: #F9A8D4;
+
+  --acd-chat-bubble-blue: #19273A;           /* Subtle dark navy/cobalt tint */
+  --acd-chat-bubble-blue-border: rgba(110, 168, 254, 0.28);
+  --acd-chat-sender-blue: #93C5FD;
+
+  --acd-chat-bubble-grey: #262C36;           /* Neutral dark-slate variation */
+  --acd-chat-bubble-grey-border: rgba(184, 192, 202, 0.18);
+  --acd-chat-sender-grey: #CBD5E1;
+
+  --acd-chat-bubble-text: #F0F3F6;           /* High-contrast light text across all dark bubbles */
+  --acd-chat-bubble-time: #B8C0CA;           /* Readable light-secondary timestamp on dark bubbles */
 
   /* ==========================================================================
      Borders & Dividers

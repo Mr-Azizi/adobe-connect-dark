@@ -52,7 +52,8 @@
       this.observer.observe(target, {
         childList: true,
         subtree: true,
-        attributes: false,
+        attributes: true,
+        attributeFilter: ['style'],
         characterData: false
       });
 
@@ -85,10 +86,25 @@
 
       for (let i = 0; i < mutations.length; i++) {
         const mutation = mutations[i];
+        if (mutation.type === 'attributes') {
+          const target = mutation.target;
+          if (
+            target &&
+            target.nodeType === Node.ELEMENT_NODE &&
+            typeof target.className === 'string' &&
+            target.className.indexOf('chatIndividualMessageContentWrapperDiv--') !== -1
+          ) {
+            this.themeEngine.classifyChatBubble(target);
+          }
+          continue;
+        }
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
           for (let j = 0; j < mutation.addedNodes.length; j++) {
             const node = mutation.addedNodes[j];
             if (node.nodeType === Node.ELEMENT_NODE && !IGNORE_TAGS.has(node.tagName.toUpperCase())) {
+              // Immediately classify any chat message bubbles in this added subtree (zero-FOUC)
+              this.themeEngine.classifyChatBubblesInTree(node);
+
               // Collect node AND candidate descendants within this mounted subtree
               const candidates = this.themeEngine.getCandidateElements(node);
               for (let k = 0; k < candidates.length; k++) {
