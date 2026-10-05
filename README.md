@@ -9,7 +9,7 @@
 
 A source-driven Chromium extension (Manifest V3) that modernizes the Adobe Connect web interface while strictly preserving shared slides, PDFs, whiteboards, video streams, and screen sharing.
 
-[![Version](https://img.shields.io/badge/version-1.8.0-6EA8FE?style=flat-square)](#v180)
+[![Version](https://img.shields.io/badge/version-1.8.4-6EA8FE?style=flat-square)](#v184)
 [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#technical-architecture)
 [![Chrome](https://img.shields.io/badge/Chrome-supported-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](#browser-compatibility)
 [![Edge](https://img.shields.io/badge/Edge-supported-0C59A4?style=flat-square&logo=microsoftedge&logoColor=white)](#browser-compatibility)
@@ -84,7 +84,7 @@ A source-driven Chromium extension (Manifest V3) that modernizes the Adobe Conne
 - [Troubleshooting](#troubleshooting)
 - [Development & Contributing](#development)
 - [Manual QA Checklist](#qa-checklist)
-- [Release Notes (v1.8.0)](#release-notes)
+- [Release Notes (v1.8.4)](#release-notes)
 - [License & Disclaimer](#license)
 - [راهنمای سریع فارسی](#persian-guide)
 
@@ -173,7 +173,7 @@ In addition to visual theming, it provides an independent **RTL Chat Text** engi
 The extension features are structured as independent top-level modules, with the exception of outgoing formatting, which operates as a sub-feature under RTL Chat Text:
 
 ```text
-Adobe Connect Dark (v1.8.0)
+Adobe Connect Dark (v1.8.2)
 │
 ├── Dark Mode (Top-level)
 │   └── Independent activation
@@ -311,7 +311,7 @@ The extension popup provides clear, per-site toggles with real-time state feedba
 | **Two-Row Chat Layout** | `#chat-two-row-toggle` | Toggles the two-row sender/message layout for the current site. |
 | **Reset Site Button** | `#reset-btn` | Clears all stored settings for the origin, unregisters content scripts, and revokes host permission. |
 | **Protected Content Note** | `.safety-badge` | Displays safety notice: *"Webcam, screen share & slides protected"*. |
-| **Version Indicator** | `#extension-version` | Automatically displays the version read from `manifest.json` (`v1.8.0`). |
+| **Version Indicator** | `#extension-version` | Automatically displays the version read from `manifest.json` (`v1.8.2`). |
 
 ---
 
@@ -769,6 +769,56 @@ Before committing or releasing updates, verify the following checklist in a real
 <a id="release-notes"></a>
 
 ## Release Notes
+
+<a id="v184"></a>
+
+### v1.8.4 — Dark Chat Color Mapping Fix
+
+- **Fixed Light/Default Adobe Chat Bubbles Leaking into Dark Mode**: Resolved the v1.8.3 regression where normal/default Adobe Connect chat messages (which also carry inline `background` styles such as `rgb(245, 245, 245)` or `#ffffff`) were treated as custom Chat Colors and rendered as bright white/light-grey cards inside Dark Mode.
+- **Replaced Broad Inline-Background Detection with Semantic Chat Color Mapping**: Removed the `[style*="background"]` assumption and introduced an isolated, non-destructive semantic classifier (`classifyChatBubbleColor`) that maps native inline bubble RGB values to `data-acd-chat-color="default | red | orange | green | brown | purple | pink | blue | grey"`.
+- **Added Dark-Compatible Variants for Adobe Chat Colors**: Designed subtle, non-fluorescent dark-tinted bubble surfaces (`--acd-chat-bubble-red`, `orange`, `green`, `brown`, `purple`, `pink`, `blue`, `grey`), hue-aware light sender accents, subtle borders, and crisp light primary text (`#F0F3F6`) so selected Chat Colors remain visually distinguishable without breaking Dark Mode aesthetics.
+- **Preserved RTL, Two-Row & Native Chat State**: Maintained 100% independence of RTL/LTR line classification (`data-acd-bidi-dir`), Send RTL Formatting, Two-Row layout (`data-acd-chat-two-row`), self-message alignment (`margin-left: auto`), and full native appearance restoration when Dark Mode is turned off.
+
+---
+
+<a id="v183"></a>
+
+### v1.8.3 — Chat Color & Bubble Fix
+
+- **User-Selected Chat Color Bubble Preservation**: Fixed the root cause where Adobe Connect applies user-selected Chat Colors (`Green`, `Red`, `Blue`, `Grey`, etc.) as an inline `background` / `background-color` directly on `chatIndividualMessageContentWrapperDiv` (e.g., `style="background: rgb(215, 235, 218); ..."`). Default dark bubble backgrounds (`var(--acd-chat-bubble-default)`) are now strictly scoped with `:not([style*="background" i])` so Adobe's inline colored bubble backgrounds win unconditionally.
+- **High-Contrast Typography on Pastel Colored Bubbles**: Added dedicated high-contrast dark foreground tokens (`--acd-chat-colored-sender: #1F242B`, `--acd-chat-colored-text: #2C2C2C`, `--acd-chat-colored-time: #4B4B4B`) for sender names, message bodies, timestamps, and links when rendered inside a user-colored pastel chat bubble, preventing low-contrast white-on-pastel text while keeping default dark bubbles styled with light foregrounds.
+- **Non-Destructive Inline Style & Layout Coexistence**: Preserved all native inline layout declarations (`padding`, `margin-left: auto`) on `chatIndividualMessageContentWrapperDiv` alongside `data-acd-chat-two-line="true"`, RTL/LTR line classification (`data-acd-bidi-dir`), and Send RTL Formatting in both Normal DOM and Open Shadow DOM.
+
+---
+
+<a id="v182"></a>
+
+### v1.8.2
+
+- **Spectrum Substring Selector Refactoring**: Replaced broad substring selectors (`[class*="spectrum-Dialog"]`, `[class*="spectrum-Toast"]`, `[class*="spectrum-Popover"]`, `[class*="spectrum-Menu"]`, `[class*="spectrum-Picker"]`, `[class*="spectrum-Dropdown"]`) across all stylesheets with exact token and root component selectors (`.spectrum-Dialog, [class~="spectrum-Dialog"], [class^="spectrum-Dialog--"]`). Child elements (`header`, `content`, `footer`, `typeIcon`) are now styled strictly as layout/typography containers rather than independent nested cards.
+- **Normal DOM & Shadow DOM Menu Parity**: Unified Open Shadow DOM menus with Normal DOM hierarchy. The Popover container now functions as the single unified card surface (`--acd-bg-elevated`, subtle border, 6px radius, soft shadow), while inner menus are fully flat and transparent with subtle hover/selection highlights and thin dividers.
+- **Preserved Chat Colors & Swatches**: Prevented Layer 1 dynamic luminance detection (`data-acd-text="dark"`, `data-acd-surface="bright"`) from touching chat messages, message wrappers, or color palette swatches. User-selected chat text colors (Red, Green, Blue, Grey) and color dots in the palette now strictly preserve their native inline styles while coexisting smoothly with RTL/LTR classification and Two-Row layout.
+- **Dialog & Toast Root-vs-Child Architecture**: Cleanly separated root elevation from child elements in all Dialogs (Connection Status, Switch to Application, Alerts, Manage Pods) and Toasts. Header and footer elements render with clean divider borders only, while body content remains transparent without nested borders or conflicting box shadows.
+- **Single Chat Tab Active Indicator**: Solved duplicate underlines on active chat tabs by isolating the native selected text element (`.chatTabDisplayNameSelected`) and eliminating inherited underlines from generic tab buttons and tab wrappers.
+- **Semantic Icon Preservation in Shadow DOM**: Harmonized Shadow DOM icon handling with Normal DOM, explicitly excluding semantic SVG icons (active audio green `#33ab84`, muted red `#ec5b62`, connection status, and toast type icons) from monochrome overrides.
+
+---
+
+<a id="v181"></a>
+
+### v1.8.1
+
+- **Top Navigation & Toolbar Consistency**: Unified all toolbar icons, meeting title, dropdown arrows, and user status controls using a coherent foreground token system (`--acd-text-secondary`, `--acd-icon-primary`, `--acd-control-hover`, `--acd-icon-hover`, `--acd-accent`), while strictly preserving native semantic status indicators (active audio green `#33ab84`, muted audio red `#ec5b62`, and network connection states).
+- **Refined Menu & Dropdown Visual Hierarchy**: Overhauled context and dropdown menus (Raise Hand, Pod options, Meeting settings) to render as single, clean elevated cards (`--acd-bg-elevated`, subtle 1px border, 6px border radius, soft drop shadow). Stripped button-like bevels and standalone backgrounds from menu items, implementing subtle flat hover and selection highlights with low-contrast section dividers.
+- **Zero-Flash Connection Status Dialog**: Applied explicit, high-priority dark theme rules to `[class*="connectionDetail--"]` at `document_start`, completely eliminating the brief white flash (FOUC) when clicking the connection status indicator.
+- **Immediate Transient UI Theming**: Unified instant dark styling for toasts, alerts, and temporary notifiers (`.spectrum-Toast`, `.react-spectrum-ToastContainer`, `centerNotifiers--...`, `rightNotifiers--...`, `.spectrum-Alert`), ensuring zero-flash presentation while protecting semantic alert type icons.
+- **"Switch to Desktop Application" Dialog Theming**: Overrode high-specificity native ID rules (`#confirmationDialog`, `#notificationDialog`, `.promotionDialog--...`), rendering the modal dialog, header, body, steps, and footer with consistent dark styling, readable typography, and accessible action buttons.
+- **Native Chat Color Swatches & Custom Message Colors**: Preserved native Adobe Connect color dots in the Chat Color menu palette without theme flattening. Message bodies with custom user-selected colors now strictly preserve their native inline color while maintaining full RTL/LTR bidirectional classification.
+- **Clean Chat Composer Focus Ring**: Eliminated stacked borders, double outlines, and bottom-border asymmetry on `#chatChildContainerWrapper` and `.childContainerDiv`, standardizing on a single, focused accent ring.
+- **Unfocused / Blurred Chat Composer Contrast**: Fixed low-contrast black-on-dark text regression when blurring the chat input field, guaranteeing that typed draft text remains crisp and readable (`--acd-text-primary`) whether focused or blurred.
+- **Streamlined Chat Active Tab Indicator**: Removed duplicate underline borders and misaligned offsets on active chat tabs and private chat tabs with close buttons, enforcing a single, precise 2px accent underline.
+
+---
 
 <a id="v180"></a>
 
