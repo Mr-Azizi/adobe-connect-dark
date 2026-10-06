@@ -8,6 +8,11 @@
     "type": "git",
     "url": "git+https://github.com/Mr-Azizi/adobe-connect-dark.git"
   },
+  "scripts": {
+    "build": "npm run build:darkreader",
+    "build:darkreader": "node scripts/build-darkreader.mjs",
+    "verify:darkreader": "node scripts/verify-darkreader.mjs"
+  },
   "dependencies": {
     "darkreader": "4.9.133"
   }

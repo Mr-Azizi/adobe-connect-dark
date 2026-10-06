@@ -217,8 +217,8 @@
         const blob = await response.blob();
         const dataURL = await new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.addEventListener("loadend", () => resolve(reader.result), {once: true});
-            reader.addEventListener("error", () => reject(reader.error), {once: true});
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
             reader.readAsDataURL(blob);
         });
         return dataURL;
@@ -3031,8 +3031,8 @@
     async function loadImage(url) {
         return new Promise((resolve, reject) => {
             const image = new Image();
-            image.addEventListener("load", () => resolve(image), {once: true});
-            image.addEventListener("error", () => reject(`Unable to load image ${url}`), {once: true});
+            image.onload = () => resolve(image);
+            image.onerror = () => reject(`Unable to load image ${url}`);
             if (
                 ++loadingImagesCount <= INCOMPLETE_DOC_LOADING_IMAGE_LIMIT ||
                 isReadyStateComplete()
@@ -7585,14 +7585,14 @@
             const blob = new Blob([bytes], {type: "image/svg+xml"});
             const objectURL = URL.createObjectURL(blob);
             const image = new Image();
-            image.addEventListener("load", () => {
+            image.onload = () => {
                 blobURLAllowed = true;
                 sendBlobURLCheckResponse();
-            }, {once: true});
-            image.addEventListener("error", () => {
+            };
+            image.onerror = () => {
                 blobURLAllowed = false;
                 sendBlobURLCheckResponse();
-            }, {once: true});
+            };
             image.src = objectURL;
         }
         function sendBlobURLCheckResponse() {
@@ -8362,7 +8362,23 @@
         registerVariablesSheet(variableStyle.sheet);
         const rootVarsStyle = createOrUpdateStyle("darkreader--root-vars");
         injectStaticStyle(rootVarsStyle, variableStyle, "root-vars");
+        const enableStyleSheetsProxy = !(
+            fixes && fixes.disableStyleSheetsProxy
+        );
+        const enableCustomElementRegistryProxy = !(
+            fixes && fixes.disableCustomElementRegistryProxy
+        );
         document.dispatchEvent(new CustomEvent("__darkreader__cleanUp"));
+        {
+            document.dispatchEvent(
+                new CustomEvent("__darkreader__stylesheetProxy__arg", {
+                    detail: {
+                        enableStyleSheetsProxy,
+                        enableCustomElementRegistryProxy
+                    }
+                })
+            );
+        }
         const overrideStyle = createOrUpdateStyle("darkreader--override");
         overrideStyle.textContent =
             fixes && fixes.css ? replaceCSSTemplates(fixes.css) : "";
@@ -8844,8 +8860,6 @@
                 palette.border.forEach((color) =>
                     modifyBorderColor(color, theme)
                 );
-                prevTheme = theme;
-                prevFixes = fixes;
                 return;
             }
             clearColorPalette();

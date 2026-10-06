@@ -355,7 +355,9 @@ Adobe Connect Dark is distributed as an unpacked Manifest V3 browser extension f
    - Pin the extension icon to your browser toolbar for quick access.
 
 > [!NOTE]
-> No build step, Node.js compile, or bundler is required. The extension runs directly from its source files.
+> **For End Users:** No build step, Node.js, or `npm` is required. `vendor/darkreader.js` is pre-generated and committed intentionally so you can download the repository or release ZIP and **Load unpacked** directly.
+>
+> **For Developers / Maintainers:** `vendor/darkreader.js` is reproducibly generated from `darkreader@4.9.133`. To rebuild and verify it from clean dependencies, run `npm ci && npm run build:darkreader && npm run verify:darkreader` (see [BUILDING.md](BUILDING.md)).
 
 ---
 
