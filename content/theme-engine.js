@@ -11,15 +11,28 @@
   // Prevent multiple definitions
   if (window.__ACD_THEME_ENGINE__) return;
 
-  const STYLESHEET_PATHS = [
+  const DARK_ENGINE = window.__ACD_DARK_ENGINE__ || 'darkreader'; // 'darkreader' | 'legacy'
+
+  const FUNCTIONAL_STYLESHEET_PATHS = [
+    'styles/chat-functional.css'
+  ];
+
+  const CHAT_COLOR_STYLESHEET_PATHS = [
+    'styles/chat-colors.css'
+  ];
+
+  const LEGACY_DARK_STYLESHEET_PATHS = [
     'styles/variables.css',
     'styles/base.css',
     'styles/adobe-connect.css',
     'styles/components.css',
     'styles/connect-central.css'
   ];
+  const STYLESHEET_PATHS = LEGACY_DARK_STYLESHEET_PATHS;
 
   const SHADOW_STYLESHEET_PATH = 'styles/shadow-dom.css';
+  const SHADOW_FUNCTIONAL_STYLESHEET_PATH = 'styles/chat-functional.css';
+  const SHADOW_CHAT_COLOR_STYLESHEET_PATH = 'styles/chat-colors.css';
 
   const CHAT_LAYOUT_STYLE_ID = 'acd-chat-layout-style';
   const CHAT_LAYOUT_CSS = `
@@ -184,17 +197,171 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
 
   class ACDThemeEngine {
     constructor() {
+      this.darkEngine = window.__ACD_DARK_ENGINE__ || DARK_ENGINE;
+      this.darkReaderEngine = window.__ACD_DARKREADER_ENGINE__ || null;
       this.enabled = false;
+      this.themePreset = this.normalizeThemePreset(
+        (this.darkReaderEngine && typeof this.darkReaderEngine.getPreset === 'function')
+          ? this.darkReaderEngine.getPreset()
+          : (window.__ACD_INITIAL_THEME_PRESET__ || 'dark')
+      );
       this.chatRtlEnabled = false;
       this.sendRtlFormattingEnabled = true;
       this.chatTwoRowEnabled = false;
       this.observer = null; // Associated ACDObserver
       this.injectedElements = new Set();
+      this.injectedLegacyDarkElements = new Set();
+      this.injectedChatColorElements = new Set();
       this.attachedShadowRoots = new Set();
       this.shadowObservers = new Map(); // Map<ShadowRoot, MutationObserver>
       this.hasScannedInitialDOM = false;
       this.processQueue = [];
       this.isProcessingQueue = false;
+      this.updateDebugState();
+    }
+
+    /**
+     * Normalize any preset identifier safely to a registered preset ID ('dark' fallback)
+     */
+    normalizeThemePreset(presetId) {
+      if (window.ACDThemePresets && typeof window.ACDThemePresets.normalizePresetId === 'function') {
+        return window.ACDThemePresets.normalizePresetId(presetId);
+      }
+      const drEngine = this.darkReaderEngine || window.__ACD_DARKREADER_ENGINE__;
+      if (drEngine && typeof drEngine.normalizePresetId === 'function') {
+        return drEngine.normalizePresetId(presetId);
+      }
+      return 'dark';
+    }
+
+    /**
+     * Return current theme preset ID ('dark' | 'amoled' | 'dim' | 'warm')
+     */
+    getThemePreset() {
+      const drEngine = this.darkReaderEngine || window.__ACD_DARKREADER_ENGINE__;
+      if (drEngine && typeof drEngine.getPreset === 'function') {
+        this.themePreset = drEngine.getPreset();
+      }
+      return this.themePreset || 'dark';
+    }
+
+    /**
+     * Return available theme presets from the central preset registry
+     */
+    getAvailablePresets() {
+      if (window.ACDThemePresets && typeof window.ACDThemePresets.getAvailablePresets === 'function') {
+        return window.ACDThemePresets.getAvailablePresets();
+      }
+      const drEngine = this.darkReaderEngine || window.__ACD_DARKREADER_ENGINE__;
+      if (drEngine && typeof drEngine.getAvailablePresets === 'function') {
+        return drEngine.getAvailablePresets();
+      }
+      return [];
+    }
+
+    /**
+     * Update the selected theme preset.
+     * - When Dark Mode is ON, immediately updates Dark Reader live without reload.
+     * - When Dark Mode is OFF, stores the preset preference without darkening the page.
+     */
+    setThemePreset(presetId) {
+      const resolvedPreset = this.normalizeThemePreset(presetId);
+      this.themePreset = resolvedPreset;
+
+      const drEngine = this.darkReaderEngine || window.__ACD_DARKREADER_ENGINE__;
+      if (drEngine && typeof drEngine.setPreset === 'function') {
+        drEngine.setPreset(resolvedPreset);
+      }
+
+      const root = document.documentElement;
+      if (this.enabled && this.isDarkReaderEngine() && root) {
+        root.setAttribute('data-acd-theme-preset', resolvedPreset);
+      }
+
+      this.updateDebugState();
+      return resolvedPreset;
+    }
+
+    /**
+     * Synchronize window.__ACD_DEBUG__ state
+     */
+    updateDebugState() {
+      const drEngine = this.darkReaderEngine || window.__ACD_DARKREADER_ENGINE__;
+      const darkReaderEnabled = Boolean(
+        this.enabled &&
+        this.isDarkReaderEngine() &&
+        drEngine &&
+        typeof drEngine.isEnabled === 'function' &&
+        drEngine.isEnabled()
+      );
+
+      window.__ACD_DEBUG__ = {
+        darkEngine: this.getDarkEngine(),
+        themeEnabled: Boolean(this.enabled),
+        themePreset: this.getThemePreset(),
+        darkReaderEnabled
+      };
+    }
+
+    /**
+     * Return active dark engine identifier ('darkreader' | 'legacy')
+     */
+    getDarkEngine() {
+      return window.__ACD_DARK_ENGINE__ || this.darkEngine || DARK_ENGINE;
+    }
+
+    /**
+     * Check whether Dark Reader engine mode is selected
+     */
+    isDarkReaderEngine() {
+      return this.getDarkEngine() === 'darkreader';
+    }
+
+    /**
+     * Check whether legacy custom dark engine mode is selected
+     */
+    isLegacyDarkEngine() {
+      return this.getDarkEngine() === 'legacy';
+    }
+
+    /**
+     * Check whether legacy generic visual engine work should execute
+     */
+    shouldRunLegacyVisualEngine() {
+      return Boolean(this.enabled && this.isLegacyDarkEngine());
+    }
+
+    /**
+     * Separate capability gate for semantic Adobe Chat Color classification.
+     * Returns true when Dark Mode is enabled (for BOTH 'darkreader' and 'legacy')
+     * and, if a specific root element is passed, when Adobe Connect chat is present.
+     */
+    shouldRunChatColorMapping(root) {
+      if (!this.enabled) return false;
+      if (!this.isDarkReaderEngine() && !this.isLegacyDarkEngine()) return false;
+      if (root && root.nodeType === Node.ELEMENT_NODE) {
+        if (
+          typeof root.className === 'string' &&
+          root.className.indexOf('chatIndividualMessageContentWrapperDiv--') !== -1
+        ) {
+          return true;
+        }
+        if (root.querySelector) {
+          return Boolean(
+            root.querySelector(
+              '[class^="chatIndividualMessageContentWrapperDiv--"], [class*=" chatIndividualMessageContentWrapperDiv--"], #chatPod, [class^="chatPod--"], [class*=" chatPod--"], [class^="chatContentArea--"], [class*=" chatContentArea--"]'
+            )
+          );
+        }
+      }
+      return true;
+    }
+
+    /**
+     * Check whether any extension feature (Dark Mode, RTL Chat, or Two-Row Layout) is active
+     */
+    hasAnyActiveFeature() {
+      return Boolean(this.enabled || this.chatRtlEnabled || this.chatTwoRowEnabled);
     }
 
     /**
@@ -246,7 +413,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
      */
     setObserver(observer) {
       this.observer = observer;
-      if (this.enabled && !observer.isObserving) {
+      if (this.hasAnyActiveFeature() && !observer.isObserving) {
         observer.start();
       }
     }
@@ -276,9 +443,56 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
      * CONSOLIDATED IDEMPOTENT ACTIVATION PATH
      * Executed identically by automatic page load and manual popup toggle.
      */
-    applyDarkTheme() {
+    applyDarkTheme(presetId) {
       const wasAlreadyEnabled = this.enabled;
       this.enabled = true;
+      if (presetId !== undefined) {
+        this.themePreset = this.normalizeThemePreset(presetId);
+      }
+
+      if (this.isDarkReaderEngine()) {
+        // Dark Reader mode:
+        // 1. Ensure legacy root attribute and legacy dark stylesheets are not active
+        const root = document.documentElement;
+        if (root) {
+          if (root.hasAttribute('data-acd-theme')) {
+            root.removeAttribute('data-acd-theme');
+          }
+          root.setAttribute('data-acd-theme-preset', this.themePreset);
+        }
+        this.cleanupLegacyDarkStylesheets();
+
+        // 2. Inject functional stylesheets (Vazirmatn font, RTL Chat, BiDi, Two-Row) + chat-colors.css
+        this.injectStylesheets(document);
+
+        // 3. Keep ACDObserver active for chat color classification and functional Shadow DOM discovery
+        if (this.observer && !this.observer.isObserving) {
+          this.observer.start();
+        }
+
+        // 4. Enable Dark Reader engine with the selected preset (no legacy luminance scanning)
+        const drEngine = this.darkReaderEngine || window.__ACD_DARKREADER_ENGINE__;
+        if (drEngine && typeof drEngine.enable === 'function') {
+          drEngine.enable(this.themePreset);
+        } else if (typeof window.DarkReader !== 'undefined' && typeof window.DarkReader.enable === 'function') {
+          window.DarkReader.enable({ brightness: 100, contrast: 96, sepia: 0 });
+        }
+
+        // 5. Classify existing chat bubbles for semantic Chat Color preservation (without legacy luminance scanning)
+        this.scheduleChatColorScan();
+
+        // 6. Ensure functional Shadow DOM discovery for RTL / Two-Row / Chat Colors
+        this.scheduleFunctionalShadowDiscovery();
+
+        this.updateDebugState();
+        return;
+      }
+
+      // Legacy Dark Engine mode (identical to v1.8.5):
+      const drEngine = this.darkReaderEngine || window.__ACD_DARKREADER_ENGINE__;
+      if (drEngine && typeof drEngine.isEnabled === 'function' && drEngine.isEnabled()) {
+        drEngine.disable();
+      }
 
       // 1. Set root attribute immediately on documentElement to prevent white flash
       this.applyRootAttribute();
@@ -297,44 +511,62 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
       } else {
         this.scheduleInitialScan();
       }
+
+      this.updateDebugState();
     }
 
     /**
      * Backward-compatible alias for applyDarkTheme
      */
-    enable() {
-      this.applyDarkTheme();
+    enable(presetId) {
+      this.applyDarkTheme(presetId);
     }
 
     /**
      * CONSOLIDATED DEACTIVATION PATH
-     * Cleanly restores native appearance and disconnects all observers.
+     * Cleanly restores native appearance and disconnects observers if no functional feature remains active.
      */
     removeDarkTheme() {
-      if (!this.enabled) return;
+      if (!this.enabled) {
+        this.updateDebugState();
+        return;
+      }
       this.enabled = false;
       this.hasScannedInitialDOM = false;
 
-      // 1. Stop main MutationObserver
-      if (this.observer) {
+      // 1. Disable Dark Reader engine if active
+      const drEngine = this.darkReaderEngine || window.__ACD_DARKREADER_ENGINE__;
+      if (drEngine && typeof drEngine.disable === 'function') {
+        drEngine.disable();
+      } else if (typeof window.DarkReader !== 'undefined' && typeof window.DarkReader.disable === 'function') {
+        try {
+          window.DarkReader.disable();
+        } catch (e) {}
+      }
+
+      // 2. Stop main MutationObserver ONLY if neither RTL nor Two-Row remains active
+      if (this.observer && !this.hasAnyActiveFeature()) {
         this.observer.stop();
       }
 
-      // 2. Disconnect and clean up Open Shadow Roots
+      // 3. Disconnect or clean up Open Shadow Roots
       this.cleanupShadowRoots();
 
-      // 3. Remove root attribute
+      // 4. Remove root attributes
       const root = document.documentElement;
       if (root) {
         root.removeAttribute('data-acd-theme');
+        root.removeAttribute('data-acd-theme-preset');
       }
 
-      // 4. Remove all injected document stylesheet elements ONLY if neither chat RTL nor Two-Row is active
+      // 5. Always remove legacy dark and chat-color stylesheets; remove functional stylesheets only if neither RTL nor Two-Row is active
+      this.cleanupLegacyDarkStylesheets();
+      this.cleanupChatColorStylesheets();
       if (!this.chatRtlEnabled && !this.chatTwoRowEnabled) {
         this.cleanupStylesheets();
       }
 
-      // 5. Clean up Layer 1 and chat color attributes in main document
+      // 6. Clean up Layer 1 and chat color attributes in main document
       try {
         const brightSurfaces = document.querySelectorAll('[data-acd-surface]');
         brightSurfaces.forEach((el) => el.removeAttribute('data-acd-surface'));
@@ -350,6 +582,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
 
       this.processQueue = [];
       this.isProcessingQueue = false;
+      this.updateDebugState();
     }
 
     /**
@@ -360,9 +593,10 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     }
 
     /**
-     * Set attribute on html element as early as possible
+     * Set attribute on html element as early as possible (Legacy Dark Engine only)
      */
     applyRootAttribute() {
+      if (!this.isLegacyDarkEngine()) return;
       const root = document.documentElement;
       if (root && !root.hasAttribute('data-acd-theme')) {
         root.setAttribute('data-acd-theme', 'dark');
@@ -380,6 +614,10 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
       this.applyChatRtlAttribute();
       this.applySendRtlFormattingAttribute();
       this.injectStylesheets(document);
+      if (this.observer && !this.observer.isObserving) {
+        this.observer.start();
+      }
+      this.scheduleFunctionalShadowDiscovery();
     }
 
     /**
@@ -393,8 +631,12 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         root.removeAttribute('data-acd-send-rtl-formatting');
       }
 
-      // If neither dark mode, RTL, nor Two-Row is active, clean up injected stylesheets
-      if (!this.enabled && !this.chatRtlEnabled && !this.chatTwoRowEnabled) {
+      // If neither dark mode, RTL, nor Two-Row is active, clean up observers, shadow roots, and stylesheets
+      if (!this.hasAnyActiveFeature()) {
+        if (this.observer) {
+          this.observer.stop();
+        }
+        this.cleanupShadowRoots();
         this.cleanupStylesheets();
       }
     }
@@ -410,12 +652,13 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
       }
       this.injectStylesheets(document);
       this.ensureChatLayoutStyle(document);
+      if (this.observer && !this.observer.isObserving) {
+        this.observer.start();
+      }
       this.attachedShadowRoots.forEach((sr) => {
         this.ensureChatLayoutStyle(sr);
       });
-      if (document.body) {
-        this.scanForShadowRoots(document.body);
-      }
+      this.scheduleFunctionalShadowDiscovery();
     }
 
     /**
@@ -432,8 +675,12 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         this.removeChatLayoutStyle(sr);
       });
 
-      // If neither dark mode, RTL, nor Two-Row is active, clean up injected stylesheets
-      if (!this.enabled && !this.chatRtlEnabled && !this.chatTwoRowEnabled) {
+      // If neither dark mode, RTL, nor Two-Row is active, clean up observers, shadow roots, and stylesheets
+      if (!this.hasAnyActiveFeature()) {
+        if (this.observer) {
+          this.observer.stop();
+        }
+        this.cleanupShadowRoots();
         this.cleanupStylesheets();
       }
     }
@@ -471,6 +718,36 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     }
 
     /**
+     * Remove only legacy dark-theme stylesheet link elements while preserving functional chat CSS
+     */
+    cleanupLegacyDarkStylesheets() {
+      this.injectedLegacyDarkElements.forEach((el) => {
+        try {
+          if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        } catch (e) {}
+        this.injectedElements.delete(el);
+      });
+      this.injectedLegacyDarkElements.clear();
+    }
+
+    /**
+     * Remove dedicated semantic chat-color stylesheet link elements when Dark Mode is disabled
+     */
+    cleanupChatColorStylesheets() {
+      this.injectedChatColorElements.forEach((el) => {
+        try {
+          if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        } catch (e) {}
+        this.injectedElements.delete(el);
+      });
+      this.injectedChatColorElements.clear();
+    }
+
+    /**
      * Remove all injected document stylesheet link elements
      */
     cleanupStylesheets() {
@@ -484,13 +761,19 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         }
       });
       this.injectedElements.clear();
+      this.injectedLegacyDarkElements.clear();
+      this.injectedChatColorElements.clear();
     }
 
     /**
-     * Inject extension stylesheets into the document
+     * Inject extension stylesheets into the document.
+     * Separates:
+     *   1. Functional stylesheets (Vazirmatn font, RTL Chat, BiDi, Two-Row)
+     *   2. Semantic Chat Color stylesheet (styles/chat-colors.css) when Dark Mode is enabled
+     *   3. Legacy dark-theme stylesheets ONLY when Legacy Dark Engine is active
      */
     injectStylesheets(target) {
-      if (!this.enabled && !this.chatRtlEnabled && !this.chatTwoRowEnabled) return;
+      if (!this.hasAnyActiveFeature()) return;
 
       const container = target === document
         ? (document.head || document.documentElement)
@@ -498,7 +781,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
 
       if (!container) return;
 
-      STYLESHEET_PATHS.forEach((path) => {
+      const injectPath = (path, category) => {
         const id = 'acd-style-' + path.replace(/[\/\.]/g, '-');
 
         // Check if already injected in this target
@@ -512,10 +795,78 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         link.type = 'text/css';
         link.href = chrome.runtime.getURL(path);
         link.setAttribute('data-acd-injected', 'true');
+        if (category === 'legacy') {
+          link.setAttribute('data-acd-legacy-dark-injected', 'true');
+        } else if (category === 'chat-color') {
+          link.setAttribute('data-acd-chat-color-injected', 'true');
+        } else {
+          link.setAttribute('data-acd-functional-injected', 'true');
+        }
 
         container.appendChild(link);
         this.injectedElements.add(link);
-      });
+        if (category === 'legacy') {
+          this.injectedLegacyDarkElements.add(link);
+        } else if (category === 'chat-color') {
+          this.injectedChatColorElements.add(link);
+        }
+      };
+
+      // 1. Always inject functional CSS (Vazirmatn @font-face, RTL Chat, BiDi, Two-Row)
+      FUNCTIONAL_STYLESHEET_PATHS.forEach((path) => injectPath(path, 'functional'));
+
+      // 2. Inject dedicated semantic Chat Color CSS whenever Dark Mode is enabled (Dark Reader + Legacy)
+      if (this.shouldRunChatColorMapping()) {
+        CHAT_COLOR_STYLESHEET_PATHS.forEach((path) => injectPath(path, 'chat-color'));
+      }
+
+      // 3. Inject legacy dark-theme CSS ONLY when Legacy Dark Engine is active
+      if (this.shouldRunLegacyVisualEngine()) {
+        LEGACY_DARK_STYLESHEET_PATHS.forEach((path) => injectPath(path, 'legacy'));
+      }
+    }
+
+    /**
+     * Schedule semantic Chat Color classification over existing DOM chat bubbles
+     * without running legacy generic luminance scanning.
+     */
+    scheduleChatColorScan() {
+      if (!this.shouldRunChatColorMapping()) return;
+
+      const runScan = () => {
+        if (this.shouldRunChatColorMapping() && document.body) {
+          this.classifyChatBubblesInTree(document.body);
+        }
+      };
+
+      if (document.body) {
+        runScan();
+      } else {
+        document.addEventListener('DOMContentLoaded', runScan, { once: true });
+      }
+
+      if (document.readyState !== 'complete') {
+        window.addEventListener('load', runScan, { once: true });
+      }
+    }
+
+    /**
+     * Schedule Shadow DOM discovery for functional features (RTL, BiDi, Two-Row)
+     * without triggering legacy luminance scanning.
+     */
+    scheduleFunctionalShadowDiscovery() {
+      if (!this.hasAnyActiveFeature()) return;
+
+      if (document.body) {
+        this.scanForShadowRoots(document.body);
+      } else {
+        const onBodyReady = () => {
+          if (this.hasAnyActiveFeature() && document.body) {
+            this.scanForShadowRoots(document.body);
+          }
+        };
+        document.addEventListener('DOMContentLoaded', onBodyReady, { once: true });
+      }
     }
 
     /**
@@ -545,16 +896,18 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     }
 
     /**
-     * Guaranteed Initial DOM Scan
+     * Guaranteed Initial DOM Scan (Legacy Dark Engine only)
      * Fixes document_start race where document.body is not yet constructed.
      */
     scheduleInitialScan() {
+      if (!this.shouldRunLegacyVisualEngine()) return;
+
       if (document.body) {
         this.performInitialScan();
       } else {
         // Wait for body to be created
         const onReady = () => {
-          if (this.enabled && document.body) {
+          if (this.shouldRunLegacyVisualEngine() && document.body) {
             this.performInitialScan();
           }
         };
@@ -573,7 +926,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
       // Safety sweep when window completes loading
       if (document.readyState !== 'complete') {
         window.addEventListener('load', () => {
-          if (this.enabled && document.body) {
+          if (this.shouldRunLegacyVisualEngine() && document.body) {
             this.performInitialScan(true);
           }
         }, { once: true });
@@ -581,10 +934,10 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     }
 
     /**
-     * Perform the scan over document.body and all current candidate descendants
+     * Perform the scan over document.body and all current candidate descendants (Legacy Dark Engine only)
      */
     performInitialScan(force = false) {
-      if (!this.enabled || !document.body) return;
+      if (!this.shouldRunLegacyVisualEngine() || !document.body) return;
       if (this.hasScannedInitialDOM && !force) return;
       this.hasScannedInitialDOM = true;
 
@@ -600,42 +953,59 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     }
 
     /**
-     * Handle Open Shadow Root styling and observe dynamic shadow mutations
+     * Handle Open Shadow Root styling and observe dynamic shadow mutations.
+     * Functional Shadow DOM support (RTL, BiDi, Two-Row) is decoupled from legacy dark-theme state.
      */
     attachToShadowRoot(shadowRoot) {
-      if (!shadowRoot) return;
+      if (!shadowRoot || !this.hasAnyActiveFeature()) return;
 
       this.attachedShadowRoots.add(shadowRoot);
 
-      // Inject Two-Row Chat presentation layout style inside shadow root ONLY if enabled
+      // 1. Inject functional Shadow DOM stylesheet (Vazirmatn, RTL Chat, BiDi, Two-Row)
+      const shadowFunctionalStyleId = 'acd-shadow-functional-style';
+      if (!shadowRoot.querySelector || !shadowRoot.querySelector(`#${shadowFunctionalStyleId}`)) {
+        const fnLink = document.createElement('link');
+        fnLink.id = shadowFunctionalStyleId;
+        fnLink.rel = 'stylesheet';
+        fnLink.type = 'text/css';
+        fnLink.href = chrome.runtime.getURL(SHADOW_FUNCTIONAL_STYLESHEET_PATH);
+        fnLink.setAttribute('data-acd-shadow-functional-injected', 'true');
+        shadowRoot.appendChild(fnLink);
+      }
+
+      // 2. Inject semantic Chat Color stylesheet and classify existing shadow chat bubbles when Dark Mode is enabled
+      if (this.shouldRunChatColorMapping()) {
+        const shadowChatColorStyleId = 'acd-shadow-chat-color-style';
+        if (!shadowRoot.querySelector || !shadowRoot.querySelector(`#${shadowChatColorStyleId}`)) {
+          const ccLink = document.createElement('link');
+          ccLink.id = shadowChatColorStyleId;
+          ccLink.rel = 'stylesheet';
+          ccLink.type = 'text/css';
+          ccLink.href = chrome.runtime.getURL(SHADOW_CHAT_COLOR_STYLESHEET_PATH);
+          ccLink.setAttribute('data-acd-shadow-chat-color-injected', 'true');
+          shadowRoot.appendChild(ccLink);
+        }
+        this.classifyChatBubblesInTree(shadowRoot);
+      }
+
+      // 3. Inject Two-Row Chat presentation layout style inside shadow root ONLY if enabled
       if (this.chatTwoRowEnabled) {
         this.ensureChatLayoutStyle(shadowRoot);
       }
 
-      if (!this.enabled) return;
-
-      // 1. Inject dedicated Shadow DOM stylesheet (encapsulation-friendly)
-      const shadowStyleId = 'acd-shadow-theme-style';
-      if (!shadowRoot.querySelector || !shadowRoot.querySelector(`#${shadowStyleId}`)) {
-        const link = document.createElement('link');
-        link.id = shadowStyleId;
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = chrome.runtime.getURL(SHADOW_STYLESHEET_PATH);
-        link.setAttribute('data-acd-shadow-injected', 'true');
-
-        shadowRoot.appendChild(link);
-      }
-
-      // 2. Attach dedicated lightweight MutationObserver to this ShadowRoot
+      // 4. Attach dedicated lightweight MutationObserver to this ShadowRoot
       if (!this.shadowObservers.has(shadowRoot)) {
         const shadowObserver = new MutationObserver((mutations) => {
-          if (!this.enabled) return;
+          if (!this.hasAnyActiveFeature()) return;
 
+          const runLegacyVisual = this.shouldRunLegacyVisualEngine();
+          const runChatColor = this.shouldRunChatColorMapping();
           const addedElements = [];
+
           for (let i = 0; i < mutations.length; i++) {
             const mutation = mutations[i];
             if (mutation.type === 'attributes') {
+              if (!runChatColor) continue;
               const target = mutation.target;
               if (
                 target &&
@@ -651,10 +1021,16 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
               for (let j = 0; j < mutation.addedNodes.length; j++) {
                 const node = mutation.addedNodes[j];
                 if (node.nodeType === Node.ELEMENT_NODE && !SENSITIVE_TAGS.has(node.tagName.toUpperCase())) {
-                  this.classifyChatBubblesInTree(node);
-                  const subCandidates = this.getCandidateElements(node);
-                  for (let k = 0; k < subCandidates.length; k++) {
-                    addedElements.push(subCandidates[k]);
+                  if (runChatColor) {
+                    this.classifyChatBubblesInTree(node);
+                  }
+                  if (runLegacyVisual) {
+                    const subCandidates = this.getCandidateElements(node);
+                    for (let k = 0; k < subCandidates.length; k++) {
+                      addedElements.push(subCandidates[k]);
+                    }
+                  } else {
+                    addedElements.push(node);
                   }
                 }
               }
@@ -662,7 +1038,9 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
           }
 
           if (addedElements.length > 0) {
-            this.queueNodesForEvaluation(addedElements);
+            if (runLegacyVisual) {
+              this.queueNodesForEvaluation(addedElements);
+            }
 
             for (const el of addedElements) {
               if (el.shadowRoot) {
@@ -683,34 +1061,50 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         this.shadowObservers.set(shadowRoot, shadowObserver);
       }
 
-      // 3. Classify existing chat bubbles inside shadow root
-      this.classifyChatBubblesInTree(shadowRoot);
+      // 5. Legacy Dark Engine visual work inside Shadow DOM
+      if (this.shouldRunLegacyVisualEngine()) {
+        const shadowStyleId = 'acd-shadow-theme-style';
+        if (!shadowRoot.querySelector || !shadowRoot.querySelector(`#${shadowStyleId}`)) {
+          const link = document.createElement('link');
+          link.id = shadowStyleId;
+          link.rel = 'stylesheet';
+          link.type = 'text/css';
+          link.href = chrome.runtime.getURL(SHADOW_STYLESHEET_PATH);
+          link.setAttribute('data-acd-shadow-injected', 'true');
 
-      // 4. Evaluate existing elements inside shadow root
-      const shadowCandidates = [];
-      for (let i = 0; i < shadowRoot.children.length; i++) {
-        const sub = this.getCandidateElements(shadowRoot.children[i]);
-        for (let j = 0; j < sub.length; j++) {
-          shadowCandidates.push(sub[j]);
+          shadowRoot.appendChild(link);
         }
-      }
-      this.queueNodesForEvaluation(shadowCandidates);
 
-      // 5. Recursively check for nested shadow roots
+        // Evaluate existing elements inside shadow root
+        const shadowCandidates = [];
+        for (let i = 0; i < shadowRoot.children.length; i++) {
+          const sub = this.getCandidateElements(shadowRoot.children[i]);
+          for (let j = 0; j < sub.length; j++) {
+            shadowCandidates.push(sub[j]);
+          }
+        }
+        this.queueNodesForEvaluation(shadowCandidates);
+      }
+
+      // 6. Recursively check for nested shadow roots
       this.scanForShadowRoots(shadowRoot);
     }
 
     /**
-     * Clean up all attached shadow roots and disconnect all shadow observers on disable()
+     * Clean up attached shadow roots and disconnect shadow observers when no longer needed
      */
     cleanupShadowRoots() {
-      // 1. Disconnect all shadow MutationObservers
-      this.shadowObservers.forEach((observer) => {
-        try {
-          observer.disconnect();
-        } catch (e) {}
-      });
-      this.shadowObservers.clear();
+      const keepFunctional = Boolean(this.chatRtlEnabled || this.chatTwoRowEnabled);
+
+      // 1. Disconnect all shadow MutationObservers if no functional feature remains active
+      if (!keepFunctional && !this.enabled) {
+        this.shadowObservers.forEach((observer) => {
+          try {
+            observer.disconnect();
+          } catch (e) {}
+        });
+        this.shadowObservers.clear();
+      }
 
       // 2. Remove injected styles and clean up Layer 1 attributes
       this.attachedShadowRoots.forEach((shadowRoot) => {
@@ -720,10 +1114,29 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
           }
 
           if (shadowRoot.querySelectorAll) {
-            const injected = shadowRoot.querySelectorAll('[data-acd-shadow-injected]');
-            injected.forEach((el) => {
-              if (el && el.parentNode) el.parentNode.removeChild(el);
-            });
+            // Always remove legacy shadow dark theme stylesheet when dark mode is removed
+            if (!this.shouldRunLegacyVisualEngine()) {
+              const injectedLegacy = shadowRoot.querySelectorAll('[data-acd-shadow-injected]');
+              injectedLegacy.forEach((el) => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+              });
+            }
+
+            // Remove shadow chat-color stylesheet when dark mode is disabled
+            if (!this.shouldRunChatColorMapping()) {
+              const injectedChatColor = shadowRoot.querySelectorAll('[data-acd-shadow-chat-color-injected]');
+              injectedChatColor.forEach((el) => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+              });
+            }
+
+            // Remove functional shadow stylesheet only when no feature remains active
+            if (!keepFunctional && !this.enabled) {
+              const injectedFunctional = shadowRoot.querySelectorAll('[data-acd-shadow-functional-injected]');
+              injectedFunctional.forEach((el) => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+              });
+            }
 
             const brightSurfaces = shadowRoot.querySelectorAll('[data-acd-surface]');
             brightSurfaces.forEach((el) => el.removeAttribute('data-acd-surface'));
@@ -739,7 +1152,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         }
       });
 
-      if (!this.chatTwoRowEnabled) {
+      if (!keepFunctional && !this.enabled) {
         this.attachedShadowRoots.clear();
       }
     }
@@ -748,8 +1161,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
      * Scan container for custom elements with open shadow roots
      */
     scanForShadowRoots(container) {
-      if (!container) return;
-      if (!this.enabled && !this.chatRtlEnabled && !this.chatTwoRowEnabled) return;
+      if (!container || !this.hasAnyActiveFeature()) return;
 
       try {
         const allElements = container.querySelectorAll('*');
@@ -1020,6 +1432,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
      * and set data-acd-chat-color without mutating native inline styles.
      */
     classifyChatBubble(element) {
+      if (!this.shouldRunChatColorMapping()) return;
       if (!element || element.nodeType !== Node.ELEMENT_NODE) return;
       const rawBg = this.extractInlineBackground(element);
       const family = this.classifyChatBubbleColor(rawBg);
@@ -1032,7 +1445,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
      * Classify all chat message bubbles inside a root container or subtree
      */
     classifyChatBubblesInTree(root) {
-      if (!root) return;
+      if (!this.shouldRunChatColorMapping(root) || !root) return;
       try {
         if (
           root.nodeType === Node.ELEMENT_NODE &&
@@ -1060,10 +1473,10 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     }
 
     /**
-     * Layer 1: Evaluate element computed colors conservatively
+     * Layer 1: Evaluate element computed colors conservatively (Legacy Dark Engine only)
      */
     evaluateElement(element) {
-      if (!this.enabled) return;
+      if (!this.shouldRunLegacyVisualEngine()) return;
       if (this.isSensitive(element)) return;
 
       // Check for Open Shadow Root
@@ -1111,10 +1524,10 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     }
 
     /**
-     * Add nodes to queue for batched evaluation
+     * Add nodes to queue for batched evaluation (Legacy Dark Engine only)
      */
     queueNodesForEvaluation(nodes) {
-      if (!this.enabled || !nodes) return;
+      if (!this.shouldRunLegacyVisualEngine() || !nodes) return;
 
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
@@ -1127,9 +1540,14 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
     }
 
     /**
-     * Schedule queue processing using requestAnimationFrame or requestIdleCallback
+     * Schedule queue processing using requestAnimationFrame or requestIdleCallback (Legacy Dark Engine only)
      */
     scheduleQueueProcessing() {
+      if (!this.shouldRunLegacyVisualEngine()) {
+        this.processQueue = [];
+        this.isProcessingQueue = false;
+        return;
+      }
       if (this.isProcessingQueue || this.processQueue.length === 0) return;
       this.isProcessingQueue = true;
 
@@ -1139,7 +1557,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
         let processed = 0;
 
         while (this.processQueue.length > 0 && processed < batchSize) {
-          if (!this.enabled) break;
+          if (!this.shouldRunLegacyVisualEngine()) break;
           const element = this.processQueue.shift();
           this.evaluateElement(element);
           processed++;
@@ -1151,7 +1569,7 @@ html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
 
         this.isProcessingQueue = false;
 
-        if (this.enabled && this.processQueue.length > 0) {
+        if (this.shouldRunLegacyVisualEngine() && this.processQueue.length > 0) {
           this.scheduleQueueProcessing();
         }
       });

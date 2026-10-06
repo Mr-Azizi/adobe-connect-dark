@@ -1,0 +1,210 @@
+/**
+ * Adobe Connect Dark Mode - Semantic Chat Color Bubbles Stylesheet
+ * Dedicated minimal stylesheet for Adobe Connect Chat Color preservation in Dark Mode.
+ *
+ * Scope:
+ *   - Dark-compatible chat bubble color tokens (v1.8.4 / v1.8.5 palette)
+ *   - Selectors for [data-acd-chat-color] (default + 8 Adobe semantic colors)
+ *   - Family-specific sender accent colors
+ *   - Message body and timestamp contrast rules inside chat bubbles
+ *
+ * Excludes:
+ *   - Toolbar, menus, modals, pod headers, and generic surface rules
+ */
+
+:root,
+:host {
+  --acd-chat-bubble-default: #1E242D;
+  --acd-chat-bubble-default-border: rgba(255, 255, 255, 0.07);
+  --acd-chat-sender-default: #6EA8FE;
+
+  --acd-chat-bubble-red: #311C21;
+  --acd-chat-bubble-red-border: rgba(248, 81, 73, 0.28);
+  --acd-chat-sender-red: #FCA5A5;
+
+  --acd-chat-bubble-orange: #312318;
+  --acd-chat-bubble-orange-border: rgba(230, 145, 56, 0.28);
+  --acd-chat-sender-orange: #FDBA74;
+
+  --acd-chat-bubble-green: #192E26;
+  --acd-chat-bubble-green-border: rgba(63, 185, 80, 0.28);
+  --acd-chat-sender-green: #6EE7B7;
+
+  --acd-chat-bubble-brown: #2A221D;
+  --acd-chat-bubble-brown-border: rgba(186, 146, 112, 0.26);
+  --acd-chat-sender-brown: #E2C2A2;
+
+  --acd-chat-bubble-purple: #261E34;
+  --acd-chat-bubble-purple-border: rgba(163, 113, 247, 0.28);
+  --acd-chat-sender-purple: #C4B5FD;
+
+  --acd-chat-bubble-pink: #311D2B;
+  --acd-chat-bubble-pink-border: rgba(236, 108, 180, 0.28);
+  --acd-chat-sender-pink: #F9A8D4;
+
+  --acd-chat-bubble-blue: #19273A;
+  --acd-chat-bubble-blue-border: rgba(110, 168, 254, 0.28);
+  --acd-chat-sender-blue: #93C5FD;
+
+  --acd-chat-bubble-grey: #262C36;
+  --acd-chat-bubble-grey-border: rgba(184, 192, 202, 0.18);
+  --acd-chat-sender-grey: #CBD5E1;
+
+  --acd-chat-bubble-text: #F0F3F6;
+  --acd-chat-bubble-time: #B8C0CA;
+  --acd-chat-bubble-time-default: #7F8A96;
+}
+
+/* ==========================================================================
+   Default Dark Chat Bubble Surface
+   ========================================================================== */
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="default"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="default"] {
+  background: var(--acd-chat-bubble-default) !important;
+  background-color: var(--acd-chat-bubble-default) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-default-border) !important;
+  border-radius: 4px !important;
+}
+
+/* ==========================================================================
+   8 Semantic Adobe Chat Color Bubble Surfaces
+   ========================================================================== */
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="red"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="red"] {
+  background: var(--acd-chat-bubble-red) !important;
+  background-color: var(--acd-chat-bubble-red) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-red-border) !important;
+  border-radius: 4px !important;
+}
+
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="orange"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="orange"] {
+  background: var(--acd-chat-bubble-orange) !important;
+  background-color: var(--acd-chat-bubble-orange) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-orange-border) !important;
+  border-radius: 4px !important;
+}
+
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="green"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="green"] {
+  background: var(--acd-chat-bubble-green) !important;
+  background-color: var(--acd-chat-bubble-green) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-green-border) !important;
+  border-radius: 4px !important;
+}
+
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="brown"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="brown"] {
+  background: var(--acd-chat-bubble-brown) !important;
+  background-color: var(--acd-chat-bubble-brown) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-brown-border) !important;
+  border-radius: 4px !important;
+}
+
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="purple"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="purple"] {
+  background: var(--acd-chat-bubble-purple) !important;
+  background-color: var(--acd-chat-bubble-purple) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-purple-border) !important;
+  border-radius: 4px !important;
+}
+
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="pink"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="pink"] {
+  background: var(--acd-chat-bubble-pink) !important;
+  background-color: var(--acd-chat-bubble-pink) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-pink-border) !important;
+  border-radius: 4px !important;
+}
+
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="blue"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="blue"] {
+  background: var(--acd-chat-bubble-blue) !important;
+  background-color: var(--acd-chat-bubble-blue) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-blue-border) !important;
+  border-radius: 4px !important;
+}
+
+[class^="chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="grey"],
+[class*=" chatIndividualMessageContentWrapperDiv--"][data-acd-chat-color="grey"] {
+  background: var(--acd-chat-bubble-grey) !important;
+  background-color: var(--acd-chat-bubble-grey) !important;
+  color: var(--acd-chat-bubble-text) !important;
+  border: 1px solid var(--acd-chat-bubble-grey-border) !important;
+  border-radius: 4px !important;
+}
+
+/* ==========================================================================
+   Sender Accent Foregrounds (Default + 8 Semantic Families)
+   ========================================================================== */
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-default) !important;
+  font-weight: 600 !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="red"] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="red"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-red) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="orange"] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="orange"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-orange) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="green"] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="green"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-green) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="brown"] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="brown"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-brown) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="purple"] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="purple"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-purple) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="pink"] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="pink"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-pink) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="blue"] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="blue"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-blue) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="grey"] [class^="chatMessageSender--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="grey"] [class*=" chatMessageSender--"] {
+  color: var(--acd-chat-sender-grey) !important;
+}
+
+/* ==========================================================================
+   Message Content & Timestamp Contrast inside Classified Chat Bubbles
+   ========================================================================== */
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color] [class^="chatIndividualMessageContent--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color] [class*=" chatIndividualMessageContent--"] {
+  color: var(--acd-chat-bubble-text) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="default"] [class^="chatMessageTime--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color="default"] [class*=" chatMessageTime--"] {
+  color: var(--acd-chat-bubble-time-default) !important;
+}
+
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color]:not([data-acd-chat-color="default"]) [class^="chatMessageTime--"],
+[class*="chatIndividualMessageContentWrapperDiv"][data-acd-chat-color]:not([data-acd-chat-color="default"]) [class*=" chatMessageTime--"] {
+  color: var(--acd-chat-bubble-time) !important;
+}

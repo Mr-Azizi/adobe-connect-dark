@@ -1,0 +1,14 @@
+{
+  "name": "adobe-connect-dark-mode",
+  "version": "1.8.5",
+  "private": true,
+  "description": "Professional Dark Mode, Intelligent RTL Chat & Two-Row Layout for Adobe Connect Web",
+  "main": "background.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mr-Azizi/adobe-connect-dark.git"
+  },
+  "dependencies": {
+    "darkreader": "4.9.133"
+  }
+}

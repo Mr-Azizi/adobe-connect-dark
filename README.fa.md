@@ -220,9 +220,14 @@ Adobe Connect Dark (نسخه 1.8.2)
 حالت تاریک یک قابلیت مستقل است که متناسب با ساختار فرانت‌اند ادوبی کانکت توسعه یافته است:
 
 - **رویکرد غیرتخریبی**: به جای استفاده از فیلترهای وارونه‌ساز تصویر، از مجموعه‌ای از قوانین دقیق CSS برای پوشش پادها، نوار منوها، دکمه‌ها و فرم‌ها استفاده می‌کند.
-- **معماری دو لایه تم**:
-  - *لایه اول (اسکنر محافظه‌کار Fallback)*: المان‌های ناشناخته صفحه را بررسی کرده و پس‌زمینه‌های روشن (`Luminance > 185`) و متون تیره (`Luminance < 110`) را با استاندارد ITU-R BT.601 شناسایی و تصحیح می‌کند.
-  - *لایه دوم (استایل‌دهی مستقیم کامپوننت‌ها)*: کلاس‌های استاندارد ادوبی کانکت و ادوبی اسپکتروم (Adobe Spectrum) را با سلکتورهای مقاوم هدف قرار داده و متغیرهای تاریک استاندارد را اعمال می‌نماید.
+- **موتور آزمایشی Dark Reader و تم‌های از پیش آماده (`1.8.5 DarkReader Themes PoC`)**:
+  - مبتنی بر یک موتور واحد Dark Reader (`darkreader@4.9.133`) همراه با رجیستری مرکزی تم‌ها (`content/darkreader-presets.js`) و تنظیمات مشترک حفاظت از مدیای ادوبی کانکت (`content/darkreader-engine.js`).
+  - **تم‌های اولیه (Theme Presets)**:
+    - **`Dark` (پیش‌فرض)** — تم تاریک متعادل (`brightness: 100`, `contrast: 96`, `sepia: 0`, `darkSchemeBackgroundColor: #0F141A`, `darkSchemeTextColor: #F0F3F6`).
+    - **`AMOLED`** — پس‌زمینه مشکی عمیق و مناسب نمایشگرهای OLED (`brightness: 96`, `contrast: 100`, `sepia: 0`, `darkSchemeBackgroundColor: #000000`, `darkSchemeTextColor: #F2F5F8`).
+    - **`Dim`** — تم تاریک ملایم‌تر با شدت نوری کمتر برای جلسات طولانی (`brightness: 93`, `contrast: 88`, `sepia: 0`, `darkSchemeBackgroundColor: #18202A`, `darkSchemeTextColor: #DCE3EA`).
+    - **`Warm`** — تم تاریک گرم‌تر برای استفاده در شب (`brightness: 97`, `contrast: 94`, `sepia: 16`, `darkSchemeBackgroundColor: #161311`, `darkSchemeTextColor: #EFEAE2`).
+  - **تغییر زنده تم بدون رفرش صفحه (Live Theme Switching)**: جابه‌جایی میان `Dark`، `AMOLED`، `Dim` و `Warm` بلافاصله و بدون بارگذاری مجدد صفحه اعمال می‌شود و هویت رنگ‌های چت (`[data-acd-chat-color]`)، چت RTL، چیدمان دو سطری و حفاظت از مدیا کاملاً مستقل و دست‌نخورده باقی می‌مانند.
 - **محافظت از مدیا**: اسلایدها، ویدیوها و فایل‌های پی‌دی‌اف به صورت قطعی از اعمال رنگ محافظت می‌شوند (به بخش [محافظت از محتوا](#معماری-حفاظت-از-محتوای-جلسه-و-مدیا) مراجعه کنید).
 
 ---
@@ -303,17 +308,18 @@ Adobe Connect Dark (نسخه 1.8.2)
 
 پاپ‌آپ افزونه امکان کنترل گزینه‌ها به تفکیک هر دامنه را فراهم می‌سازد:
 
-| المان رابط کاربری | شناسه המان (ID) | توضیحات و عملکرد |
+| المان رابط کاربری | شناسه المان (ID) | توضیحات و عملکرد |
 | :--- | :--- | :--- |
 | **دامنه فعلی (Current Domain)** | `#current-domain` | نمایش پروتکل و آدرس سرور فعال (مثال: `connect.example.com (HTTPS)`). |
 | **نشانگر وضعیت (Status Badge)** | `#status-badge` | وضعیت `Active` (آبی‌رنگ) در صورت فعال بودن حداقل یکی از سه قابلیت، یا `Inactive` (خاکستری). |
 | **سوئیچ Dark Mode** | `#theme-toggle` | فعال/غیرفعال‌سازی تم تیره برای دامنه کنونی. |
+| **انتخاب‌گر تم (Theme Selector)** | `#theme-preset-select` | انتخاب تم تیره (`Dark`، `AMOLED`، `Dim`، `Warm`) برای دامنه کنونی با قابلیت تغییر زنده بدون رفرش صفحه. |
 | **سوئیچ RTL Chat Text** | `#rtl-toggle` | فعال/غیرفعال‌سازی موتور چت راست‌به‌چپ برای دامنه کنونی. |
 | **سوئیچ Send RTL Formatting** | `#send-rtl-toggle` | زیرگزینه اختیاری فرمت‌بندی یونیکد ارسالی (در صورت خاموش بودن RTL Chat غیرفعال است). |
 | **سوئیچ Two-Row Chat Layout** | `#chat-two-row-toggle` | فعال/غیرفعال‌سازی چیدمان دو سطری پیام‌های چت برای دامنه کنونی. |
-| **دکمه بازنشانی دامنه (Reset Site)**| `#reset-btn` | حذف تمام تنظیمات دامنه از حافظه، لغو اسکریپت‌های پویا و پس‌گرفتن دسترسی اختیاری هاست. |
+| **دکمه بازنشانی دامنه (Reset Site)**| `#reset-btn` | حذف تمام تنظیمات دامنه از حافظه (و بازگردانی `themePreset` به `dark`)، لغو اسکریپت‌های پویا و پس‌گرفتن دسترسی اختیاری هاست. |
 | **یادداشت ایمنی محتوا** | `.safety-badge` | یادآوری حفاظت از وب‌کم، اسلایدها و اسکرین‌شیر در انتهای پاپ‌آپ. |
-| **شماره نسخه** | `#extension-version` | همگام با شماره نسخه موجود در `manifest.json` (`v1.8.2`). |
+| **شماره نسخه** | `#extension-version` | همگام با شماره نسخه موجود در `manifest.json` (`v1.8.5 DarkReader Themes PoC`). |
 
 ---
 
@@ -361,7 +367,7 @@ Adobe Connect Dark (نسخه 1.8.2)
 1. وارد کلاس، وبینار یا صفحه ضبط‌شده ادوبی کانکت در مرورگر شوید.
 2. روی آیکون افزونه در نوار ابزار کلیک کنید.
 3. گزینه‌های مورد نظر خود را روشن کنید:
-   - برای تاریک شدن محیط: **Dark Mode** را فعال کنید.
+   - برای تاریک شدن محیط: **Dark Mode** را فعال کرده و از منوی **Theme** یکی از تم‌های `Dark`، `AMOLED`، `Dim` یا `Warm` را انتخاب کنید.
    - برای راست‌به‌چپ شدن پیام‌ها: **RTL Chat Text** را فعال کنید.
    - برای درج کدهای بیاندیشی یونیکد جهت مشاهده بهتر سایر حاضران: **Send RTL Formatting** را روشن بگذارید.
    - برای تفکیک نام فرستنده و پیام در دو خط: **Two-Row Chat Layout** را فعال کنید.
@@ -382,6 +388,7 @@ Adobe Connect Dark (نسخه 1.8.2)
 | کلید در حافظه (Storage Key) | نوع داده | کاربرد و هدف | دامنه کلید |
 | :--- | :--- | :--- | :--- |
 | `acd_enabled_sites` | `Record<string, boolean>` | ذخیره وضعیت فعال/غیرفعال بودن Dark Mode. | `siteKey` (مثال: `https://connect.example.com`) |
+| `acd_theme_preset_sites` | `Record<string, string>` | ذخیره تم انتخاب‌شده (`"dark"`, `"amoled"`, `"dim"`, `"warm"`) برای هر دامنه (با بازگشت امن به `"dark"`). | `siteKey` (پیش‌فرض: `"dark"`) |
 | `acd_rtl_chat_sites` | `Record<string, boolean>` | ذخیره وضعیت فعال/غیرفعال بودن RTL Chat Text. | `siteKey` |
 | `acd_send_rtl_formatting_sites` | `Record<string, boolean>` | ذخیره اولویت کاربر برای فرمت‌بندی ارسالی پیام‌ها. | `siteKey` (پیش‌فرض: `true`) |
 | `acd_chat_two_row_sites` | `Record<string, boolean>` | ذخیره وضعیت فعال/غیرفعال بودن Two-Row Chat Layout. | `siteKey` |
@@ -393,6 +400,9 @@ Adobe Connect Dark (نسخه 1.8.2)
 {
   "acd_enabled_sites": {
     "https://connect.example.com": true
+  },
+  "acd_theme_preset_sites": {
+    "https://connect.example.com": "amoled"
   },
   "acd_rtl_chat_sites": {
     "https://connect.example.com": true
@@ -449,7 +459,10 @@ Adobe Connect Dark (نسخه 1.8.2)
    ▼ (اخذ مجوز اختیاری هاست)
 ثبت داینامیک اسکریپت‌ها (chrome.scripting.registerContentScripts)
    ├── 1. دنیای ایزوله (ISOLATED World) -> acd_cs_*
-   │      ├── content/theme-engine.js (اعمال تم و اسکن رنگ‌ها)
+   │      ├── vendor/darkreader.js (موتور Dark Reader)
+   │      ├── content/darkreader-presets.js (رجیستری مرکزی تم‌ها)
+   │      ├── content/darkreader-engine.js (آداپتور و تنظیمات حفاظت از مدیا)
+   │      ├── content/theme-engine.js (چرخه حیات تم و مدیریت رنگ چت)
    │      ├── content/observer.js (آبزرور تغییرات پادها و SPA)
    │      └── content/content.js (هماهنگ‌کننده وضعیت و رویدادها)
    │
@@ -461,9 +474,9 @@ Adobe Connect Dark (نسخه 1.8.2)
 
 1. **دنیای ایزوله (`ISOLATED` World)**:
    - شناسه: `acd_cs_<protocol>_<host>`
-   - فایل‌ها: `content/theme-engine.js`, `content/observer.js`, `content/content.js`
+   - فایل‌ها: `vendor/darkreader.js`, `content/darkreader-presets.js`, `content/darkreader-engine.js`, `content/theme-engine.js`, `content/observer.js`, `content/content.js`
    - تنظیمات: `runAt: "document_start"`, `allFrames: true`, `world: "ISOLATED"`
-   - مسئولیت‌ها: اعمال اتریبیوت‌های روت، تزریق شیوه‌نامه‌های CSS افزونه، اسکن لایه اول و پایش پادها با `MutationObserver`.
+   - مسئولیت‌ها: اعمال تم پویای Dark Reader با تم انتخاب‌شده (`dark`, `amoled`, `dim`, `warm`)، تزریق استایل‌های عملکردی چت و رنگ‌های چت، و پایش پادها با `MutationObserver`.
 2. **دنیای اصلی صفحه (`MAIN` World)**:
    - شناسه: `acd_main_<protocol>_<host>`
    - فایل‌ها: `content/chat-rtl-main.js`
@@ -525,14 +538,14 @@ Adobe Connect Dark (نسخه 1.8.2)
 
 | اتریبیوت در DOM | محل قرارگیری | مقادیر ممکن | مفهوم فنی |
 | :--- | :--- | :--- | :--- |
-| `data-acd-theme` | `<html>` | `"dark"` | حالت تاریک فعال است. |
+| `data-acd-theme` | `<html>` | `"dark"` | حالت تاریک کلاسیک فعال است. |
+| `data-acd-theme-preset` | `<html>` | `"dark"`, `"amoled"`, `"dim"`, `"warm"` | تم فعال Dark Reader در زمان روشن بودن حالت تاریک. |
 | `data-acd-chat-rtl` | `<html>` | `"true"` | موتور چت راست‌به‌چپ فعال است. |
 | `data-acd-send-rtl-formatting` | `<html>` | `"true"`, `"false"` | وضعیت فرمت‌بندی ارسالی فعال یا غیرفعال است. |
 | `data-acd-chat-two-row` | `<html>` | `"true"` | چیدمان دو سطری چت فعال است. |
+| `data-acd-chat-color` | حباب پیام در پاد چت | `"default"`, `"red"`, `"orange"`, `"green"`, `"brown"`, `"purple"`, `"pink"`, `"blue"`, `"grey"` | هویت رنگ معنایی پیام چت ادوبی کانکت در تمامی تم‌ها. |
 | `data-acd-bidi-dir` | متن پیام در پاد چت | `"rtl"`, `"ltr"` | جهت تعیین‌شده توسط کلاسیفایر هوشمند برای پیام. |
 | `data-acd-chat-two-line` | کانتینر پیام چت | `"true"` | مشخص‌کننده فعال‌سازی گرید دو سطری روی پیام. |
-| `data-acd-surface` | المان‌های ناشناخته صفحه | `"bright"` | شناسایی‌شده توسط لایه اسکنر به عنوان پس‌زمینه نیازمند تاریک‌سازی. |
-| `data-acd-text` | المان‌های ناشناخته صفحه | `"dark"` | شناسایی‌شده توسط لایه اسکنر به عنوان متن نیازمند روشن‌سازی. |
 | `data-acd-preserve` | هر کانتینر محافظت‌شده | `"true"` | معافیت قطعی المان و فرزندانش از هرگونه استایل‌دهی تیره. |
 
 ---
@@ -545,20 +558,26 @@ Adobe Connect Dark (نسخه 1.8.2)
 adobe-connect-dark/
 ├── manifest.json                 # شناسه Manifest V3، مجوزها و تنظیمات اصلی
 ├── background.js                 # سرویس‌ورکر: مدیریت نشانگر بج و همگام‌سازی اسکریپت‌ها
+├── vendor/
+│   └── darkreader.js             # باندل محلی موتور Dark Reader نسخه 4.9.133
 ├── content/
+│   ├── darkreader-presets.js     # رجیستری مرکزی و توسعه‌پذیر تم‌های Dark Reader
+│   ├── darkreader-engine.js      # آداپتور Dark Reader و تنظیمات مشترک حفاظت از مدیا
 │   ├── content.js                # هماهنگ‌کننده تنظیمات حافظه و DOM صفحه
 │   ├── observer.js               # پایشگر بهینه‌شده تغییرات صفحه ادوبی کانکت (SPA)
-│   ├── theme-engine.js           # چرخه حیات تم، اسکنر رنگ‌ها و مدیریت Shadow DOM
+│   ├── theme-engine.js           # چرخه حیات تم، رنگ‌های چت و مدیریت Shadow DOM
 │   └── chat-rtl-main.js          # پل دنیای MAIN: موتور BiDi، کامپوزر ری‌اکت و چیدمان دو سطری
 ├── popup/
-│   ├── popup.html                # ساختار بصری پنجره پاپ‌آپ افزونه
+│   ├── popup.html                # ساختار بصری پنجره پاپ‌آپ افزونه (شامل انتخاب‌گر تم)
 │   ├── popup.css                 # استایل‌های پنجره پاپ‌آپ
 │   └── popup.js                  # مدیریت دکمه‌ها، درخواست مجوزها و ذخیره‌سازی
 ├── styles/
-│   ├── variables.css             # متغیرها و رنگ‌های استاندارد پالت تیره
+│   ├── chat-functional.css       # قوانین مستقل چت راست‌به‌چپ و چیدمان دو سطری
+│   ├── chat-colors.css           # پالت تیره معنایی برای رنگ‌های چت ادوبی کانکت
+│   ├── variables.css             # متغیرها و رنگ‌های استاندارد پالت تیره کلاسیک
 │   ├── base.css                  # استایل‌های پایه روت، اسکرول‌بار و حفاظت از مدیا
 │   ├── components.css            # استایل مشترک منوها، دیالوگ‌ها و کامپوننت‌های اسپکتروم
-│   ├── connect-central.css        # استایل‌های صفحات ادوبی کانکت سنترال (تقویم، گزارش‌ها و...)
+│   ├── connect-central.css       # استایل‌های صفحات ادوبی کانکت سنترال (تقویم، گزارش‌ها و...)
 │   ├── adobe-connect.css         # استایل پادهای کلاس، پلیر ضبط و چیدمان چت
 │   └── shadow-dom.css            # استایل‌های کپسوله‌شده برای Open Shadow DOM
 ├── assets/

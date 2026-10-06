@@ -219,9 +219,14 @@ Because Dark Mode, RTL Chat Text, and Two-Row Chat Layout are decoupled, you can
 Dark Mode is an independent top-level feature built specifically for the Adobe Connect Web architecture.
 
 - **Non-Invasive Theming**: Rather than applying a global CSS `invert()` filter that washes out colors and distorts images, the theme engine injects semantic CSS rules targeting Adobe Connect pods, toolbars, sidebars, menus, dialogs, and inputs.
-- **Two-Layer Architecture**:
-  - *Layer 1 (Conservative Fallback)*: Dynamically evaluates unmapped container elements via computed styles and safely themes bright backgrounds (`Luminance > 185`) and dark text (`Luminance < 110`) using the ITU-R BT.601 standard.
-  - *Layer 2 (Source-Derived Component Styling)*: Applies explicit dark tokens (`var(--acd-bg-main)`, `var(--acd-bg-panel)`, etc.) to verified Adobe Connect and Spectrum classes using resilient prefix and substring selectors.
+- **Experimental Dark Reader Engine & Theme Presets (`1.8.5 DarkReader Themes PoC`)**:
+  - Powered by a single Dark Reader dynamic engine (`darkreader@4.9.133`) paired with a central preset registry (`content/darkreader-presets.js`) and shared Adobe Connect media-protection fixes (`content/darkreader-engine.js`).
+  - **Initial Theme Presets**:
+    - **`Dark` (Default)** — Balanced dark theme (`brightness: 100`, `contrast: 96`, `sepia: 0`, `darkSchemeBackgroundColor: #0F141A`, `darkSchemeTextColor: #F0F3F6`).
+    - **`AMOLED`** — Deep black / OLED-friendly surfaces (`brightness: 96`, `contrast: 100`, `sepia: 0`, `darkSchemeBackgroundColor: #000000`, `darkSchemeTextColor: #F2F5F8`).
+    - **`Dim`** — Softer dark theme with reduced visual intensity for long sessions (`brightness: 93`, `contrast: 88`, `sepia: 0`, `darkSchemeBackgroundColor: #18202A`, `darkSchemeTextColor: #DCE3EA`).
+    - **`Warm`** — Warmer night theme with a subtle warm tone (`brightness: 97`, `contrast: 94`, `sepia: 16`, `darkSchemeBackgroundColor: #161311`, `darkSchemeTextColor: #EFEAE2`).
+  - **Live Theme Switching**: Switching between `Dark`, `AMOLED`, `Dim`, and `Warm` updates the active Adobe Connect session in-place without page reload or white flash, while keeping semantic Chat Color mapping (`[data-acd-chat-color]`), RTL Chat, Send RTL Formatting, Two-Row Layout, and media protection completely independent.
 - **Media Preservation Guard**: Guarantees that presentation materials, video cameras, and shared documents remain untouched (see [Media Preservation](#media-preservation)).
 
 ---
@@ -306,12 +311,13 @@ The extension popup provides clear, per-site toggles with real-time state feedba
 | **Current Domain** | `#current-domain` | Displays the detected origin protocol and host (e.g., `connect.example.com (HTTPS)`). |
 | **Status Badge** | `#status-badge` | Indicates `Active` (blue) if any top-level feature is enabled, or `Inactive` (gray). |
 | **Dark Mode Toggle** | `#theme-toggle` | Toggles the dark theme for the current site. |
+| **Theme Selector** | `#theme-preset-select` | Selects the per-site Dark Reader theme preset (`Dark`, `AMOLED`, `Dim`, `Warm`) with live switching without page reload. |
 | **RTL Chat Text Toggle** | `#rtl-toggle` | Toggles right-to-left chat handling for the current site. |
 | **Send RTL Formatting** | `#send-rtl-toggle` | Nested sub-toggle; formats outgoing messages with Unicode BiDi controls. Disabled if RTL Chat is off. |
 | **Two-Row Chat Layout** | `#chat-two-row-toggle` | Toggles the two-row sender/message layout for the current site. |
-| **Reset Site Button** | `#reset-btn` | Clears all stored settings for the origin, unregisters content scripts, and revokes host permission. |
+| **Reset Site Button** | `#reset-btn` | Clears all stored settings for the origin (resetting `themePreset` to `dark`), unregisters content scripts, and revokes host permission. |
 | **Protected Content Note** | `.safety-badge` | Displays safety notice: *"Webcam, screen share & slides protected"*. |
-| **Version Indicator** | `#extension-version` | Automatically displays the version read from `manifest.json` (`v1.8.2`). |
+| **Version Indicator** | `#extension-version` | Automatically displays the version read from `manifest.json` (`v1.8.5 DarkReader Themes PoC`). |
 
 ---
 
@@ -362,7 +368,7 @@ Adobe Connect Dark is distributed as an unpacked Manifest V3 browser extension f
 2. **Open the Popup**:
    - Click the **Adobe Connect Dark** icon in the browser toolbar.
 3. **Enable Desired Features**:
-   - Switch on **Dark Mode** to darken the application UI.
+   - Switch on **Dark Mode** to darken the application UI, and choose your preferred **Theme** (`Dark`, `AMOLED`, `Dim`, or `Warm`).
    - Switch on **RTL Chat Text** to enable right-to-left Persian/Arabic chat text.
    - *(Optional)* Adjust **Send RTL Formatting** if you want outgoing messages formatted for other participants.
    - Switch on **Two-Row Chat Layout** if you prefer sender names stacked above messages.
@@ -371,7 +377,7 @@ Adobe Connect Dark is distributed as an unpacked Manifest V3 browser extension f
 5. **Persistent Storage**:
    - Your preferences are automatically saved for that origin. When you revisit the room, your settings are applied immediately at `document_start`.
 6. **Resetting a Site**:
-   - Click **Reset Site / بازنشانی دامنه** in the popup to return the site to default native behavior and revoke origin permissions.
+   - Click **Reset Site / بازنشانی دامنه** in the popup to return the site to default native behavior (`themePreset` → `dark`) and revoke origin permissions.
 
 ---
 
@@ -388,6 +394,7 @@ The extension uses `chrome.storage.local` with the following schema:
 | Storage Key | Value Type | Purpose | Scope |
 | :--- | :--- | :--- | :--- |
 | `acd_enabled_sites` | `Record<string, boolean>` | Stores per-site Dark Mode state (`true` = active). | Origin key (e.g., `https://connect.example.com`) |
+| `acd_theme_preset_sites` | `Record<string, string>` | Stores per-site Dark Reader theme preset (`"dark"`, `"amoled"`, `"dim"`, `"warm"`). Invalid or missing values safely fall back to `"dark"`. | Origin key (defaults to `"dark"`) |
 | `acd_rtl_chat_sites` | `Record<string, boolean>` | Stores per-site RTL Chat Text state (`true` = active). | Origin key |
 | `acd_send_rtl_formatting_sites` | `Record<string, boolean>` | Stores per-site outgoing Send RTL Formatting preference (`true`/`false`). | Origin key (defaults to `true` when RTL Chat is enabled) |
 | `acd_chat_two_row_sites` | `Record<string, boolean>` | Stores per-site Two-Row Chat Layout state (`true` = active). | Origin key |
@@ -399,6 +406,9 @@ The extension uses `chrome.storage.local` with the following schema:
 {
   "acd_enabled_sites": {
     "https://connect.example.com": true
+  },
+  "acd_theme_preset_sites": {
+    "https://connect.example.com": "amoled"
   },
   "acd_rtl_chat_sites": {
     "https://connect.example.com": true
@@ -469,12 +479,12 @@ flowchart TD
 ### Execution Worlds
 
 1. **ISOLATED World** (`acd_cs_<protocol>_<host>`):
-   - **Files**: `content/theme-engine.js`, `content/observer.js`, `content/content.js`
+   - **Files**: `vendor/darkreader.js`, `content/darkreader-presets.js`, `content/darkreader-engine.js`, `content/theme-engine.js`, `content/observer.js`, `content/content.js`
    - **Configuration**: `runAt: "document_start"`, `allFrames: true`, `world: "ISOLATED"`
    - **Responsibilities**:
      - Synchronizes storage settings with `documentElement`.
-     - Injects extension stylesheets (`styles/variables.css`, `styles/base.css`, etc.).
-     - Runs Layer 1 color detection and observes DOM mutations.
+     - Applies Dark Reader dynamic theme with the selected preset (`dark`, `amoled`, `dim`, `warm`) and shared Adobe Connect protection fixes.
+     - Injects functional stylesheets (`styles/chat-functional.css`, `styles/chat-colors.css`).
      - Inspects and styles accessible Open Shadow DOM roots.
 2. **MAIN World** (`acd_main_<protocol>_<host>`):
    - **Files**: `content/chat-rtl-main.js`
@@ -544,14 +554,14 @@ The extension communicates runtime state using attributes on the `<html>` (`docu
 
 | Attribute | Location | Possible Values | Meaning |
 | :--- | :--- | :--- | :--- |
-| `data-acd-theme` | `<html>` | `"dark"` | Dark Mode is active for this site. |
+| `data-acd-theme` | `<html>` | `"dark"` | Legacy dark theme is active for this site. |
+| `data-acd-theme-preset` | `<html>` | `"dark"`, `"amoled"`, `"dim"`, `"warm"` | Active Dark Reader theme preset when Dark Mode is enabled. |
 | `data-acd-chat-rtl` | `<html>` | `"true"` | RTL Chat Text is active for this site. |
 | `data-acd-send-rtl-formatting` | `<html>` | `"true"`, `"false"` | Outgoing Send RTL Formatting state (effective when RTL Chat is on). |
 | `data-acd-chat-two-row` | `<html>` | `"true"` | Two-Row Chat Layout is active for this site. |
+| `data-acd-chat-color` | Chat Message Bubble | `"default"`, `"red"`, `"orange"`, `"green"`, `"brown"`, `"purple"`, `"pink"`, `"blue"`, `"grey"` | Semantic Adobe Chat Color identity preserved across all Dark Reader presets. |
 | `data-acd-bidi-dir` | Chat Message Body | `"rtl"`, `"ltr"` | Dynamically applied direction computed by the BiDi classifier. |
 | `data-acd-chat-two-line` | Message Wrapper | `"true"` | Marks message container for two-row grid styling. |
-| `data-acd-surface` | Internal Elements | `"bright"` | Flagged by Layer 1 fallback scanner as bright surface needing dark background. |
-| `data-acd-text` | Internal Elements | `"dark"` | Flagged by Layer 1 fallback scanner as dark text needing light color. |
 | `data-acd-preserve` | Any Container | `"true"` | Explicitly exempts element and its subtree from theming. |
 
 ---
@@ -564,21 +574,27 @@ The extension communicates runtime state using attributes on the `<html>` (`docu
 adobe-connect-dark/
 ├── manifest.json                 # Manifest V3 metadata, permissions & resource declarations
 ├── background.js                 # Service worker: self-healing script sync & badge management
+├── vendor/
+│   └── darkreader.js             # Local Dark Reader v4.9.133 bundle
 ├── content/
+│   ├── darkreader-presets.js     # Central extensible registry of Dark Reader theme presets
+│   ├── darkreader-engine.js      # Dark Reader adapter & shared Adobe Connect dynamic fixes
 │   ├── content.js                # Content script entry point & storage-to-DOM synchronizer
 │   ├── observer.js               # Debounced MutationObserver for SPA DOM additions
-│   ├── theme-engine.js           # Theme lifecycle, fallback scanner & shadow DOM manager
+│   ├── theme-engine.js           # Theme lifecycle, Chat Color tagger & Shadow DOM manager
 │   └── chat-rtl-main.js          # MAIN-world bridge: React composer interceptor & BiDi engine
 ├── popup/
-│   ├── popup.html                # Extension popup markup
+│   ├── popup.html                # Extension popup markup (including Theme Preset selector)
 │   ├── popup.css                 # Popup user interface styling
 │   └── popup.js                  # Popup controls, permission requester & storage controller
 ├── styles/
-│   ├── variables.css             # CSS custom properties & color tokens
-│   ├── base.css                  # Document root, scrollbars & media preservation guards
-│   ├── components.css            # Common menus, dialogs, forms & Spectrum controls
-│   ├── connect-central.css        # Adobe Connect Central views (Calendar, Reports, etc.)
-│   ├── adobe-connect.css         # Live meeting pods, recording player & chat layout rules
+│   ├── chat-functional.css       # Independent RTL Chat & Two-Row Chat Layout rules
+│   ├── chat-colors.css           # Semantic dark-palette overrides for Adobe Chat Colors
+│   ├── variables.css             # Legacy CSS custom properties & color tokens
+│   ├── base.css                  # Legacy document root, scrollbars & media preservation guards
+│   ├── components.css            # Legacy common menus, dialogs, forms & Spectrum controls
+│   ├── connect-central.css       # Legacy Adobe Connect Central views (Calendar, Reports, etc.)
+│   ├── adobe-connect.css         # Legacy live meeting pods, recording player & chat rules
 │   └── shadow-dom.css            # Encapsulation-safe rules for Open Shadow DOM roots
 ├── assets/
 │   └── fonts/
