@@ -217,8 +217,8 @@
         const blob = await response.blob();
         const dataURL = await new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = () => reject(reader.error);
+            reader.addEventListener("loadend", () => resolve(reader.result), {once: true});
+            reader.addEventListener("error", () => reject(reader.error), {once: true});
             reader.readAsDataURL(blob);
         });
         return dataURL;
@@ -3031,8 +3031,8 @@
     async function loadImage(url) {
         return new Promise((resolve, reject) => {
             const image = new Image();
-            image.onload = () => resolve(image);
-            image.onerror = () => reject(`Unable to load image ${url}`);
+            image.addEventListener("load", () => resolve(image), {once: true});
+            image.addEventListener("error", () => reject(`Unable to load image ${url}`), {once: true});
             if (
                 ++loadingImagesCount <= INCOMPLETE_DOC_LOADING_IMAGE_LIMIT ||
                 isReadyStateComplete()
@@ -7585,14 +7585,14 @@
             const blob = new Blob([bytes], {type: "image/svg+xml"});
             const objectURL = URL.createObjectURL(blob);
             const image = new Image();
-            image.onload = () => {
+            image.addEventListener("load", () => {
                 blobURLAllowed = true;
                 sendBlobURLCheckResponse();
-            };
-            image.onerror = () => {
+            }, {once: true});
+            image.addEventListener("error", () => {
                 blobURLAllowed = false;
                 sendBlobURLCheckResponse();
-            };
+            }, {once: true});
             image.src = objectURL;
         }
         function sendBlobURLCheckResponse() {
@@ -8172,15 +8172,6 @@
         }
         return element;
     }
-    function createOrUpdateScript(className, root = document.head || document) {
-        let element = root.querySelector(`.${className}`);
-        if (!element) {
-            element = document.createElement("script");
-            element.classList.add("darkreader");
-            element.classList.add(className);
-        }
-        return element;
-    }
     const nodePositionWatchers = new Map();
     function setupNodePositionWatcher(node, alias, callback) {
         nodePositionWatchers.has(alias) &&
@@ -8371,21 +8362,7 @@
         registerVariablesSheet(variableStyle.sheet);
         const rootVarsStyle = createOrUpdateStyle("darkreader--root-vars");
         injectStaticStyle(rootVarsStyle, variableStyle, "root-vars");
-        const enableStyleSheetsProxy = !(
-            fixes && fixes.disableStyleSheetsProxy
-        );
-        const enableCustomElementRegistryProxy = !(
-            fixes && fixes.disableCustomElementRegistryProxy
-        );
         document.dispatchEvent(new CustomEvent("__darkreader__cleanUp"));
-        {
-            const proxyScript = createOrUpdateScript("darkreader--proxy");
-            proxyScript.append(
-                `(${injectProxy})(${enableStyleSheetsProxy}, ${enableCustomElementRegistryProxy})`
-            );
-            document.head.insertBefore(proxyScript, rootVarsStyle.nextSibling);
-            proxyScript.remove();
-        }
         const overrideStyle = createOrUpdateStyle("darkreader--override");
         overrideStyle.textContent =
             fixes && fixes.css ? replaceCSSTemplates(fixes.css) : "";
@@ -8867,6 +8844,8 @@
                 palette.border.forEach((color) =>
                     modifyBorderColor(color, theme)
                 );
+                prevTheme = theme;
+                prevFixes = fixes;
                 return;
             }
             clearColorPalette();

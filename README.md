@@ -219,7 +219,7 @@ Because Dark Mode, RTL Chat Text, and Two-Row Chat Layout are decoupled, you can
 Dark Mode is an independent top-level feature built specifically for the Adobe Connect Web architecture.
 
 - **Non-Invasive Theming**: Rather than applying a global CSS `invert()` filter that washes out colors and distorts images, the theme engine injects semantic CSS rules targeting Adobe Connect pods, toolbars, sidebars, menus, dialogs, and inputs.
-- **Experimental Dark Reader Engine & Theme Presets (`1.8.5 DarkReader Themes PoC`)**:
+- **Experimental Dark Reader Engine & Theme Presets (`1.8.6 DarkReader Themes PoC`)**:
   - Powered by a single Dark Reader dynamic engine (`darkreader@4.9.133`) paired with a central preset registry (`content/darkreader-presets.js`) and shared Adobe Connect media-protection fixes (`content/darkreader-engine.js`).
   - **Initial Theme Presets**:
     - **`Dark` (Default)** — Balanced dark theme (`brightness: 100`, `contrast: 96`, `sepia: 0`, `darkSchemeBackgroundColor: #0F141A`, `darkSchemeTextColor: #F0F3F6`).
@@ -317,7 +317,7 @@ The extension popup provides clear, per-site toggles with real-time state feedba
 | **Two-Row Chat Layout** | `#chat-two-row-toggle` | Toggles the two-row sender/message layout for the current site. |
 | **Reset Site Button** | `#reset-btn` | Clears all stored settings for the origin (resetting `themePreset` to `dark`), unregisters content scripts, and revokes host permission. |
 | **Protected Content Note** | `.safety-badge` | Displays safety notice: *"Webcam, screen share & slides protected"*. |
-| **Version Indicator** | `#extension-version` | Automatically displays the version read from `manifest.json` (`v1.8.5 DarkReader Themes PoC`). |
+| **Version Indicator** | `#extension-version` | Automatically displays the version read from `manifest.json` (`v1.8.6 DarkReader Themes PoC`). |
 
 ---
 

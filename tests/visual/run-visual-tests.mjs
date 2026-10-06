@@ -52,7 +52,8 @@ function startStaticServer() {
       const ext = path.extname(filePath).toLowerCase();
       res.writeHead(200, {
         'Content-Type': MIME_TYPES[ext] || 'application/octet-stream',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Content-Security-Policy': "script-src 'self'"
       });
       fs.createReadStream(filePath).pipe(res);
     });
@@ -417,7 +418,9 @@ const COLLECT_PAGE_REPORT_EXPR = `(() => {
     shadowDomChatColorStyleLoaded: srHost?.shadowRoot ? !!srHost.shadowRoot.getElementById('acd-shadow-chat-color-style') : false,
     shadowDomChatColorAttr: srBubble?.getAttribute('data-acd-chat-color') || null,
     shadowDomRtlBidiDir: srMsg?.getAttribute('data-acd-bidi-dir') || null,
-    shadowDomTwoRowDisplay: srBubbleCs ? srBubbleCs.display : null
+    shadowDomTwoRowDisplay: srBubbleCs ? srBubbleCs.display : null,
+    proxyScriptCount: document.querySelectorAll('script.darkreader--proxy').length,
+    cspViolations: Array.isArray(window.__ACD_CSP_VIOLATIONS__) ? window.__ACD_CSP_VIOLATIONS__ : []
   };
 
   return {
@@ -608,7 +611,9 @@ async function runLivePresetSwitchingTest(cdp, baseUrl) {
         greenBubbleBg: greenBubble ? window.getComputedStyle(greenBubble).backgroundColor : null,
         videoFilter: videoCs ? videoCs.filter : null,
         pdfFilter: pdfCs ? pdfCs.filter : null,
-        darkReaderStyleCount: document.querySelectorAll('style.darkreader').length
+        darkReaderStyleCount: document.querySelectorAll('style.darkreader').length,
+        proxyScriptCount: document.querySelectorAll('script.darkreader--proxy').length,
+        cspViolations: Array.isArray(window.__ACD_CSP_VIOLATIONS__) ? window.__ACD_CSP_VIOLATIONS__ : []
       };
     })()`);
 

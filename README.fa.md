@@ -220,7 +220,7 @@ Adobe Connect Dark (نسخه 1.8.2)
 حالت تاریک یک قابلیت مستقل است که متناسب با ساختار فرانت‌اند ادوبی کانکت توسعه یافته است:
 
 - **رویکرد غیرتخریبی**: به جای استفاده از فیلترهای وارونه‌ساز تصویر، از مجموعه‌ای از قوانین دقیق CSS برای پوشش پادها، نوار منوها، دکمه‌ها و فرم‌ها استفاده می‌کند.
-- **موتور آزمایشی Dark Reader و تم‌های از پیش آماده (`1.8.5 DarkReader Themes PoC`)**:
+- **موتور آزمایشی Dark Reader و تم‌های از پیش آماده (`1.8.6 DarkReader Themes PoC`)**:
   - مبتنی بر یک موتور واحد Dark Reader (`darkreader@4.9.133`) همراه با رجیستری مرکزی تم‌ها (`content/darkreader-presets.js`) و تنظیمات مشترک حفاظت از مدیای ادوبی کانکت (`content/darkreader-engine.js`).
   - **تم‌های اولیه (Theme Presets)**:
     - **`Dark` (پیش‌فرض)** — تم تاریک متعادل (`brightness: 100`, `contrast: 96`, `sepia: 0`, `darkSchemeBackgroundColor: #0F141A`, `darkSchemeTextColor: #F0F3F6`).
@@ -319,7 +319,7 @@ Adobe Connect Dark (نسخه 1.8.2)
 | **سوئیچ Two-Row Chat Layout** | `#chat-two-row-toggle` | فعال/غیرفعال‌سازی چیدمان دو سطری پیام‌های چت برای دامنه کنونی. |
 | **دکمه بازنشانی دامنه (Reset Site)**| `#reset-btn` | حذف تمام تنظیمات دامنه از حافظه (و بازگردانی `themePreset` به `dark`)، لغو اسکریپت‌های پویا و پس‌گرفتن دسترسی اختیاری هاست. |
 | **یادداشت ایمنی محتوا** | `.safety-badge` | یادآوری حفاظت از وب‌کم، اسلایدها و اسکرین‌شیر در انتهای پاپ‌آپ. |
-| **شماره نسخه** | `#extension-version` | همگام با شماره نسخه موجود در `manifest.json` (`v1.8.5 DarkReader Themes PoC`). |
+| **شماره نسخه** | `#extension-version` | همگام با شماره نسخه موجود در `manifest.json` (`v1.8.6 DarkReader Themes PoC`). |
 
 ---
 

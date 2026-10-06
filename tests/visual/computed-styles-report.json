@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-06T14:52:00.131Z",
+  "timestamp": "2026-10-06T19:40:01.315Z",
   "viewportsTested": [
     "1440x900",
     "900x700"
@@ -1476,7 +1476,9 @@
         "shadowDomChatColorStyleLoaded": false,
         "shadowDomChatColorAttr": null,
         "shadowDomRtlBidiDir": null,
-        "shadowDomTwoRowDisplay": "block"
+        "shadowDomTwoRowDisplay": "block",
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       "consoleErrors": [],
       "mutationTest": null,
@@ -1509,7 +1511,7 @@
           "id": null,
           "inlineBackground": null,
           "acdSurface": null,
-          "acdText": null,
+          "acdText": "dark",
           "acdChatColor": null,
           "acdBidiDir": null,
           "colorOrigin": null,
@@ -1690,7 +1692,7 @@
           "id": "sendButton",
           "inlineBackground": null,
           "acdSurface": null,
-          "acdText": null,
+          "acdText": "dark",
           "acdChatColor": null,
           "acdBidiDir": null,
           "colorOrigin": null,
@@ -1710,13 +1712,13 @@
           "id": "test-selected-tab",
           "inlineBackground": null,
           "acdSurface": null,
-          "acdText": null,
+          "acdText": "dark",
           "acdChatColor": null,
           "acdBidiDir": null,
           "colorOrigin": null,
           "background-color": "rgba(0, 0, 0, 0)",
-          "color": "rgb(110, 168, 254)",
-          "border-color": "rgb(110, 168, 254)",
+          "color": "rgb(240, 243, 246)",
+          "border-color": "rgb(240, 243, 246) rgb(240, 243, 246) rgb(110, 168, 254)",
           "box-shadow": "none",
           "filter": "none",
           "direction": "ltr",
@@ -1909,14 +1911,14 @@
           "tag": "div",
           "id": "test-toolbar",
           "inlineBackground": null,
-          "acdSurface": null,
+          "acdSurface": "bright",
           "acdText": null,
           "acdChatColor": null,
           "acdBidiDir": null,
           "colorOrigin": null,
-          "background-color": "rgb(28, 34, 43)",
+          "background-color": "rgb(22, 27, 34)",
           "color": "rgb(240, 243, 246)",
-          "border-color": "rgb(240, 243, 246) rgb(240, 243, 246) rgba(255, 255, 255, 0.055)",
+          "border-color": "rgb(41, 50, 61)",
           "box-shadow": "none",
           "filter": "none",
           "direction": "ltr",
@@ -1929,14 +1931,14 @@
           "tag": "div",
           "id": null,
           "inlineBackground": "rgb(245, 245, 245)",
-          "acdSurface": null,
+          "acdSurface": "bright",
           "acdText": null,
           "acdChatColor": null,
           "acdBidiDir": null,
           "colorOrigin": null,
-          "background-color": "rgb(28, 34, 43)",
+          "background-color": "rgb(22, 27, 34)",
           "color": "rgb(240, 243, 246)",
-          "border-color": "rgb(240, 243, 246) rgb(240, 243, 246) rgba(255, 255, 255, 0.055)",
+          "border-color": "rgb(41, 50, 61)",
           "box-shadow": "none",
           "filter": "none",
           "direction": "ltr",
@@ -1950,7 +1952,7 @@
           "id": null,
           "inlineBackground": null,
           "acdSurface": null,
-          "acdText": null,
+          "acdText": "dark",
           "acdChatColor": null,
           "acdBidiDir": null,
           "colorOrigin": null,
@@ -2943,8 +2945,8 @@
         "legacyBaseCssLoaded": true,
         "legacyAdobeConnectCssLoaded": true,
         "legacyComponentsCssLoaded": true,
-        "acdSurfaceCount": 4,
-        "acdTextCount": 0,
+        "acdSurfaceCount": 25,
+        "acdTextCount": 48,
         "acdChatColorCount": 9,
         "htmlAttributes": {
           "theme": "dark",
@@ -2963,7 +2965,9 @@
         "shadowDomChatColorStyleLoaded": true,
         "shadowDomChatColorAttr": "default",
         "shadowDomRtlBidiDir": "rtl",
-        "shadowDomTwoRowDisplay": "inline-grid"
+        "shadowDomTwoRowDisplay": "inline-grid",
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       "consoleErrors": [],
       "mutationTest": {
@@ -3018,8 +3022,8 @@
       },
       "stressTest": {
         "messagesAppended": 120,
-        "domAppendMs": 2.1,
-        "totalElapsedMs": 458.5,
+        "domAppendMs": 1.2,
+        "totalElapsedMs": 474.8,
         "mutationsObserved": 480,
         "mutationLoopDetected": false,
         "consoleErrorsAfterStress": []
@@ -4506,7 +4510,9 @@
         "shadowDomChatColorStyleLoaded": true,
         "shadowDomChatColorAttr": "default",
         "shadowDomRtlBidiDir": "rtl",
-        "shadowDomTwoRowDisplay": "inline-grid"
+        "shadowDomTwoRowDisplay": "inline-grid",
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       "consoleErrors": [],
       "mutationTest": {
@@ -4561,8 +4567,8 @@
       },
       "stressTest": {
         "messagesAppended": 120,
-        "domAppendMs": 1.1,
-        "totalElapsedMs": 466,
+        "domAppendMs": 1.5,
+        "totalElapsedMs": 462.1,
         "mutationsObserved": 480,
         "mutationLoopDetected": false,
         "consoleErrorsAfterStress": []
@@ -6049,7 +6055,9 @@
         "shadowDomChatColorStyleLoaded": true,
         "shadowDomChatColorAttr": "default",
         "shadowDomRtlBidiDir": "rtl",
-        "shadowDomTwoRowDisplay": "inline-grid"
+        "shadowDomTwoRowDisplay": "inline-grid",
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       "consoleErrors": [],
       "mutationTest": null,
@@ -7536,7 +7544,9 @@
         "shadowDomChatColorStyleLoaded": true,
         "shadowDomChatColorAttr": "default",
         "shadowDomRtlBidiDir": "rtl",
-        "shadowDomTwoRowDisplay": "inline-grid"
+        "shadowDomTwoRowDisplay": "inline-grid",
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       "consoleErrors": [],
       "mutationTest": null,
@@ -9023,7 +9033,9 @@
         "shadowDomChatColorStyleLoaded": true,
         "shadowDomChatColorAttr": "default",
         "shadowDomRtlBidiDir": "rtl",
-        "shadowDomTwoRowDisplay": "inline-grid"
+        "shadowDomTwoRowDisplay": "inline-grid",
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       "consoleErrors": [],
       "mutationTest": null,
@@ -10510,7 +10522,9 @@
         "shadowDomChatColorStyleLoaded": true,
         "shadowDomChatColorAttr": "default",
         "shadowDomRtlBidiDir": "rtl",
-        "shadowDomTwoRowDisplay": "block"
+        "shadowDomTwoRowDisplay": "block",
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       "consoleErrors": [],
       "mutationTest": null,
@@ -11997,7 +12011,9 @@
         "shadowDomChatColorStyleLoaded": false,
         "shadowDomChatColorAttr": null,
         "shadowDomRtlBidiDir": "rtl",
-        "shadowDomTwoRowDisplay": "inline-grid"
+        "shadowDomTwoRowDisplay": "inline-grid",
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       "consoleErrors": [],
       "mutationTest": null,
@@ -12043,7 +12059,9 @@
         "greenBubbleBg": "rgb(25, 46, 38)",
         "videoFilter": "none",
         "pdfFilter": "none",
-        "darkReaderStyleCount": 11
+        "darkReaderStyleCount": 11,
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       {
         "stepIndex": 1,
@@ -12075,7 +12093,9 @@
         "greenBubbleBg": "rgb(25, 46, 38)",
         "videoFilter": "none",
         "pdfFilter": "none",
-        "darkReaderStyleCount": 11
+        "darkReaderStyleCount": 11,
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       {
         "stepIndex": 2,
@@ -12107,7 +12127,9 @@
         "greenBubbleBg": "rgb(25, 46, 38)",
         "videoFilter": "none",
         "pdfFilter": "none",
-        "darkReaderStyleCount": 11
+        "darkReaderStyleCount": 11,
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       {
         "stepIndex": 3,
@@ -12139,7 +12161,9 @@
         "greenBubbleBg": "rgb(25, 46, 38)",
         "videoFilter": "none",
         "pdfFilter": "none",
-        "darkReaderStyleCount": 11
+        "darkReaderStyleCount": 11,
+        "proxyScriptCount": 0,
+        "cspViolations": []
       },
       {
         "stepIndex": 4,
@@ -12171,7 +12195,9 @@
         "greenBubbleBg": "rgb(25, 46, 38)",
         "videoFilter": "none",
         "pdfFilter": "none",
-        "darkReaderStyleCount": 11
+        "darkReaderStyleCount": 11,
+        "proxyScriptCount": 0,
+        "cspViolations": []
       }
     ],
     "fallbackAndLightModeChecks": {

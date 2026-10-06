@@ -12,6 +12,16 @@
 (function () {
   'use strict';
 
+  window.__ACD_CSP_VIOLATIONS__ = [];
+  document.addEventListener('securitypolicyviolation', (e) => {
+    window.__ACD_CSP_VIOLATIONS__.push({
+      blockedURI: e.blockedURI,
+      violatedDirective: e.violatedDirective,
+      sourceFile: e.sourceFile,
+      lineNumber: e.lineNumber
+    });
+  });
+
   const params = new URLSearchParams(window.location.search);
   const engineParam = (params.get('engine') || 'darkreader').toLowerCase();
   const presetParam = params.get('preset') || 'dark';
@@ -256,8 +266,8 @@
     return new Promise((resolve, reject) => {
       const s = document.createElement('script');
       s.src = src;
-      s.onload = () => resolve(true);
-      s.onerror = (err) => reject(new Error('Failed to load ' + src));
+      s.addEventListener('load', () => resolve(true), { once: true });
+      s.addEventListener('error', () => reject(new Error('Failed to load ' + src)), { once: true });
       document.head.appendChild(s);
     });
   }
