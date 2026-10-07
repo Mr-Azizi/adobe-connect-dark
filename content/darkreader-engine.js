@@ -4,8 +4,8 @@
  * with Adobe Connect media/presentation preservation rules and engine switching.
  *
  * Engine modes:
- *   - 'darkreader': Uses official Dark Reader dynamic theme engine (PoC default)
- *   - 'legacy':     Uses v1.8.5 custom CSS + Layer 1 luminance theme engine
+ *   - 'darkreader': Uses official Dark Reader dynamic theme engine (v1.9.0 default)
+ *   - 'legacy':     Uses v1.8.5 custom CSS + Layer 1 luminance theme engine (fallback/comparison mode)
  */
 
 (function () {
@@ -15,11 +15,10 @@
 
   /**
    * Authoritative Dark Engine Switch
-   * Set to 'darkreader' for the Dark Reader PoC, or 'legacy' for v1.8.5 behavior.
+   * Defaults to 'darkreader' in production; 'legacy' is retained as an isolated fallback/comparison mode.
    */
   const DARK_ENGINE = window.__ACD_DARK_ENGINE__ || 'darkreader';
   window.__ACD_DARK_ENGINE__ = DARK_ENGINE;
-  window.ACD_DARK_ENGINE = DARK_ENGINE;
 
   const presetRegistry = window.ACDThemePresets || null;
   const DEFAULT_PRESET_ID = (presetRegistry && presetRegistry.DEFAULT_PRESET_ID) || 'dark';
@@ -181,7 +180,6 @@
       if (mode !== 'darkreader' && mode !== 'legacy') return;
       this.engineMode = mode;
       window.__ACD_DARK_ENGINE__ = mode;
-      window.ACD_DARK_ENGINE = mode;
       this.updateDebugState();
     }
 

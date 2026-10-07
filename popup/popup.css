@@ -320,13 +320,6 @@ body {
   color: var(--text-primary);
 }
 
-.select-chevron {
-  position: absolute;
-  right: 8px;
-  pointer-events: none;
-  color: var(--text-secondary);
-}
-
 /* Modern iOS / Material Switch */
 .switch {
   position: relative;

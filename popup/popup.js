@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const DEFAULT_THEME_PRESET = (presetRegistry && presetRegistry.DEFAULT_PRESET_ID) || 'dark';
 
   function resolvePresetId(presetId) {
-    if (presetRegistry && typeof presetRegistry.resolvePresetId === 'function') {
-      return presetRegistry.resolvePresetId(presetId);
+    if (presetRegistry && typeof presetRegistry.normalizePresetId === 'function') {
+      return presetRegistry.normalizePresetId(presetId);
     }
     const valid = ['dark', 'amoled', 'dim', 'warm'];
     const normalized = typeof presetId === 'string' ? presetId.trim().toLowerCase() : '';
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Synchronize version display with manifest.json (prefers version_name on experimental builds)
+  // Synchronize version display with manifest.json
   if (versionEl) {
     try {
       const manifest = chrome.runtime.getManifest();

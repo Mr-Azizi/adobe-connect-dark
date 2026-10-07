@@ -350,17 +350,6 @@
   border-top: 1px solid var(--acd-border-subtle) !important;
 }
 
-[class^="childContainerDiv--"],
-[class*=" childContainerDiv--"],
-.chat-input-container {
-  background-color: var(--acd-bg-input) !important;
-  border: 1px solid var(--acd-border-subtle) !important;
-  border-radius: 4px;
-  transition: border-color var(--acd-transition-fast), box-shadow var(--acd-transition-fast);
-}
-
-[class^="childContainerDivSelected--"],
-[class*=" childContainerDivSelected--"],
 /* Reset outer wrapper borders inside Shadow DOM to avoid stacked outlines */
 #chatChildContainerWrapper,
 [id^="childContainerDiv"] {

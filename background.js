@@ -63,10 +63,6 @@ function getMainScriptIdForSite(siteKey) {
   }
 }
 
-function getScriptIdForSite(siteKey) {
-  return getIsolatedScriptIdForSite(siteKey);
-}
-
 // Initialize default storage, migrate legacy domain data, and sync scripts
 chrome.runtime.onInstalled.addListener(async (details) => {
   await migrateLegacyStorage();

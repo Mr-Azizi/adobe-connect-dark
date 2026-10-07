@@ -21,6 +21,7 @@
     'styles/chat-colors.css'
   ];
 
+  // Isolated fallback stylesheets injected ONLY when darkEngine === 'legacy'
   const LEGACY_DARK_STYLESHEET_PATHS = [
     'styles/variables.css',
     'styles/base.css',
@@ -28,7 +29,6 @@
     'styles/components.css',
     'styles/connect-central.css'
   ];
-  const STYLESHEET_PATHS = LEGACY_DARK_STYLESHEET_PATHS;
 
   const SHADOW_STYLESHEET_PATH = 'styles/shadow-dom.css';
   const SHADOW_FUNCTIONAL_STYLESHEET_PATH = 'styles/chat-functional.css';

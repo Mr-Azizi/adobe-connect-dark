@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Adobe Connect Dark Mode",
-  "version": "1.8.6",
-  "version_name": "1.8.6 DarkReader Themes PoC",
+  "version": "1.9.0",
+  "version_name": "1.9.0",
   "description": "Professional Dark Mode for Adobe Connect Web - حالت تاریک پیشرفته برای ادوبی کانکت وب",
   "icons": {
     "16": "icons/icon16.png",
