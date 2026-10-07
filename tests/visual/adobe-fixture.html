@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adobe Connect 11.2 — Offline Visual Regression Test Lab</title>
+  <!-- 280 Native Adobe Connect 11.2 Stylesheets extracted from recording-inner-styles.json -->
+  <link rel="stylesheet" href="fixtures/adobe-native-styles.css">
+  <style id="test-lab-structural-grid">
+    /* Structural layout grid for the offline test lab ONLY.
+       Does NOT set colors, backgrounds, borders, or filters on Adobe Connect components. */
+    html, body.client {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      font-family: "Adobe Clean", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: visible !important;
+      user-select: text !important;
+    }
+    #region-toolbar {
+      width: 100%;
+      height: 40px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 20;
+    }
+    #region-toolbar .actionBar--121SkHJEFxiY_i3EE-0DFP {
+      height: 40px;
+      padding: 0 12px;
+      box-sizing: border-box;
+      justify-content: space-between;
+      background-color: rgb(245, 245, 245);
+      border-bottom: 1px solid rgb(225, 225, 225);
+    }
+    #lab-workspace-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr 360px;
+      grid-template-rows: 430px 410px;
+      gap: 8px;
+      padding: 8px;
+      flex: 1;
+      box-sizing: border-box;
+    }
+    @media (max-width: 1024px) {
+      #lab-workspace-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+      }
+    }
+    .lab-cell {
+      position: relative !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 360px;
+      top: auto !important;
+      left: auto !important;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+    /* Override absolute positioning of captured pods so they sit cleanly in the lab grid */
+    #connectPod2, #connectPod3, #connectPod4, #connectPod20 {
+      position: relative !important;
+      width: 100% !important;
+      height: 100% !important;
+      top: 0 !important;
+      left: 0 !important;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgb(215, 215, 215);
+      background-color: rgb(255, 255, 255);
+      box-sizing: border-box;
+    }
+    .podPrimaryBar--2Vw6SaEid6wE12N5XtMSBR {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      height: 32px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .podTitle--1c4NxOm_cSTDsBtTXWvyOX {
+      font-size: 13px;
+      margin: 0;
+      font-weight: 600;
+    }
+    .podContent--ZqyBee02YqmnSQn83E3Z3 {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Chat Pod internal sizing for test lab */
+    #chatPod {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      height: 100%;
+    }
+    #chatContentAreaContainer {
+      flex: 1;
+      height: calc(100% - 70px) !important;
+      overflow-y: auto;
+      display: block !important;
+    }
+    #chatContentArea {
+      padding: 4px 6px !important;
+      box-sizing: border-box;
+      width: 100% !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 4px 6px !important;
+      align-content: start !important;
+    }
+    #chatContentArea .chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3 {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .chatComposeArea--2r7JQTL0WrmhO-L6B_IUjn {
+      position: relative !important;
+      height: 36px;
+      flex-shrink: 0;
+    }
+    /* Contain Menus, Connection Status, Modal & Toasts in their visual inspection cells */
+    #region-menus {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px;
+      background-color: rgb(250, 250, 250);
+      border: 1px solid rgb(220, 220, 220);
+      overflow: auto;
+    }
+    #region-menus .spectrum-Popover {
+      position: relative !important;
+      top: 0 !important;
+      left: 0 !important;
+      transform: none !important;
+      padding: 6px;
+      min-width: 160px;
+    }
+    #region-menus .connectionDetail--2sFDPJbKDvPI3ifG6eTyBi {
+      margin-top: 0 !important;
+      width: auto !important;
+      height: auto !important;
+      padding: 12px !important;
+      grid-column: 1 / -1;
+    }
+    #region-modal {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgb(220, 220, 220);
+      background-color: rgb(240, 240, 240);
+      display: flex;
+      flex-direction: column;
+    }
+    #confirmationDialog.spectrumModalDialog--27LfITOe7-gJe6bnVzfzy3 {
+      position: relative !important;
+      padding-top: 12px !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: 5 !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    #confirmationDialog .spectrum-Dialog {
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      width: 92% !important;
+      min-width: 0 !important;
+      max-width: 480px !important;
+      padding: 16px 20px !important;
+      box-sizing: border-box;
+      background: rgb(245, 245, 245);
+      border: 1px solid rgb(210, 210, 210);
+      border-radius: 6px;
+    }
+    #region-media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 1fr 1fr;
+      gap: 6px;
+      padding: 6px;
+      flex: 1;
+      box-sizing: border-box;
+    }
+    .media-box {
+      position: relative;
+      border: 1px solid rgb(200, 200, 200);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: rgb(255, 255, 255);
+    }
+    .media-box-label {
+      font-size: 10px;
+      padding: 2px 4px;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+    #region-toasts-attendees {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    #region-toasts-attendees .customAccordionHeader--1ExVxr3R0DQvb9yn0_c5d,
+    #region-toasts-attendees .attendeeItemContainer1--XHFJrqHBi7zAwwGQH2Y42,
+    #region-toasts-attendees .attendeeItemContainer2--JCZweF8pheabgZeiMZYmS {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      height: auto !important;
+      width: 100% !important;
+      box-sizing: border-box;
+    }
+    #region-toasts {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      width: 100% !important;
+      box-sizing: border-box;
+      padding: 8px;
+      background-color: rgb(250, 250, 250);
+      border: 1px solid rgb(220, 220, 220);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .spectrum-Toast {
+      position: relative !important;
+      width: 100% !important;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      border-radius: 4px;
+      background-color: rgb(245, 245, 245);
+      color: rgb(44, 44, 44);
+      border: 1px solid rgb(215, 215, 215);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body class="client">
+  <div id="container" class="spectrum spectrum--light spectrum--medium react-spectrum-provider spectrum--light--dk3_vahJ4ajnPlHIDMgF4">
+
+    <!-- ==================================================================
+         1. TOP TOOLBAR (Real Adobe Connect 11.2 actionBar-- markup)
+         ================================================================== -->
+    <header id="region-toolbar">
+      <div id="test-toolbar" class="actionBar--121SkHJEFxiY_i3EE-0DFP" role="toolbar" aria-label="Meeting Action Bar">
+        <div class="leftPane--1RX6U9UP4vR7TtUeOoM9ev" style="display:flex;align-items:center;gap:8px;">
+          <button class="appBarButton--3W1oLdiqxktR_0RQPuJGoY leftPaneMeeting--3BASLLRhZq7rAk2Ya6J8hQ" id="toolbar-meeting-menu-btn" aria-haspopup="true" aria-expanded="true">
+            <span class="meetingName--3Uyluf33Xis0aq8mD-5BwB">کلاس مهندسی نرم‌افزار — Adobe Connect 11.2</span>
+            <div class="leftPaneMeetingDropDownIconDiv--inZpPXxHrhsiRz_AHsDl0">
+              <svg class="leftPaneMeetingDropDownIcon--121msZnwRGou_vt9cjGgcn" viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
+            </div>
+          </button>
+        </div>
+
+        <div class="centrePane--2OGj43CNov7Nm6Qiz4qXsV" style="display:flex;align-items:center;gap:10px;">
+          <div class="centrePaneMeetingDropDown--3WKKwH2Dkj1gK6uDG2n22d">
+            <!-- Active Audio Icon (Semantic Green #33ab84) -->
+            <button class="centrePaneAudioDropDownBtn--17ep1ZgAO5p2R75sS7N7bV" id="toolbar-audio-active-btn" aria-label="Microphone Connected" title="Microphone Active">
+              <svg class="centrePaneAudioDropDownActiveIcon--2RNZp3BVDwQh-bgPRWHNX2" width="18" height="18" viewBox="0 0 18 18" style="fill: rgb(51, 171, 132);">
+                <circle cx="9" cy="9" r="7"/>
+              </svg>
+            </button>
+            <!-- Inactive/Muted Audio Icon (Semantic Red #ec5b62) -->
+            <button class="centrePaneAudioDropDownBtn--17ep1ZgAO5p2R75sS7N7bV" id="toolbar-audio-muted-btn" aria-label="Microphone Muted" title="Microphone Muted">
+              <svg class="centrePaneAudioDropDownInactiveIcon--1o0PD4XmzCCiqcECGPSRbP" width="18" height="18" viewBox="0 0 18 18" style="fill: rgb(236, 91, 98);">
+                <rect x="3" y="3" width="12" height="12" rx="2"/>
+              </svg>
+            </button>
+            <!-- Selected/Active Toolbar Button -->
+            <button class="centrePaneMeetingDropDownButton--2x3MxaQxDBhb1CklpzlFkQ active" id="toolbar-webcam-btn" aria-pressed="true" aria-label="Webcam">
+              <span>Webcam</span>
+            </button>
+            <!-- Raise Hand / User Status Button -->
+            <button class="centrePaneMeetingDropDownButtonUserStatus--1BVUgUd8LuuXFP8e21f2g-" id="toolbar-status-btn" aria-label="Raise Hand">
+              <span>Raise Hand</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="rightPane--toolbar" style="display:flex;align-items:center;gap:10px;">
+          <div class="ConnectionStatus--bar" id="toolbar-conn-indicator" title="Connection Status: Excellent" style="display:flex;align-items:center;gap:4px;">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:rgb(45,157,120);"></span>
+            <span style="font-size:12px;">Connected</span>
+          </div>
+          <button class="helpButton--19eID2EVmOnvHTANijT5L1" id="toolbar-help-btn" aria-label="Help">?</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================================================================
+         MAIN WORKSPACE GRID
+         ================================================================== -->
+    <main id="lab-workspace-grid" class="mainRoomRecording--NrR9JcLmrLt4YlNSawceL defaultStyle--1fobP_x8odOxYx6Av3hyAO">
+
+      <!-- ================================================================
+           2. CHAT POD (Real #connectPod2 + BiDi/RTL + 9 Chat Color Bubbles)
+           ================================================================ -->
+      <section id="region-chat" class="lab-cell">
+        <div id="connectPod2" class="pod--2_NUXHfquySRNw_Ppy6ICI" data-pod-type="chat">
+          <div class="podPrimaryBar--2Vw6SaEid6wE12N5XtMSBR noBorder--ky9lKs88kqUl1wttwF3Q" style="background-color: rgb(245, 245, 245); color: rgb(112, 112, 112);">
+            <h2 class="podTitle--1c4NxOm_cSTDsBtTXWvyOX" role="application" aria-label="Chat">Chat</h2>
+            <div class="podControls--2JgJ1XF5BNvVZpXWj8tOu_">
+              <div class="buttonBarButtons--1K0QbSBsfxE0TFESW76bCJ">
+                <button id="toggle-fullscreen" aria-label="Chat Options" class="spectrum-ActionButton spectrum-ActionButton--quiet button--2BlpZxnwM9C-3PNt_B4829">•••</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="podContent--ZqyBee02YqmnSQn83E3Z3">
+            <div id="chatPod" class="chatPod--Y7W2hS6yYrp4oMuKiuU-k">
+              <!-- Real Chat Tab Bar -->
+              <div id="chatTabBar" class="chatTabBar--3YQ9e0U9HF0TsOhonQ-JOo">
+                <div id="ChatTabList" role="tablist" class="ChatTabList--1c3kkgwDONu3kq4OlIH1Ea spectrum-Tabs spectrum-Tabs--horizontal spectrum-Tabs--quiet spectrum-Tabs--compact" style="display:flex;gap:12px;align-items:center;width:100%;">
+                  <div id="test-selected-tab" role="tab" aria-selected="true" class="spectrum-Tabs-item chatTab--2Z-u-Ws2dobMKo0vl9R5BB is-selected">
+                    <div class="chatTabButton--2eUd8gXCS2BPV2N2pqZ9_z">
+                      <div class="newMessageNotificationContiner--CQtQbz3_cKoFc_p19VlE5"></div>
+                      <span class="chatTabDisplayName--2Kp2C50QKm_kF_XtwOH2oE chatTabDisplayNameSelected--2XSeQQ730hcXkUm3f78ntk">Everyone</span>
+                    </div>
+                    <div class="spectrum-Tabs-selectionIndicator" style="background-color: rgb(44, 44, 44); height: 2px;"></div>
+                  </div>
+                  <div id="test-unselected-tab" role="tab" aria-selected="false" class="spectrum-Tabs-item chatTab--2Z-u-Ws2dobMKo0vl9R5BB">
+                    <div class="chatTabButton--2eUd8gXCS2BPV2N2pqZ9_z" style="display:flex;align-items:center;gap:4px;">
+                      <div class="newMessageNotificationContiner--CQtQbz3_cKoFc_p19VlE5">
+                        <div class="chatNewMessageNotification--2QHoQBxpZEutX_2wkapG8C"></div>
+                      </div>
+                      <span class="chatTabDisplayName--2Kp2C50QKm_kF_XtwOH2oE">Hosts (2)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Real Chat Content Area -->
+              <div id="chatContentAreaContainer" class="chatContentAreaContainer--1fOZdz7AGq-dIGc_SmCLbH">
+                <div id="chatContentArea" class="chatContentArea--3MxNvrb8yLLVMhuQ1BG_WX">
+                  <!-- Section 3: BiDi & RTL/LTR Test Messages -->
+                  <!-- 1. Incoming RTL Message (Default Light Adobe Bubble) -->
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3" data-msg-type="incoming">
+                    <div id="bubble-color-default" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" style="background-color: rgb(245, 245, 245);">
+                      <span id="test-chat-sender" class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">دکتر رضایی: </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:01</span>
+                      <span id="msg-rtl" class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">سلام خوبی؟</span>
+                    </div>
+                  </div>
+
+                  <!-- 2. Incoming Mixed Message (Latin-first + Persian question) -->
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3" data-msg-type="incoming">
+                    <div id="bubble-color-blue" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" style="background-color: rgb(212, 229, 247);" title="Blue (Documented Adobe Pastel)">
+                      <span class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">سارا محمدی: </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:02</span>
+                      <span id="msg-mixed-1" class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">linux چیه ؟</span>
+                    </div>
+                  </div>
+
+                  <!-- 3. Self Mixed Message (Persian + Latin name) -->
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3" data-msg-type="self">
+                    <div id="bubble-color-green" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" style="background-color: rgb(215, 235, 218);" title="Green (Confirmed Real Adobe RGB 215,235,218)">
+                      <span class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">شما (You): </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:03</span>
+                      <span id="msg-mixed-2" class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">سلام alireza چطوری؟</span>
+                    </div>
+                  </div>
+
+                  <!-- 4. Incoming LTR Message -->
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3" data-msg-type="incoming">
+                    <div id="bubble-color-red" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" style="background-color: rgb(245, 215, 215);" title="Red (Documented Adobe Pastel)">
+                      <span class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">John Smith: </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:04</span>
+                      <span id="msg-ltr" class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">hello world</span>
+                    </div>
+                  </div>
+
+                  <!-- Section 4: Remaining Chat Color Bubbles (Orange, Brown, Purple, Pink, Grey) -->
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3">
+                    <div id="bubble-color-orange" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" data-color-origin="synthetic-classifier" style="background-color: rgb(252, 226, 196);" title="Orange (Synthetic Classifier Pastel)">
+                      <span class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">Orange [Synthetic]: </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:05</span>
+                      <span class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">حباب نارنجی (Orange test)</span>
+                    </div>
+                  </div>
+
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3">
+                    <div id="bubble-color-brown" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" data-color-origin="synthetic-classifier" style="background-color: rgb(232, 218, 202);" title="Brown (Synthetic Classifier Pastel)">
+                      <span class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">Brown [Synthetic]: </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:06</span>
+                      <span class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">حباب قهوه‌ای (Brown test)</span>
+                    </div>
+                  </div>
+
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3">
+                    <div id="bubble-color-purple" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" style="background-color: rgb(228, 215, 242);" title="Purple (Documented Adobe Pastel)">
+                      <span class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">Purple: </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:07</span>
+                      <span class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">حباب بنفش (Purple test)</span>
+                    </div>
+                  </div>
+
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3">
+                    <div id="bubble-color-pink" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" style="background-color: rgb(247, 215, 232);" title="Pink (Documented Adobe Pastel)">
+                      <span class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">Pink: </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:08</span>
+                      <span class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">حباب صورتی (Pink test)</span>
+                    </div>
+                  </div>
+
+                  <div class="chatIndividualMessage--IntdQwOo-jr9XRxDxKbH3">
+                    <div id="bubble-color-grey" class="chatIndividualMessageContentWrapperDiv--3_-ljsHfbddoYb57h1tELa" style="background-color: rgb(228, 228, 228);" title="Grey (Documented Adobe Pastel)">
+                      <span class="chatMessageSender--DWciMGe1kN4RIucfuWC0f">Grey: </span>
+                      <span class="chatMessageTime--mfT0iWBdHWhH_u8MKaTqn">10:09</span>
+                      <span class="chatIndividualMessageContent--ZoTO-kllP1-hUR76ZCyod">حباب خاکستری (Grey test)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Real Chat Compose Area -->
+              <div class="chatComposeArea--2r7JQTL0WrmhO-L6B_IUjn">
+                <div id="childContainerDiv--1oZNkE5-qVC5sbXC7rsBBo" class="childContainerDiv--1oZNkE5-qVC5sbXC7rsBBo">
+                  <textarea id="chatTypingArea" class="typingArea--2P3FOygWyvyk5nJu5GJQS2 typingAreaHasText--3b7jBuWzu9X9ktA44kUVad defaultTypingAreaHeight--2Tk-M_kJ7r8lxGjsJlGO99" placeholder="پیام خود را بنویسید... / Type a message...">سلام همگی</textarea>
+                  <button id="sendButton" class="spectrum-ActionButton spectrum-ActionButton--quiet sendButton--1vaQ_KDC_Gn4fId1xEvlWp" aria-label="Send message">
+                    <svg class="chatSendButtonIcon--1AhI0-iL_rU_rA5N9R01-6" viewBox="0 0 18 18"><path d="M1 2l16 7-16 7 3-7z" fill="currentColor"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           3. MEDIA PROTECTION POD (Video, Canvas, Image, PDF Share, ScreenShare, Whiteboard)
+           ================================================================ -->
+      <section id="region-media" class="lab-cell">
+        <div id="connectPod20" class="pod--2_NUXHfquySRNw_Ppy6ICI" data-pod-type="share">
+          <div class="podPrimaryBar--2Vw6SaEid6wE12N5XtMSBR" style="background-color: rgb(245, 245, 245); color: rgb(112, 112, 112);">
+            <h2 class="podTitle--1c4NxOm_cSTDsBtTXWvyOX" role="application" aria-label="سرفصل درس برای ورودی های 1403 به بعد.pdf">سرفصل درس برای ورودی های 1403 به بعد.pdf (Media Protection)</h2>
+            <div class="podControls--2JgJ1XF5BNvVZpXWj8tOu_">
+              <div class="buttonBarButtons--1K0QbSBsfxE0TFESW76bCJ">
+                <button class="spectrum-ActionButton spectrum-ActionButton--quiet button--2BlpZxnwM9C-3PNt_B4829">Full Screen</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="region-media-grid" class="podContent--ZqyBee02YqmnSQn83E3Z3">
+            <!-- 3a. Video Pod Stream -->
+            <div class="media-box videoLayoutContainer--3moYO51yZ_pekCbh7wJRLP">
+              <span class="media-box-label">1. Video Element</span>
+              <div class="videoLayout--9VTU_C-egoYI0cMejZbZG" style="flex:1;display:flex;align-items:center;justify-content:center;">
+                <video id="test-video" width="160" height="110" muted playsinline style="background: rgb(20, 40, 80); width:100%; height:100%; object-fit:cover;"></video>
+              </div>
+            </div>
+
+            <!-- 3b. Standalone Canvas (RGB Reference Bars) -->
+            <div class="media-box">
+              <span class="media-box-label">2. Canvas RGB Bars</span>
+              <canvas id="test-canvas" width="180" height="120" style="width:100%;height:100%;"></canvas>
+            </div>
+
+            <!-- 3c. Image Element (RGB Reference Pattern) -->
+            <div class="media-box">
+              <span class="media-box-label">3. Image RGB Reference</span>
+              <img id="test-image" alt="RGB Reference" style="width:100%;height:100%;object-fit:cover;" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='120'><rect width='60' height='120' x='0' fill='%23ff0000'/><rect width='60' height='120' x='60' fill='%2300ff00'/><rect width='60' height='120' x='120' fill='%230000ff'/><text x='12' y='65' fill='white' font-size='14' font-family='sans-serif' font-weight='bold'>RGB IMG</text></svg>">
+            </div>
+
+            <!-- 3d. Real Adobe PDF / Slide Share Stage (shareContent-- / pdfLoaderScreen-- / #pdf-viewer / .canvasHTMLPDF) -->
+            <div id="test-share-content" class="media-box shareContent--3QsJloJq04r3ONslTf18N4">
+              <span class="media-box-label">4. PDF / Slide Share</span>
+              <div class="pdfLoaderScreen--2xxekHms-S6znOyAP7sT5C" style="width:100%;height:100%;">
+                <div id="pdf-viewer" style="width:100%;height:100%;">
+                  <canvas id="test-pdf-canvas" class="canvasSingleHTMLPDF canvasHTMLPDF" width="180" height="120" style="width:100%;height:100%;"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3e. Screen-share style region -->
+            <div id="test-screenshare" class="media-box screenShareLoader--synthetic1" data-ac-role="screenshare">
+              <span class="media-box-label">5. ScreenShare [Synthetic]</span>
+              <canvas id="test-screenshare-canvas" width="180" height="120" style="width:100%;height:100%;"></canvas>
+            </div>
+
+            <!-- 3f. Real Whiteboard Stage (whiteboardWrapper-- / wbShapesWrapper--) -->
+            <div id="test-whiteboard" class="media-box whiteboardWrapper--11dwcb2cod2tb0DgDwIgFa" data-ac-role="whiteboard">
+              <span class="media-box-label">6. Whiteboard Stage</span>
+              <div class="wbShapesWrapper--QIJkEqm1k9t1dP3WcGY2K" style="width:100%;height:100%;background:#ffffff;display:flex;align-items:center;justify-content:center;">
+                <svg id="test-whiteboard-svg" width="160" height="100" viewBox="0 0 160 100">
+                  <rect x="4" y="4" width="152" height="92" fill="#ffffff" stroke="#1473e6" stroke-width="2"/>
+                  <circle cx="45" cy="50" r="22" fill="#e34850"/>
+                  <path d="M85 72 L115 28 L145 72 Z" fill="#2d9d78"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           4. ATTENDEES POD & TOASTS (Real #connectPod3 + .spectrum-Toast)
+           ================================================================ -->
+      <section id="region-toasts-attendees" class="lab-cell">
+        <!-- Real Attendees Pod -->
+        <div id="connectPod3" class="pod--2_NUXHfquySRNw_Ppy6ICI" data-pod-type="attendee" style="flex:1;">
+          <div class="podPrimaryBar--2Vw6SaEid6wE12N5XtMSBR" style="background-color: rgb(245, 245, 245); color: rgb(112, 112, 112);">
+            <h2 class="podTitle--1c4NxOm_cSTDsBtTXWvyOX">Attendees (4)</h2>
+          </div>
+          <div class="podContent--ZqyBee02YqmnSQn83E3Z3">
+            <div id="attendeePodContainerDiv" class="attendee---63CyvnZzE3otYTYsydKD" style="padding:4px;">
+              <div class="connectAccordion--1BtuaQwy4L3w92wyadwhdZ">
+                <div class="customAccordionHeader--1ExVxr3R0DQvb9yn0_c5d headerContainer--3ZXDmEVD-dXxoSssv34w9N" style="padding:6px 8px;background:rgb(238,238,238);">
+                  <span class="customAttendeeGroupText--daHoEM7I99NakeSPyK7H7">Hosts (1)</span>
+                </div>
+                <div class="attendeeItemContainer1--XHFJrqHBi7zAwwGQH2Y42">
+                  <div class="attendeeItemContainer2--JCZweF8pheabgZeiMZYmS attendeeItemContainer2Selected--selected" style="padding:5px 8px;display:flex;justify-content:space-between;">
+                    <div class="attendeeItem--1L-N1xIcV65SuDXMPf-JYo" aria-selected="true">
+                      <span class="attendeeUserName--1bDwNpCLyJE2vaqwOaeC0u">دکتر رضایی (Host)</span>
+                    </div>
+                    <span class="attendeeItemRightIconContainer--3u54yOSmOvIvvGTa75g4x0">🎤</span>
+                  </div>
+                </div>
+
+                <div class="customAccordionHeader--1ExVxr3R0DQvb9yn0_c5d headerContainer--3ZXDmEVD-dXxoSssv34w9N" style="padding:6px 8px;background:rgb(238,238,238);margin-top:4px;">
+                  <span class="customAttendeeGroupText--daHoEM7I99NakeSPyK7H7">Participants (3)</span>
+                </div>
+                <div class="attendeeItemContainer1--XHFJrqHBi7zAwwGQH2Y42">
+                  <div class="attendeeItemContainer2--JCZweF8pheabgZeiMZYmS" style="padding:5px 8px;display:flex;justify-content:space-between;">
+                    <div class="attendeeItem--1L-N1xIcV65SuDXMPf-JYo">
+                      <span class="attendeeUserName--1bDwNpCLyJE2vaqwOaeC0u">علیرضا عزیزی</span>
+                    </div>
+                    <span class="attendeeItemRightIconContainer--3u54yOSmOvIvvGTa75g4x0">✋</span>
+                  </div>
+                  <div class="attendeeItemBorder--divider" style="height:1px;background:rgb(225,225,225);"></div>
+                  <div class="attendeeItemContainer2--JCZweF8pheabgZeiMZYmS" style="padding:5px 8px;display:flex;justify-content:space-between;">
+                    <div class="attendeeItem--1L-N1xIcV65SuDXMPf-JYo">
+                      <span class="attendeeUserName--1bDwNpCLyJE2vaqwOaeC0u">سارا محمدی</span>
+                    </div>
+                    <span class="attendeeItemRightIconContainer--3u54yOSmOvIvvGTa75g4x0">📱</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 7: Toast Notifications -->
+        <div id="region-toasts" class="notifierContainer--3JMuEepbSinwIhZi3p6e2i centerNotifiers--213CZ2gK-J0pA5Gm8ORvud">
+          <div id="test-toast-neutral" class="spectrum-Toast" role="alert">
+            <span class="spectrum-Toast-typeIcon" style="margin-right:6px;">ℹ️</span>
+            <div class="spectrum-Toast-body">
+              <div class="spectrum-Toast-content">Recording has started for this session.</div>
+            </div>
+            <div class="spectrum-Toast-buttons">
+              <button class="spectrum-ClearButton" aria-label="Close">✕</button>
+            </div>
+          </div>
+          <div id="test-toast-status" class="spectrum-Toast spectrum-Toast--positive" role="status" style="background-color: rgb(230, 245, 238);">
+            <span class="spectrum-Toast-typeIcon" style="margin-right:6px;">✓</span>
+            <div class="spectrum-Toast-body">
+              <div class="spectrum-Toast-content">Microphone connected successfully.</div>
+            </div>
+            <div class="spectrum-Toast-buttons">
+              <button class="spectrum-ClearButton" aria-label="Close">✕</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           5. MENUS, SUBMENUS & CONNECTION STATUS (#region-menus)
+           ================================================================ -->
+      <section id="region-menus" class="lab-cell">
+        <!-- Main Menu + Nested Submenu Trigger + States (Hover, Selected, Disabled, Separator, Toggle) -->
+        <div id="test-popover" class="spectrum-Popover react-spectrum-Popover spectrum-Popover--bottom is-open">
+          <ul class="spectrum-Menu" role="menu" aria-label="Meeting Menu" style="margin:0;list-style:none;padding:4px;">
+            <li class="spectrum-Menu-sectionHeading">Meeting Options</li>
+            <li class="spectrum-Menu-item actionBarMeetingDropDownMenuItem--1cvJ53v-P-0E9Hhl-M_Vnf" role="menuitem" style="padding:4px 8px;">
+              <span>Manage Meeting Information</span>
+            </li>
+            <li id="test-menu-item-hover" class="spectrum-Menu-item is-focused actionBarMeetingDropDownMenuItem--1cvJ53v-P-0E9Hhl-M_Vnf" role="menuitem" style="padding:4px 8px;background-color:rgb(235,235,235);">
+              <span>Switch to Desktop App (Hover)</span>
+            </li>
+            <li id="test-menu-item-selected" class="spectrum-Menu-item is-selected actionBarMeetingDropDownMenuItemSelected--1oqTDTdKDXaCoFdkfwlkTg" role="menuitem" aria-selected="true" style="padding:4px 8px;">
+              <span>Full Screen Mode (Selected ✓)</span>
+            </li>
+            <li id="test-menu-item-disabled" class="spectrum-Menu-item is-disabled actionBarMeetingDropDownMenuItemDisabled--aNS6Tr2t5k3Kpq4alTq1r" role="menuitem" aria-disabled="true" style="padding:4px 8px;">
+              <span>End Meeting (Disabled)</span>
+            </li>
+            <li class="spectrum-Menu-divider actionBarSeparator--qaQ8yCRcpNEuZ38bEkFXy" role="separator"></li>
+            <li class="spectrum-Menu-item actionBarMeetingSubMenuParent--25GfZNHsOPrO4K1dOkhv3A" role="menuitem" aria-haspopup="true" style="padding:4px 8px;position:relative;">
+              <span>Chat Color ▸</span>
+            </li>
+            <li class="spectrum-Menu-item" role="menuitem" style="padding:4px 8px;position:relative;">
+              <div class="chatSound--27PK6KVO5B6FNfu5dxQZqD" style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="chatSoundText--1-R-j8rSqAWnROWeI88k28">Chat Sound</span>
+                <input type="checkbox" class="spectrum-ToggleSwitch-input" checked aria-label="Chat Sound Toggle">
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Chat Color Submenu + Raise Hand Status Menu -->
+        <div id="test-color-popover" class="spectrum-Popover react-spectrum-Popover spectrum-Popover--bottom is-open">
+          <ul class="spectrum-Menu" role="menu" aria-label="Chat Color & Status Submenu" style="margin:0;list-style:none;padding:4px;">
+            <li class="spectrum-Menu-sectionHeading">Chat Color Submenu</li>
+            <li class="spectrum-Menu-item" role="menuitem" style="padding:3px 8px;">
+              <div class="chatColorMenuItem--3Y5p8221my9d6IhT6lcYN0">
+                <span class="chatMenuItemColorCode--2saTHurO6A1ZArICHC1QOB" style="background-color: rgb(45, 157, 120); display:inline-block;"></span>
+                <span class="chatMenuItemColorName--29BHHlbxe0aGaWGLnUF-MC">Green</span>
+              </div>
+            </li>
+            <li class="spectrum-Menu-item" role="menuitem" style="padding:3px 8px;">
+              <div class="chatColorMenuItem--3Y5p8221my9d6IhT6lcYN0">
+                <span class="chatMenuItemColorCode--2saTHurO6A1ZArICHC1QOB" style="background-color: rgb(38, 128, 235); display:inline-block;"></span>
+                <span class="chatMenuItemColorName--29BHHlbxe0aGaWGLnUF-MC">Blue</span>
+              </div>
+            </li>
+            <li class="spectrum-Menu-item" role="menuitem" style="padding:3px 8px;">
+              <div class="chatColorMenuItem--3Y5p8221my9d6IhT6lcYN0">
+                <span class="chatMenuItemColorCode--2saTHurO6A1ZArICHC1QOB" style="background-color: rgb(215, 55, 63); display:inline-block;"></span>
+                <span class="chatMenuItemColorName--29BHHlbxe0aGaWGLnUF-MC">Red</span>
+              </div>
+            </li>
+            <li class="spectrum-Menu-divider separator--dOBmmyEuwgFaquAGM8lP2" role="separator"></li>
+            <li class="spectrum-Menu-sectionHeading">Raise Hand Menu</li>
+            <li class="spectrum-Menu-item is-selected" role="menuitem" aria-selected="true" style="padding:3px 8px;display:flex;justify-content:space-between;">
+              <span>Raise Hand</span>
+              <span class="userStatusMenuItemIcon--2i74xS9xQf9S8DIyyiJabs">✋</span>
+            </li>
+            <li class="spectrum-Menu-item" role="menuitem" style="padding:3px 8px;display:flex;justify-content:space-between;">
+              <span>Agree</span>
+              <span class="userStatusMenuItemIcon--2i74xS9xQf9S8DIyyiJabs">👍</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Real Connection Status Popup (connectionDetail--2sFDPJbKDvPI3ifG6eTyBi) -->
+        <div id="test-connection-status" class="connectionDetail--2sFDPJbKDvPI3ifG6eTyBi">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="title--2qPtmbKyufR-yuJVRnRMy1">Connection Status: Excellent</span>
+            <button class="closeBtn--1o8DSxi8hMzNAdPMEGIls6 button--aR1ay6BcOHO66nk3kT9Rb" aria-label="Close Connection Status">✕</button>
+          </div>
+          <div class="description--8bGflipwxd7nJKeQ_2eYI" style="margin-top:6px !important;font-size:12px;">
+            Latency: 28 ms • Upstream: 1.4 Mbps • Downstream: 4.8 Mbps
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           6. SWITCH TO APPLICATION MODAL (#region-modal)
+           Real #confirmationDialog / .spectrum-Dialog / .promotionDialog--
+           ================================================================ -->
+      <section id="region-modal" class="lab-cell" style="grid-column: 2 / 4;">
+        <div id="confirmationDialog" class="spectrumModalDialog--27LfITOe7-gJe6bnVzfzy3" role="presentation">
+          <div id="test-underlay" class="spectrum-Underlay react-spectrum-Underlay is-open" style="position:absolute;inset:0;pointer-events:none;"></div>
+          <div id="test-modal" class="spectrum-Dialog react-spectrum-Dialog is-open" role="dialog" aria-modal="true" aria-labelledby="switch-app-title">
+            <div class="spectrum-Dialog-header">
+              <h2 id="switch-app-title" class="spectrum-Dialog-title">Switch to Desktop Application</h2>
+            </div>
+            <div class="spectrum-Dialog-content">
+              <div class="promotionDialog--14tIxjnOTZJ165BAqu7L5t">
+                <div class="stepDiv--3vFpC9lhdTf1xYFiSRqLxk" style="width:100% !important;">
+                  <div class="stepDivIcon--3tk7AwTILpmOSs1BBDjAOh">🖥️</div>
+                  <div class="stepContent--tjcWoog8fJR-iseESG9IH">
+                    <div class="headingDiv--3uzTzpEAn13zLETuPlSVpl">Adobe Connect Application is required for screen sharing</div>
+                    <p>Launch the desktop application or <button class="promotionDialogLink--1tK9s8GyLg8xqHwSGcRYew"><span>Download Adobe Connect</span></button> if not installed.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="spectrum-Dialog-footer react-spectrum-Dialog-buttons" style="display:flex;justify-content:flex-end;gap:8px;padding-top:14px;">
+              <button class="spectrum-Button spectrum-Button--secondary" type="button">
+                <span class="spectrum-Button-label">Cancel</span>
+              </button>
+              <button class="spectrum-Button spectrum-Button--cta" type="button">
+                <span class="spectrum-Button-label">Launch Adobe Connect</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Open Shadow DOM Host for Shadow Root Functional & Theme Verification -->
+    <div id="test-shadow-host" style="display:none;"></div>
+  </div>
+
+  <!-- Initialize Test Lab canvases, Shadow DOM, and Query Parameter switches -->
+  <script src="adobe-fixture.js"></script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+/**
+ * Adobe Connect Dark Mode - Functional Chat Stylesheet (Engine-Agnostic)
+ * Preserves Vazirmatn @font-face, Chat typography, Two-Row Chat Layout,
+ * and RTL / BiDi Chat presentation across both Document and Open Shadow DOM
+ * without loading any legacy dark-theme visual color overrides.
+ */
+
+/* ==========================================================================
+   1. Bundled Local Fonts (Vazirmatn Persian / Arabic Font)
+   ========================================================================== */
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("../assets/fonts/Vazirmatn-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   2. Chat Textual Typography (Vazirmatn Persian / Arabic Font Stack)
+   Applied cleanly to Chat textual content across Document and Open Shadow DOM.
+   ========================================================================== */
+[class^="chatMessageSender--"],
+[class*=" chatMessageSender--"],
+.chat-user-name,
+.sender-name,
+[class*="chat-sender"],
+[class^="chatIndividualMessageContent--"],
+[class*=" chatIndividualMessageContent--"],
+.chat-message-text,
+[class*="chat-message-content"],
+[class^="typingArea--"],
+[class*=" typingArea--"],
+[class^="typingAreaHasText--"],
+[class*=" typingAreaHasText--"],
+[class*="childContainerDiv"] [class*="typingArea"],
+[class*="chatComposeArea"] [class*="typingArea"],
+[class*="chatComposeArea"] textarea,
+[class*="chatComposeArea"] input,
+[class*="chatComposeArea"] [contenteditable="true"],
+.chat-input-container textarea,
+.chat-input-container input,
+.chat-input-container [contenteditable="true"] {
+  font-family: "Vazirmatn", Tahoma, Arial, sans-serif !important;
+}
+
+/* ==========================================================================
+   3. Chat Two-Row Message Presentation (Sender on Row 1, Body on Row 2)
+   Separates sender label and message body into distinct vertical rows
+   while strictly preserving bubble alignment, timestamps, and RTL/LTR state.
+   Gated: Only active when data-acd-chat-two-row="true" is set on root.
+   ========================================================================== */
+html[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-chat-two-row="true"] [data-acd-chat-two-line="true"],
+html[data-acd-chat-two-row="true"] [class*="chatContentArea"] .chat-message,
+html[data-acd-chat-two-row="true"] [class*="chatContentArea"] .message-item,
+:host-context([data-acd-chat-two-row="true"]) [class^="chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-two-row="true"]) [data-acd-chat-two-line="true"],
+:host-context([data-acd-chat-two-row="true"]) [class*="chatContentArea"] .chat-message,
+:host-context([data-acd-chat-two-row="true"]) [class*="chatContentArea"] .message-item,
+[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContentWrapperDiv--"],
+[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContentWrapperDiv--"],
+[data-acd-chat-two-row="true"] [data-acd-chat-two-line="true"] {
+  display: inline-grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto !important;
+  column-gap: 6px !important;
+  row-gap: 2px !important;
+  align-items: baseline !important;
+  box-sizing: border-box !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatMessageSender--"],
+html[data-acd-chat-two-row="true"] [class*=" chatMessageSender--"],
+html[data-acd-chat-two-row="true"] .chat-user-name,
+html[data-acd-chat-two-row="true"] .sender-name,
+html[data-acd-chat-two-row="true"] [class*="chat-sender"],
+:host-context([data-acd-chat-two-row="true"]) [class^="chatMessageSender--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatMessageSender--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-user-name,
+:host-context([data-acd-chat-two-row="true"]) .sender-name,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-sender"],
+[data-acd-chat-two-row="true"] [class^="chatMessageSender--"],
+[data-acd-chat-two-row="true"] [class*=" chatMessageSender--"] {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  display: block !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatMessageTime--"],
+html[data-acd-chat-two-row="true"] [class*=" chatMessageTime--"],
+html[data-acd-chat-two-row="true"] .chat-time,
+html[data-acd-chat-two-row="true"] .message-time,
+html[data-acd-chat-two-row="true"] [class*="chat-time"],
+:host-context([data-acd-chat-two-row="true"]) [class^="chatMessageTime--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatMessageTime--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-time,
+:host-context([data-acd-chat-two-row="true"]) .message-time,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-time"],
+[data-acd-chat-two-row="true"] [class^="chatMessageTime--"],
+[data-acd-chat-two-row="true"] [class*=" chatMessageTime--"] {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  display: inline-block !important;
+  float: none !important;
+  justify-self: end !important;
+  align-self: baseline !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContent--"],
+html[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContent--"],
+html[data-acd-chat-two-row="true"] .chat-message-text,
+html[data-acd-chat-two-row="true"] [class*="chat-message-content"],
+:host-context([data-acd-chat-two-row="true"]) [class^="chatIndividualMessageContent--"],
+:host-context([data-acd-chat-two-row="true"]) [class*=" chatIndividualMessageContent--"],
+:host-context([data-acd-chat-two-row="true"]) .chat-message-text,
+:host-context([data-acd-chat-two-row="true"]) [class*="chat-message-content"],
+[data-acd-chat-two-row="true"] [class^="chatIndividualMessageContent--"],
+[data-acd-chat-two-row="true"] [class*=" chatIndividualMessageContent--"] {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  line-height: 1.35 !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: pre-wrap !important;
+  margin: 0 !important;
+}
+
+/* ==========================================================================
+   4. Optional RTL Chat Text (Right-to-Left Persian / Arabic Presentation)
+   Independent from Dark Mode - Activated via html[data-acd-chat-rtl="true"]
+   Works across both Document and Open Shadow DOM (:host-context)
+   ========================================================================== */
+
+/* 4.1 Real Message Content Wrapper (Establishes RTL inline formatting context) */
+html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContentWrapperDiv--"],
+html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContentWrapperDiv--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContentWrapperDiv--"] {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* 4.2 Chat Message Sender Name (BiDi isolation keeps name + colon as one RTL unit) */
+html[data-acd-chat-rtl="true"] [class^="chatMessageSender--"],
+html[data-acd-chat-rtl="true"] [class*=" chatMessageSender--"],
+html[data-acd-chat-rtl="true"] .chat-user-name,
+html[data-acd-chat-rtl="true"] .sender-name,
+html[data-acd-chat-rtl="true"] [class*="chat-sender"],
+:host-context([data-acd-chat-rtl="true"]) [class^="chatMessageSender--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageSender--"],
+:host-context([data-acd-chat-rtl="true"]) .chat-user-name,
+:host-context([data-acd-chat-rtl="true"]) .sender-name,
+:host-context([data-acd-chat-rtl="true"]) [class*="chat-sender"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+
+/* 4.3a Dynamic BiDi Direction - Driven by Project RTL Classifier */
+html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContent--"][data-acd-bidi-dir="rtl"],
+html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContent--"][data-acd-bidi-dir="rtl"],
+html[data-acd-chat-rtl="true"] .chat-message-text[data-acd-bidi-dir="rtl"],
+html[data-acd-chat-rtl="true"] [class*="chat-message-content"][data-acd-bidi-dir="rtl"],
+html[data-acd-chat-rtl="true"] [data-acd-bidi-dir="rtl"],
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"][data-acd-bidi-dir="rtl"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"][data-acd-bidi-dir="rtl"],
+:host-context([data-acd-chat-rtl="true"]) [data-acd-bidi-dir="rtl"],
+[data-acd-bidi-dir="rtl"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+}
+
+html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContent--"][data-acd-bidi-dir="ltr"],
+html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContent--"][data-acd-bidi-dir="ltr"],
+html[data-acd-chat-rtl="true"] .chat-message-text[data-acd-bidi-dir="ltr"],
+html[data-acd-chat-rtl="true"] [class*="chat-message-content"][data-acd-bidi-dir="ltr"],
+html[data-acd-chat-rtl="true"] [data-acd-bidi-dir="ltr"],
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"][data-acd-bidi-dir="ltr"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"][data-acd-bidi-dir="ltr"],
+:host-context([data-acd-chat-rtl="true"]) [data-acd-bidi-dir="ltr"],
+[data-acd-bidi-dir="ltr"] {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+}
+
+/* 4.3b Unclassified Fallback (before classifier attaches or if neutral) */
+html[data-acd-chat-rtl="true"] [class^="chatIndividualMessageContent--"]:not([data-acd-bidi-dir]),
+html[data-acd-chat-rtl="true"] [class*=" chatIndividualMessageContent--"]:not([data-acd-bidi-dir]),
+html[data-acd-chat-rtl="true"] .chat-message-text:not([data-acd-bidi-dir]),
+html[data-acd-chat-rtl="true"] [class*="chat-message-content"]:not([data-acd-bidi-dir]),
+:host-context([data-acd-chat-rtl="true"]) [class^="chatIndividualMessageContent--"]:not([data-acd-bidi-dir]),
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatIndividualMessageContent--"]:not([data-acd-bidi-dir]) {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* 4.4 Timestamps: Protected LTR Presentation inside RTL Wrapper */
+html[data-acd-chat-rtl="true"] [class^="chatMessageTime--"],
+html[data-acd-chat-rtl="true"] [class*=" chatMessageTime--"],
+html[data-acd-chat-rtl="true"] .chat-time,
+html[data-acd-chat-rtl="true"] .message-time,
+html[data-acd-chat-rtl="true"] [class*="chat-time"],
+:host-context([data-acd-chat-rtl="true"]) [class^="chatMessageTime--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatMessageTime--"] {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  justify-self: end !important;
+}
+
+/* 4.5 Chat Compose / Typing Input Area */
+html[data-acd-chat-rtl="true"] [class^="typingArea--"],
+html[data-acd-chat-rtl="true"] [class*=" typingArea--"],
+html[data-acd-chat-rtl="true"] [class^="typingAreaHasText--"],
+html[data-acd-chat-rtl="true"] [class*=" typingAreaHasText--"],
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] textarea,
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] textarea,
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] input,
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] input,
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] [contenteditable="true"],
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] [contenteditable="true"],
+html[data-acd-chat-rtl="true"] .chat-input-container textarea,
+html[data-acd-chat-rtl="true"] .chat-input-container input,
+html[data-acd-chat-rtl="true"] .chat-input-container [contenteditable="true"],
+:host-context([data-acd-chat-rtl="true"]) [class^="typingArea--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"],
+:host-context([data-acd-chat-rtl="true"]) [class^="typingAreaHasText--"],
+:host-context([data-acd-chat-rtl="true"]) [class*=" typingAreaHasText--"],
+:host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] textarea,
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] textarea,
+:host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] input,
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] input {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+}
+
+/* 4.6 Compose Input Placeholder Alignment */
+html[data-acd-chat-rtl="true"] [class^="typingArea--"]::placeholder,
+html[data-acd-chat-rtl="true"] [class*=" typingArea--"]::placeholder,
+html[data-acd-chat-rtl="true"] [class^="typingArea--"]:-ms-input-placeholder,
+html[data-acd-chat-rtl="true"] [class*=" typingArea--"]:-ms-input-placeholder,
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] textarea::placeholder,
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] textarea::placeholder,
+html[data-acd-chat-rtl="true"] [class^="chatComposeArea--"] input::placeholder,
+html[data-acd-chat-rtl="true"] [class*=" chatComposeArea--"] input::placeholder,
+html[data-acd-chat-rtl="true"] .chat-input-container textarea::placeholder,
+html[data-acd-chat-rtl="true"] .chat-input-container input::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class^="typingArea--"]::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"]::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class*=" typingArea--"]:-ms-input-placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] textarea::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] textarea::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class^="chatComposeArea--"] input::placeholder,
+:host-context([data-acd-chat-rtl="true"]) [class*=" chatComposeArea--"] input::placeholder {
+  text-align: right !important;
+  direction: rtl !important;
+}

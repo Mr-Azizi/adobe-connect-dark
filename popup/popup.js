@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentDomainEl = document.getElementById('current-domain');
   const statusBadgeEl = document.getElementById('status-badge');
   const themeToggleEl = document.getElementById('theme-toggle');
+  const themePresetSelectEl = document.getElementById('theme-preset-select');
+  const themePresetContainerEl = document.getElementById('theme-preset-container');
+  const themePresetDescEl = document.getElementById('theme-preset-desc');
   const rtlToggleEl = document.getElementById('rtl-toggle');
   const sendRtlToggleEl = document.getElementById('send-rtl-toggle');
   const sendRtlContainerEl = document.getElementById('send-rtl-container');
@@ -17,12 +20,61 @@ document.addEventListener('DOMContentLoaded', () => {
   const toastEl = document.getElementById('toast');
   const versionEl = document.getElementById('extension-version');
 
+  const presetRegistry = window.ACDThemePresets || null;
+  const DEFAULT_THEME_PRESET = (presetRegistry && presetRegistry.DEFAULT_PRESET_ID) || 'dark';
+
+  function resolvePresetId(presetId) {
+    if (presetRegistry && typeof presetRegistry.normalizePresetId === 'function') {
+      return presetRegistry.normalizePresetId(presetId);
+    }
+    const valid = ['dark', 'amoled', 'dim', 'warm'];
+    const normalized = typeof presetId === 'string' ? presetId.trim().toLowerCase() : '';
+    return valid.includes(normalized) ? normalized : 'dark';
+  }
+
+  function isValidPresetId(presetId) {
+    if (presetRegistry && typeof presetRegistry.isValidPresetId === 'function') {
+      return presetRegistry.isValidPresetId(presetId);
+    }
+    const valid = ['dark', 'amoled', 'dim', 'warm'];
+    const normalized = typeof presetId === 'string' ? presetId.trim().toLowerCase() : '';
+    return valid.includes(normalized);
+  }
+
+  function getPresetMeta(presetId) {
+    const resolved = resolvePresetId(presetId);
+    if (presetRegistry && typeof presetRegistry.getPreset === 'function') {
+      return presetRegistry.getPreset(resolved);
+    }
+    const fallbackMap = {
+      dark: { id: 'dark', label: 'Dark', description: 'Balanced dark theme' },
+      amoled: { id: 'amoled', label: 'AMOLED', description: 'Deep black / OLED' },
+      dim: { id: 'dim', label: 'Dim', description: 'Softer dark theme' },
+      warm: { id: 'warm', label: 'Warm', description: 'Warmer night theme' }
+    };
+    return fallbackMap[resolved] || fallbackMap.dark;
+  }
+
+  // Dynamically populate select options from central preset registry for extensibility
+  if (themePresetSelectEl && presetRegistry && typeof presetRegistry.getAvailablePresets === 'function') {
+    const availablePresets = presetRegistry.getAvailablePresets();
+    if (Array.isArray(availablePresets) && availablePresets.length > 0) {
+      themePresetSelectEl.textContent = '';
+      for (const preset of availablePresets) {
+        const option = document.createElement('option');
+        option.value = preset.id;
+        option.textContent = preset.label;
+        themePresetSelectEl.appendChild(option);
+      }
+    }
+  }
+
   // Synchronize version display with manifest.json
   if (versionEl) {
     try {
       const manifest = chrome.runtime.getManifest();
-      if (manifest && manifest.version) {
-        versionEl.textContent = `v${manifest.version}`;
+      if (manifest && (manifest.version_name || manifest.version)) {
+        versionEl.textContent = `v${manifest.version_name || manifest.version}`;
       }
     } catch (err) {
       console.warn('[ACD] Failed to read manifest version:', err);
@@ -54,6 +106,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function updateThemePresetUi(isDarkActive, presetId, isUnsupportedPage = false) {
+    const resolvedId = resolvePresetId(presetId);
+    const meta = getPresetMeta(resolvedId);
+
+    if (themePresetSelectEl) {
+      themePresetSelectEl.value = resolvedId;
+      themePresetSelectEl.disabled = Boolean(isUnsupportedPage);
+    }
+
+    if (themePresetDescEl && meta) {
+      themePresetDescEl.textContent = meta.description;
+    }
+
+    if (themePresetContainerEl) {
+      if (isUnsupportedPage) {
+        themePresetContainerEl.classList.add('disabled');
+        themePresetContainerEl.classList.remove('dimmed');
+      } else if (!isDarkActive) {
+        themePresetContainerEl.classList.add('dimmed');
+        themePresetContainerEl.classList.remove('disabled');
+      } else {
+        themePresetContainerEl.classList.remove('dimmed');
+        themePresetContainerEl.classList.remove('disabled');
+      }
+    }
+  }
+
   function updateSendRtlUi(isRtlActive, sendRtlStored) {
     if (!sendRtlToggleEl || !sendRtlContainerEl) return;
     sendRtlToggleEl.checked = Boolean(sendRtlStored);
@@ -78,6 +157,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return `acd_main_${protocolSlug}_${hostSlug}`;
   }
 
+  const ISOLATED_CONTENT_SCRIPTS = [
+    'vendor/darkreader.js',
+    'content/darkreader-presets.js',
+    'content/darkreader-engine.js',
+    'content/theme-engine.js',
+    'content/observer.js',
+    'content/content.js'
+  ];
+
+  function hasUpToDateScriptFiles(registeredScript, expectedFiles) {
+    if (!registeredScript || !Array.isArray(registeredScript.js)) return false;
+    if (registeredScript.js.length !== expectedFiles.length) return false;
+    for (let i = 0; i < expectedFiles.length; i++) {
+      if (registeredScript.js[i] !== expectedFiles[i]) return false;
+    }
+    return true;
+  }
+
   async function ensureRegistration(urlObj, originPattern) {
     if (!chrome.scripting || !chrome.scripting.registerContentScripts) return true;
 
@@ -86,19 +183,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const registered = await chrome.scripting.getRegisteredContentScripts();
-      const registeredIds = new Set(registered.map((r) => r.id));
+      const registeredMap = new Map(registered.map((r) => [r.id, r]));
       const scriptsToRegister = [];
+      const outdatedIdsToUnregister = [];
 
-      // 1. ISOLATED-world registration for Theme Engine, observer, and messaging
-      if (!registeredIds.has(isolatedScriptId)) {
+      const existingIsolated = registeredMap.get(isolatedScriptId);
+      if (existingIsolated && !hasUpToDateScriptFiles(existingIsolated, ISOLATED_CONTENT_SCRIPTS)) {
+        outdatedIdsToUnregister.push(isolatedScriptId);
+        registeredMap.delete(isolatedScriptId);
+      }
+
+      if (outdatedIdsToUnregister.length > 0 && chrome.scripting.unregisterContentScripts) {
+        await chrome.scripting.unregisterContentScripts({ ids: outdatedIdsToUnregister });
+      }
+
+      // 1. ISOLATED-world registration for Dark Reader, Theme Presets, Theme Engine, observer, and messaging
+      if (!registeredMap.has(isolatedScriptId)) {
         scriptsToRegister.push({
           id: isolatedScriptId,
           matches: [originPattern],
-          js: [
-            'content/theme-engine.js',
-            'content/observer.js',
-            'content/content.js'
-          ],
+          js: ISOLATED_CONTENT_SCRIPTS,
           runAt: 'document_start',
           allFrames: true,
           world: 'ISOLATED'
@@ -106,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // 2. MAIN-world registration for outgoing Chat RTL bridge
-      if (!registeredIds.has(mainScriptId)) {
+      if (!registeredMap.has(mainScriptId)) {
         scriptsToRegister.push({
           id: mainScriptId,
           matches: [originPattern],
@@ -152,11 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Inject isolated content scripts
           chrome.scripting.executeScript({
             target: { tabId: currentTab.id, allFrames: true },
-            files: [
-              'content/theme-engine.js',
-              'content/observer.js',
-              'content/content.js'
-            ],
+            files: ISOLATED_CONTENT_SCRIPTS,
             world: 'ISOLATED'
           }).then(() => {
             chrome.tabs.sendMessage(currentTab.id, messagePayload, () => {
@@ -182,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!tabs || tabs.length === 0) {
       currentDomainEl.textContent = 'No active tab found';
       themeToggleEl.disabled = true;
+      updateThemePresetUi(false, DEFAULT_THEME_PRESET, true);
       if (rtlToggleEl) rtlToggleEl.disabled = true;
       if (chatTwoRowToggleEl) chatTwoRowToggleEl.disabled = true;
       updateSendRtlUi(false, true);
@@ -197,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       currentDomainEl.textContent = 'Invalid URL';
       themeToggleEl.disabled = true;
+      updateThemePresetUi(false, DEFAULT_THEME_PRESET, true);
       if (rtlToggleEl) rtlToggleEl.disabled = true;
       if (chatTwoRowToggleEl) chatTwoRowToggleEl.disabled = true;
       updateSendRtlUi(false, true);
@@ -208,6 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentUrl.protocol !== 'http:' && currentUrl.protocol !== 'https:') {
       currentDomainEl.textContent = 'Browser Internal Page';
       themeToggleEl.disabled = true;
+      updateThemePresetUi(false, DEFAULT_THEME_PRESET, true);
       if (rtlToggleEl) rtlToggleEl.disabled = true;
       if (chatTwoRowToggleEl) chatTwoRowToggleEl.disabled = true;
       updateSendRtlUi(false, true);
@@ -229,6 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.get([
       'acd_enabled_sites',
       'acd_enabled_domains',
+      'acd_theme_preset_sites',
+      'themePreset',
       'acd_rtl_chat_sites',
       'acd_send_rtl_formatting_sites',
       'acd_chat_two_row_sites'
@@ -252,8 +357,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       enabledSites = enabledSites || {};
+      const presetSites = result.acd_theme_preset_sites || {};
       const rtlSites = result.acd_rtl_chat_sites || {};
       const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
+
+      // Validate and optionally repair per-site themePreset
+      const rawSitePreset = presetSites[currentSiteKey];
+      const rawGlobalPreset = result.themePreset;
+      const candidatePreset = rawSitePreset !== undefined ? rawSitePreset : rawGlobalPreset;
+      const activePreset = resolvePresetId(candidatePreset);
+
+      if (rawSitePreset !== undefined && !isValidPresetId(rawSitePreset)) {
+        presetSites[currentSiteKey] = DEFAULT_THEME_PRESET;
+        chrome.storage.local.set({ acd_theme_preset_sites: presetSites });
+      }
 
       // Migration: If acd_chat_two_row_sites has never been set, default true for
       // existing sites where Dark Mode OR RTL Chat was active to preserve layout behavior.
@@ -275,6 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const sendRtlStored = sendRtlSites[currentSiteKey] ?? true;
 
       themeToggleEl.checked = isDark;
+      updateThemePresetUi(isDark, activePreset, false);
       if (rtlToggleEl) rtlToggleEl.checked = isRtl;
       if (chatTwoRowToggleEl) chatTwoRowToggleEl.checked = isTwoRow;
       updateSendRtlUi(isRtl, sendRtlStored);
@@ -288,6 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentSiteKey || !currentTab || !currentOriginPattern || !currentUrl) return;
 
     const wantsToEnable = themeToggleEl.checked;
+    const selectedPreset = resolvePresetId(themePresetSelectEl ? themePresetSelectEl.value : DEFAULT_THEME_PRESET);
     const isRtlActive = rtlToggleEl ? rtlToggleEl.checked : false;
     const isTwoRowActive = chatTwoRowToggleEl ? chatTwoRowToggleEl.checked : false;
 
@@ -295,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
       chrome.permissions.request({ origins: [currentOriginPattern] }, async (granted) => {
         if (!granted) {
           themeToggleEl.checked = false;
+          updateThemePresetUi(false, selectedPreset, false);
           updateStatusBadge(false, isRtlActive, isTwoRowActive);
           showToast('Permission not granted / مجوز داده نشد');
           return;
@@ -303,19 +423,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const regOk = await ensureRegistration(currentUrl, currentOriginPattern);
         if (!regOk) {
           themeToggleEl.checked = false;
+          updateThemePresetUi(false, selectedPreset, false);
           updateStatusBadge(false, isRtlActive, isTwoRowActive);
           showToast('Registration failed / خطا در ثبت اسکریپت');
           return;
         }
 
-        chrome.storage.local.get(['acd_enabled_sites'], (result) => {
+        chrome.storage.local.get(['acd_enabled_sites', 'acd_theme_preset_sites'], (result) => {
           const enabledSites = result.acd_enabled_sites || {};
+          const presetSites = result.acd_theme_preset_sites || {};
           enabledSites[currentSiteKey] = true;
+          presetSites[currentSiteKey] = selectedPreset;
 
-          chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
+          chrome.storage.local.set({
+            acd_enabled_sites: enabledSites,
+            acd_theme_preset_sites: presetSites
+          }, () => {
+            updateThemePresetUi(true, selectedPreset, false);
             updateStatusBadge(true, isRtlActive, isTwoRowActive);
-            showToast('✓ Dark Mode enabled for ' + currentUrl.hostname);
-            sendTabMessageWithFallback({ action: 'toggleDark', enabled: true, siteKey: currentSiteKey });
+            showToast('✓ Dark Mode (' + getPresetMeta(selectedPreset).label + ') enabled for ' + currentUrl.hostname);
+            sendTabMessageWithFallback({
+              action: 'toggleDark',
+              enabled: true,
+              themePreset: selectedPreset,
+              siteKey: currentSiteKey
+            });
           });
         });
       });
@@ -327,13 +459,66 @@ document.addEventListener('DOMContentLoaded', () => {
         await cleanupRegistrationIfUnneeded(currentUrl, false, isRtlActive, isTwoRowActive);
 
         chrome.storage.local.set({ acd_enabled_sites: enabledSites }, () => {
+          updateThemePresetUi(false, selectedPreset, false);
           updateStatusBadge(false, isRtlActive, isTwoRowActive);
           showToast('✓ Dark Mode disabled');
-          sendTabMessageWithFallback({ action: 'toggleDark', enabled: false, siteKey: currentSiteKey });
+          sendTabMessageWithFallback({
+            action: 'toggleDark',
+            enabled: false,
+            themePreset: selectedPreset,
+            siteKey: currentSiteKey
+          });
         });
       });
     }
   });
+
+  // Theme Preset Selector handler
+  if (themePresetSelectEl) {
+    themePresetSelectEl.addEventListener('change', () => {
+      if (!currentSiteKey || !currentTab) return;
+
+      const selectedPreset = resolvePresetId(themePresetSelectEl.value);
+      const isDarkActive = themeToggleEl.checked;
+      const presetMeta = getPresetMeta(selectedPreset);
+
+      updateThemePresetUi(isDarkActive, selectedPreset, false);
+
+      chrome.storage.local.get(['acd_theme_preset_sites'], (result) => {
+        const presetSites = result.acd_theme_preset_sites || {};
+        presetSites[currentSiteKey] = selectedPreset;
+
+        chrome.storage.local.set({ acd_theme_preset_sites: presetSites }, () => {
+          showToast(
+            isDarkActive
+              ? `✓ Theme switched to ${presetMeta.label}`
+              : `✓ Theme saved (${presetMeta.label})`
+          );
+
+          if (isDarkActive) {
+            sendTabMessageWithFallback({
+              action: 'setThemePreset',
+              themePreset: selectedPreset,
+              siteKey: currentSiteKey
+            });
+          } else {
+            // When Dark Mode is OFF, only notify existing content script (if any) without injecting or darkening
+            chrome.tabs.sendMessage(
+              currentTab.id,
+              {
+                action: 'setThemePreset',
+                themePreset: selectedPreset,
+                siteKey: currentSiteKey
+              },
+              () => {
+                if (chrome.runtime.lastError) {}
+              }
+            );
+          }
+        });
+      });
+    });
+  }
 
   // RTL Chat Text Toggle handler
   if (rtlToggleEl) {
@@ -505,29 +690,34 @@ document.addEventListener('DOMContentLoaded', () => {
       chrome.scripting.unregisterContentScripts({ ids: [isolatedScriptId, mainScriptId] }).catch(() => {});
     }
 
-    // 2. Remove siteKey from storage
+    // 2. Remove siteKey from storage (resets themePreset -> dark along with other site settings)
     chrome.storage.local.get([
       'acd_enabled_sites',
+      'acd_theme_preset_sites',
       'acd_rtl_chat_sites',
       'acd_send_rtl_formatting_sites',
       'acd_chat_two_row_sites'
     ], (result) => {
       const enabledSites = result.acd_enabled_sites || {};
+      const presetSites = result.acd_theme_preset_sites || {};
       const rtlSites = result.acd_rtl_chat_sites || {};
       const sendRtlSites = result.acd_send_rtl_formatting_sites || {};
       const twoRowSites = result.acd_chat_two_row_sites || {};
       delete enabledSites[currentSiteKey];
+      delete presetSites[currentSiteKey];
       delete rtlSites[currentSiteKey];
       delete sendRtlSites[currentSiteKey];
       delete twoRowSites[currentSiteKey];
 
       chrome.storage.local.set({
         acd_enabled_sites: enabledSites,
+        acd_theme_preset_sites: presetSites,
         acd_rtl_chat_sites: rtlSites,
         acd_send_rtl_formatting_sites: sendRtlSites,
         acd_chat_two_row_sites: twoRowSites
       }, () => {
         themeToggleEl.checked = false;
+        updateThemePresetUi(false, DEFAULT_THEME_PRESET, false);
         if (rtlToggleEl) rtlToggleEl.checked = false;
         if (chatTwoRowToggleEl) chatTwoRowToggleEl.checked = false;
         updateSendRtlUi(false, true);

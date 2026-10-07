@@ -77,16 +77,33 @@
     }
 
     /**
-     * Filter and queue mutation elements and their subtrees
+     * Filter and queue mutation elements and their subtrees.
+     * Remains active for functional Shadow DOM discovery (RTL Chat, Two-Row),
+     * while skipping legacy theme evaluation work when Dark Reader mode is active.
      */
     handleMutations(mutations) {
-      if (!this.themeEngine || !this.themeEngine.isEnabled()) {
+      if (!this.themeEngine) return;
+
+      const hasActiveFeature = typeof this.themeEngine.hasAnyActiveFeature === 'function'
+        ? this.themeEngine.hasAnyActiveFeature()
+        : this.themeEngine.isEnabled();
+
+      if (!hasActiveFeature) {
         return;
       }
+
+      const runLegacyVisual = typeof this.themeEngine.shouldRunLegacyVisualEngine === 'function'
+        ? this.themeEngine.shouldRunLegacyVisualEngine()
+        : this.themeEngine.isEnabled();
+
+      const runChatColorMapping = typeof this.themeEngine.shouldRunChatColorMapping === 'function'
+        ? this.themeEngine.shouldRunChatColorMapping()
+        : this.themeEngine.isEnabled();
 
       for (let i = 0; i < mutations.length; i++) {
         const mutation = mutations[i];
         if (mutation.type === 'attributes') {
+          if (!runChatColorMapping) continue;
           const target = mutation.target;
           if (
             target &&
@@ -102,13 +119,20 @@
           for (let j = 0; j < mutation.addedNodes.length; j++) {
             const node = mutation.addedNodes[j];
             if (node.nodeType === Node.ELEMENT_NODE && !IGNORE_TAGS.has(node.tagName.toUpperCase())) {
-              // Immediately classify any chat message bubbles in this added subtree (zero-FOUC)
-              this.themeEngine.classifyChatBubblesInTree(node);
+              if (runChatColorMapping) {
+                // Immediately classify any chat message bubbles in this added subtree (zero-FOUC)
+                this.themeEngine.classifyChatBubblesInTree(node);
+              }
 
-              // Collect node AND candidate descendants within this mounted subtree
-              const candidates = this.themeEngine.getCandidateElements(node);
-              for (let k = 0; k < candidates.length; k++) {
-                this.batch.push(candidates[k]);
+              if (runLegacyVisual) {
+                // Collect node AND candidate descendants within this mounted subtree
+                const candidates = this.themeEngine.getCandidateElements(node);
+                for (let k = 0; k < candidates.length; k++) {
+                  this.batch.push(candidates[k]);
+                }
+              } else {
+                // Dark Reader / Functional mode: only queue added root element for Open Shadow DOM discovery
+                this.batch.push(node);
               }
             }
           }
@@ -128,7 +152,12 @@
 
       this.debounceTimer = setTimeout(() => {
         this.debounceTimer = null;
-        if (!this.isObserving || !this.themeEngine.isEnabled() || this.batch.length === 0) {
+        const hasActiveFeature = this.themeEngine && (
+          typeof this.themeEngine.hasAnyActiveFeature === 'function'
+            ? this.themeEngine.hasAnyActiveFeature()
+            : this.themeEngine.isEnabled()
+        );
+        if (!this.isObserving || !hasActiveFeature || this.batch.length === 0) {
           this.batch = [];
           return;
         }
@@ -136,7 +165,7 @@
         const nodesToProcess = this.batch;
         this.batch = [];
 
-        // Check for Open Shadow Roots in added nodes and their subtrees
+        // Check for Open Shadow Roots in added nodes and their subtrees (functional + legacy)
         for (const node of nodesToProcess) {
           if (node.shadowRoot) {
             this.themeEngine.attachToShadowRoot(node.shadowRoot);
@@ -144,8 +173,14 @@
           this.themeEngine.scanForShadowRoots(node);
         }
 
-        // Send to Theme Engine queue for Layer 1 detection
-        this.themeEngine.queueNodesForEvaluation(nodesToProcess);
+        // Send to Theme Engine queue for Layer 1 detection ONLY in legacy visual engine mode
+        const runLegacyVisual = typeof this.themeEngine.shouldRunLegacyVisualEngine === 'function'
+          ? this.themeEngine.shouldRunLegacyVisualEngine()
+          : this.themeEngine.isEnabled();
+
+        if (runLegacyVisual) {
+          this.themeEngine.queueNodesForEvaluation(nodesToProcess);
+        }
       }, this.DEBOUNCE_DELAY);
     }
   }

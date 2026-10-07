@@ -4,6 +4,43 @@
  * and toolbar action badge indicators based on siteKey.
  */
 
+try {
+  importScripts('content/darkreader-presets.js');
+} catch (e) {
+  // Fallback if importScripts is unavailable in test environment
+}
+
+const ISOLATED_CONTENT_SCRIPTS = [
+  'vendor/darkreader.js',
+  'content/darkreader-presets.js',
+  'content/darkreader-engine.js',
+  'content/theme-engine.js',
+  'content/observer.js',
+  'content/content.js'
+];
+
+function normalizePresetId(presetId) {
+  if (typeof self !== 'undefined' && self.ACDThemePresets && typeof self.ACDThemePresets.normalizePresetId === 'function') {
+    return self.ACDThemePresets.normalizePresetId(presetId);
+  }
+  if (typeof presetId === 'string') {
+    const lower = presetId.trim().toLowerCase();
+    if (lower === 'dark' || lower === 'amoled' || lower === 'dim' || lower === 'warm') {
+      return lower;
+    }
+  }
+  return 'dark';
+}
+
+function hasUpToDateScriptFiles(registeredScript, expectedFiles) {
+  if (!registeredScript || !Array.isArray(registeredScript.js)) return false;
+  if (registeredScript.js.length !== expectedFiles.length) return false;
+  for (let i = 0; i < expectedFiles.length; i++) {
+    if (registeredScript.js[i] !== expectedFiles[i]) return false;
+  }
+  return true;
+}
+
 function getIsolatedScriptIdForSite(siteKey) {
   try {
     const u = new URL(siteKey);
@@ -26,10 +63,6 @@ function getMainScriptIdForSite(siteKey) {
   }
 }
 
-function getScriptIdForSite(siteKey) {
-  return getIsolatedScriptIdForSite(siteKey);
-}
-
 // Initialize default storage, migrate legacy domain data, and sync scripts
 chrome.runtime.onInstalled.addListener(async (details) => {
   await migrateLegacyStorage();
@@ -50,6 +83,8 @@ async function migrateLegacyStorage() {
     const result = await chrome.storage.local.get([
       'acd_enabled_sites',
       'acd_enabled_domains',
+      'acd_theme_preset_sites',
+      'themePreset',
       'acd_rtl_chat_sites',
       'acd_send_rtl_formatting_sites',
       'acd_chat_two_row_sites'
@@ -69,6 +104,29 @@ async function migrateLegacyStorage() {
       enabledSites = {};
       await chrome.storage.local.set({ acd_enabled_sites: {} });
     }
+
+    if (!result.acd_theme_preset_sites || typeof result.acd_theme_preset_sites !== 'object') {
+      await chrome.storage.local.set({ acd_theme_preset_sites: {} });
+    } else {
+      const sanitizedPresets = {};
+      let presetsRepaired = false;
+      for (const [site, rawPreset] of Object.entries(result.acd_theme_preset_sites)) {
+        const normalized = normalizePresetId(rawPreset);
+        sanitizedPresets[site] = normalized;
+        if (normalized !== rawPreset) presetsRepaired = true;
+      }
+      if (presetsRepaired) {
+        await chrome.storage.local.set({ acd_theme_preset_sites: sanitizedPresets });
+      }
+    }
+
+    if (result.themePreset !== undefined) {
+      const normalizedGlobal = normalizePresetId(result.themePreset);
+      if (normalizedGlobal !== result.themePreset) {
+        await chrome.storage.local.set({ themePreset: normalizedGlobal });
+      }
+    }
+
     const rtlSites = result.acd_rtl_chat_sites || {};
     if (!result.acd_rtl_chat_sites) {
       await chrome.storage.local.set({ acd_rtl_chat_sites: {} });
@@ -108,17 +166,20 @@ async function syncRegisteredScripts() {
   try {
     const result = await chrome.storage.local.get([
       'acd_enabled_sites',
+      'acd_theme_preset_sites',
       'acd_rtl_chat_sites',
       'acd_send_rtl_formatting_sites',
       'acd_chat_two_row_sites'
     ]);
     const enabledDarkSites = { ...(result.acd_enabled_sites || {}) };
+    const themePresetSites = { ...(result.acd_theme_preset_sites || {}) };
     const enabledRtlSites = { ...(result.acd_rtl_chat_sites || {}) };
     const sendRtlSites = { ...(result.acd_send_rtl_formatting_sites || {}) };
     const enabledTwoRowSites = { ...(result.acd_chat_two_row_sites || {}) };
     let storageChanged = false;
 
     const registered = await chrome.scripting.getRegisteredContentScripts();
+    const registeredMap = new Map(registered.map((r) => [r.id, r]));
     const registeredIds = new Set(registered.map((r) => r.id));
     const validScriptIds = new Set();
 
@@ -146,6 +207,10 @@ async function syncRegisteredScripts() {
           delete enabledDarkSites[siteKey];
           storageChanged = true;
         }
+        if (themePresetSites[siteKey] !== undefined) {
+          delete themePresetSites[siteKey];
+          storageChanged = true;
+        }
         if (enabledRtlSites[siteKey]) {
           delete enabledRtlSites[siteKey];
           storageChanged = true;
@@ -168,6 +233,16 @@ async function syncRegisteredScripts() {
       validScriptIds.add(isolatedScriptId);
       validScriptIds.add(mainScriptId);
 
+      // Upgrade outdated isolated script registration (e.g. when Dark Reader scripts were added)
+      const existingIsolated = registeredMap.get(isolatedScriptId);
+      if (existingIsolated && !hasUpToDateScriptFiles(existingIsolated, ISOLATED_CONTENT_SCRIPTS)) {
+        try {
+          await chrome.scripting.unregisterContentScripts({ ids: [isolatedScriptId] });
+          registeredIds.delete(isolatedScriptId);
+          registeredMap.delete(isolatedScriptId);
+        } catch (e) {}
+      }
+
       const scriptsToRegister = [];
 
       // Self-healing: If permission is valid but isolated script is missing, repair it!
@@ -175,11 +250,7 @@ async function syncRegisteredScripts() {
         scriptsToRegister.push({
           id: isolatedScriptId,
           matches: [originPattern],
-          js: [
-            'content/theme-engine.js',
-            'content/observer.js',
-            'content/content.js'
-          ],
+          js: ISOLATED_CONTENT_SCRIPTS,
           runAt: 'document_start',
           allFrames: true,
           world: 'ISOLATED'
@@ -226,6 +297,7 @@ async function syncRegisteredScripts() {
     if (storageChanged) {
       await chrome.storage.local.set({
         acd_enabled_sites: enabledDarkSites,
+        acd_theme_preset_sites: themePresetSites,
         acd_rtl_chat_sites: enabledRtlSites,
         acd_send_rtl_formatting_sites: sendRtlSites,
         acd_chat_two_row_sites: enabledTwoRowSites
@@ -292,4 +364,12 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       updateBadgeForTab(tabs[0].id, tabs[0].url);
     }
   });
+});
+
+// Silently acknowledge Dark Reader's internal cs-bg-fetch messages so MV3 runtime.sendMessage never rejects
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message && message.type === 'cs-bg-fetch') {
+    return false;
+  }
+  return false;
 });

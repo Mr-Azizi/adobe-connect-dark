@@ -39,16 +39,34 @@
       </div>
     </section>
 
-    <!-- Main Toggle Control -->
-    <section class="card toggle-card">
-      <div class="toggle-info">
-        <span class="toggle-title">Dark Mode</span>
-        <span class="toggle-desc">Toggle dark theme for this site</span>
+    <!-- Main Toggle Control & Theme Preset Selector -->
+    <section class="card theme-card-group">
+      <div class="toggle-card">
+        <div class="toggle-info">
+          <span class="toggle-title">Dark Mode</span>
+          <span class="toggle-desc">Toggle dark theme for this site</span>
+        </div>
+        <label class="switch" for="theme-toggle">
+          <input type="checkbox" id="theme-toggle" aria-label="Toggle Dark Mode">
+          <span class="slider"></span>
+        </label>
       </div>
-      <label class="switch" for="theme-toggle">
-        <input type="checkbox" id="theme-toggle" aria-label="Toggle Dark Mode">
-        <span class="slider"></span>
-      </label>
+
+      <!-- Sub-Control: Dark Reader Theme Preset Selector -->
+      <div id="theme-preset-container" class="sub-toggle-card disabled">
+        <div class="sub-toggle-info">
+          <label class="toggle-title sub-title" for="theme-preset-select">Theme</label>
+          <span id="theme-preset-desc" class="toggle-desc sub-desc">Balanced dark theme</span>
+        </div>
+        <div class="select-wrapper">
+          <select id="theme-preset-select" class="theme-select" aria-label="Select Dark Mode Theme Preset" disabled>
+            <option value="dark">Dark</option>
+            <option value="amoled">AMOLED</option>
+            <option value="dim">Dim</option>
+            <option value="warm">Warm</option>
+          </select>
+        </div>
+      </div>
     </section>
 
     <!-- RTL Chat Control Section -->
@@ -114,6 +132,7 @@
     </footer>
   </div>
 
+  <script src="../content/darkreader-presets.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
