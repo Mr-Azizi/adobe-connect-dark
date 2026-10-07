@@ -9,8 +9,9 @@ scratch/
 *.log
 *.tmp
 
-# Dependencies and system files
+# Dependencies, release artifacts, and system files
 node_modules/
+dist/
 .DS_Store
 Thumbs.db
 *.zip

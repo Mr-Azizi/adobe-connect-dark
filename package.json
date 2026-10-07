@@ -11,7 +11,8 @@
   "scripts": {
     "build": "npm run build:darkreader",
     "build:darkreader": "node scripts/build-darkreader.mjs",
-    "verify:darkreader": "node scripts/verify-darkreader.mjs"
+    "verify:darkreader": "node scripts/verify-darkreader.mjs",
+    "package:release": "node scripts/package-release.mjs"
   },
   "dependencies": {
     "darkreader": "4.9.133"
